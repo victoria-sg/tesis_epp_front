@@ -4,7 +4,7 @@ import { useStreamContext } from "../context/StreamContext";
 interface UseVideoStreamOptions {
   camaraId: number;
   source?: "rtsp" | "fallback" | "view";
-  /** Si es true, solo lee el frame sin abrir/cerrar conexión */
+  
   readonly?: boolean;
 }
 

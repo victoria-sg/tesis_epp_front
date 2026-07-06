@@ -1,6 +1,5 @@
 import api from "./api";
 
-// ─── Tipos genéricos ──────────────────────────────────────────────────────────
 
 export interface PaginatedResponse<T> {
   data: T[];
@@ -9,7 +8,6 @@ export interface PaginatedResponse<T> {
   limit: number;
 }
 
-// ─── Servicio CRUD genérico ────────────────────────────────────────────────────
 
 export const createCrudService = <T, TCreate, TUpdate>(basePath: string) => {
   const getById = async (id: number): Promise<T> => {

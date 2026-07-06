@@ -2,27 +2,26 @@ export interface Zona {
   id_zona: number;
   nombre_zona: string;
   nivel_riesgo?: string | null;
-  capacidad_max?: number | null;
   tiempo_toleracia_segundo?: number | null;
+  epp_ids?: number[];
 }
 
 export interface ZonaCreate {
   nombre_zona: string;
   nivel_riesgo?: string | null;
-  capacidad_max?: number | null;
   tiempo_toleracia_segundo?: number | null;
+  epp_ids?: number[];
 }
 
 export interface ZonaUpdate {
   nombre_zona?: string;
   nivel_riesgo?: string | null;
-  capacidad_max?: number | null;
   tiempo_toleracia_segundo?: number | null;
+  epp_ids?: number[];
 }
 
 export const ZONA_NIVELES_RIESGO = ["bajo", "medio", "alto"] as const;
 
-// Palabras clave para detectar el nivel automáticamente
 const PALABRAS_ALTO = [
   "fundición", "fundicion", "horno", "explosivo", "química", "quimica",
   "peligro", "alto voltaje", "volcado", "caldera", "reactor",

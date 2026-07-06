@@ -9,7 +9,6 @@ import type { AlertaReporte } from "../../models/reporte.model";
 
 const formatearFecha = (iso: string | null): string => {
   if (!iso) return "—";
-  // El backend guarda en UTC sin 'Z', hay que indicárselo al parser
   const fechaUtc = iso.endsWith("Z") || iso.includes("+") ? iso : iso + "Z";
   const fecha = new Date(fechaUtc);
   if (Number.isNaN(fecha.getTime())) return "—";
@@ -142,7 +141,7 @@ export const ReportesView = () => {
         }
       />
 
-      {/* Estadísticas */}
+      
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -209,7 +208,7 @@ export const ReportesView = () => {
         )}
       </div>
 
-      {/* Modal resolver alerta */}
+      
       {alertaResolviendo && (
         <div
           className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
@@ -277,7 +276,7 @@ export const ReportesView = () => {
         </div>
       )}
 
-      {/* Modal imagen expandida */}
+      
       {imagenExpandida && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"

@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { useCallback, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { APP_DASHBOARD } from "../constants/authRoutesConstants";
+import { APP_CAMBIAR_CONTRASENA, APP_DASHBOARD } from "../constants/authRoutesConstants";
 import {
   REFRESH_TOKEN_KEY,
   TOKEN_KEY,
@@ -64,13 +64,19 @@ export const useLogin = ({ selectedRol, onGoToReset, onChangeRole }: Props) => {
           rol: mappedRol,
           rolLabel: ROL_LABELS[mappedRol],
           permisos: usuario.permisos,
+          primer_inicio_sesion: usuario.primer_inicio_sesion,
         };
 
         localStorage.setItem(TOKEN_KEY, access_token);
         localStorage.setItem(REFRESH_TOKEN_KEY, refresh_token);
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         dispatch(loginAction({ user, token: access_token }));
-        navigate(APP_DASHBOARD);
+
+        if (usuario.primer_inicio_sesion) {
+          navigate(APP_CAMBIAR_CONTRASENA);
+        } else {
+          navigate(APP_DASHBOARD);
+        }
       } catch {
         setServerError("Credenciales incorrectas. Intenta de nuevo.");
       }

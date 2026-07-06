@@ -1,0 +1,58 @@
+import { useState } from "react";
+import { Image, Video, Scan } from "lucide-react";
+import { ImageDetectionUploader } from "../../components/ImageDetectionUploader";
+import { VideoDetectionUploader } from "../../components/VideoDetectionUploader";
+
+type Tab = "imagen" | "video";
+
+export const DeteccionView = () => {
+  const [activeTab, setActiveTab] = useState<Tab>("imagen");
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-md">
+          <Scan className="h-5 w-5 text-white" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-[#1a1a1a]">Detección EPP</h1>
+          <p className="text-sm text-[#6b6b6b]">
+            Prueba el modelo de detección con imágenes o videos de manera temporal
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg border border-[#e5e5e5] shadow-sm overflow-hidden">
+        <div className="flex border-b border-[#e5e5e5]">
+          <button
+            onClick={() => setActiveTab("imagen")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
+              activeTab === "imagen"
+                ? "border-violet-500 text-violet-700 bg-violet-50/50"
+                : "border-transparent text-[#6b6b6b] hover:text-[#1a1a1a] hover:bg-[#f5f5f5]"
+            }`}
+          >
+            <Image size={16} />
+            Imagen
+          </button>
+          <button
+            onClick={() => setActiveTab("video")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
+              activeTab === "video"
+                ? "border-violet-500 text-violet-700 bg-violet-50/50"
+                : "border-transparent text-[#6b6b6b] hover:text-[#1a1a1a] hover:bg-[#f5f5f5]"
+            }`}
+          >
+            <Video size={16} />
+            Video
+          </button>
+        </div>
+
+        <div className="p-6">
+          {activeTab === "imagen" && <ImageDetectionUploader />}
+          {activeTab === "video" && <VideoDetectionUploader />}
+        </div>
+      </div>
+    </div>
+  );
+};

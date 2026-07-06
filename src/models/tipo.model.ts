@@ -1,4 +1,3 @@
-// ─── Interfaces para Tipos de EPP ─────────────────────────────────────────────
 
 export interface TipoEPP {
   id_tipo_epp: number;

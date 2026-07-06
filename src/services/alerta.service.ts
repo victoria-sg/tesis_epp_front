@@ -1,3 +1,5 @@
+import api from "./api";
+
 export interface AlertaCapturaPayload {
   id_camara: number;
   frame_base64: string;
@@ -7,20 +9,8 @@ export interface AlertaCapturaPayload {
 export const capturarIncidencia = async (
   payload: AlertaCapturaPayload,
 ): Promise<void> => {
-  const token = localStorage.getItem("epp_token") || "";
-  const baseUrl = window.location.origin;
-
-  const response = await fetch(`${baseUrl}/alertas/captura`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || "Error al guardar la captura");
+  const response = await api.post("/alertas/captura", payload);
+  if (!response.data) {
+    throw new Error("Error al guardar la captura");
   }
 };

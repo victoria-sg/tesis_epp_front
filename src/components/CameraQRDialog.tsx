@@ -1,4 +1,5 @@
 import { QRCodeSVG } from "qrcode.react";
+import { Lightbulb } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CustomModal } from "./crud/CustomModal";
 
@@ -73,7 +74,7 @@ export const CameraQRDialog = ({
         </div>
 
         <div className="w-full bg-blue-50 border border-blue-200 rounded-lg p-3 text-[12px] text-blue-800 leading-relaxed">
-          <strong>💡 Instrucciones:</strong>
+          <strong className="flex items-center gap-1"><Lightbulb size={14} /> Instrucciones:</strong>
           <ol className="mt-1.5 ml-4 list-decimal space-y-1">
             <li>Abre la cámara del teléfono y escanea el código QR</li>
             <li>
@@ -81,7 +82,7 @@ export const CameraQRDialog = ({
               navegador
             </li>
             <li>
-              Presiona <strong>"📷 Iniciar"</strong> para comenzar la
+              Presiona <strong>"Iniciar"</strong> para comenzar la
               transmisión
             </li>
           </ol>

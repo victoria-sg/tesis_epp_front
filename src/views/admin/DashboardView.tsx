@@ -2,7 +2,9 @@ import {
   Activity,
   AlertTriangle,
   Camera,
+  Check,
   ShieldCheck,
+  Smartphone,
   Wifi,
   WifiOff,
   X,
@@ -13,8 +15,10 @@ import { DashboardCharts } from "../../components/DashboardCharts";
 import { VideoStream } from "../../components/VideoStream";
 import { useStreamContext } from "../../context/StreamContext";
 import type { Camara } from "../../models/camara.model";
+import type { Zona } from "../../models/zona.model";
 import { capturarIncidencia } from "../../services/alerta.service";
 import { camaraService } from "../../services/camara.service";
+import { zonaService } from "../../services/zona.service";
 import type { RootState } from "../../store";
 
 export const DashboardView = () => {
@@ -27,11 +31,13 @@ export const DashboardView = () => {
   const [capturandoIncidencia, setCapturandoIncidencia] = useState(false);
   const [mensajeCaptura, setMensajeCaptura] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.auth);
+  const [zonas, setZonas] = useState<Zona[]>([]);
+  const [zonaSeleccionada, setZonaSeleccionada] = useState<number | null>(null);
 
   const capturarIncidenciaDashboard = async (camaraId: number) => {
     const frame = frames[camaraId];
     if (!frame) {
-      setMensajeCaptura("❌ Sin imagen disponible");
+      setMensajeCaptura("Sin imagen disponible");
       setTimeout(() => setMensajeCaptura(null), 3000);
       return;
     }
@@ -42,10 +48,10 @@ export const DashboardView = () => {
         frame_base64: frame,
         descripcion: "Incidencia reportada desde el Dashboard",
       });
-      setMensajeCaptura("✅ Incidencia registrada");
+      setMensajeCaptura("Incidencia registrada");
       cargarAlertas();
     } catch {
-      setMensajeCaptura("❌ Error al registrar");
+      setMensajeCaptura("Error al registrar");
     } finally {
       setCapturandoIncidencia(false);
       setTimeout(() => setMensajeCaptura(null), 3000);
@@ -71,6 +77,10 @@ export const DashboardView = () => {
       .getAll()
       .then((data) => { setCamaras(data); setLoading(false); })
       .catch(() => setLoading(false));
+    zonaService
+      .getAll()
+      .then((data) => setZonas(data))
+      .catch(() => {});
     cargarAlertas();
   }, []);
 
@@ -87,7 +97,7 @@ export const DashboardView = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
           <div className="flex items-center justify-between mb-3">
@@ -120,8 +130,16 @@ export const DashboardView = () => {
           </div>
           <div className="mt-1" style={{ fontSize: 12, color: alertasPendientes > 0 ? "#dc2626" : "#10b981" }}>
             {alertasPendientes > 0
-              ? `⚠ ${alertasPendientes} pendiente${alertasPendientes !== 1 ? "s" : ""}`
-              : "✓ Sin infracciones"}
+              ? (
+                <span className="flex items-center gap-1">
+                  <AlertTriangle size={14} /> {alertasPendientes} pendiente{alertasPendientes !== 1 ? "s" : ""}
+                </span>
+              )
+              : (
+                <span className="flex items-center gap-1">
+                  <Check size={14} /> Sin infracciones
+                </span>
+              )}
           </div>
         </div>
 
@@ -156,7 +174,7 @@ export const DashboardView = () => {
         </div>
       </div>
 
-      {/* Grid de Cámaras */}
+      
       <div className="mb-4 flex items-center justify-between">
         <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>Transmisión en Vivo</div>
         <span style={{ fontSize: 12, color: "#6b6b6b" }}>
@@ -218,7 +236,11 @@ export const DashboardView = () => {
                   </div>
                 </div>
                 <div style={{ fontSize: 11, color: "#ccc" }} className="font-mono mt-1">
-                  {cam.tipo_fuente === "fallback_phone" ? "📱 Cámara virtual" : (cam.ip_direccion ?? "")}
+                  {cam.tipo_fuente === "fallback_phone" ? (
+                    <span className="flex items-center gap-1">
+                      <Smartphone size={12} /> Cámara virtual
+                    </span>
+                  ) : (cam.ip_direccion ?? "")}
                 </div>
               </div>
             </div>
@@ -226,20 +248,34 @@ export const DashboardView = () => {
         </div>
       )}
 
-      {/* Gráficos por rol */}
+      
       {user && (
         <div className="mt-8">
           <div className="mb-3 flex items-center gap-2">
             <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>Estadísticas</div>
+            {zonas.length > 0 && (
+              <select
+                value={zonaSeleccionada ?? ""}
+                onChange={(e) => setZonaSeleccionada(e.target.value ? Number(e.target.value) : null)}
+                className="h-8 px-3 rounded-md border border-[#e5e5e5] bg-white text-[13px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
+              >
+                <option value="">Todas las zonas</option>
+                {zonas.map((z) => (
+                  <option key={z.id_zona} value={z.id_zona}>
+                    {z.nombre_zona}
+                  </option>
+                ))}
+              </select>
+            )}
             <span style={{ fontSize: 11, color: "#6b6b6b", background: "#f5f5f5", padding: "2px 8px", borderRadius: 99 }}>
               {user.rolLabel}
             </span>
           </div>
-          <DashboardCharts rol={user.rol} />
+          <DashboardCharts rol={user.rol} idZona={zonaSeleccionada} />
         </div>
       )}
 
-      {/* Modal de cámara expandida */}
+      
       {camaraExpandida && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex flex-col"
@@ -299,10 +335,14 @@ export const DashboardView = () => {
                 disabled={capturandoIncidencia}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-500/90 hover:bg-yellow-500 disabled:bg-gray-600 text-white text-xs font-semibold transition-colors shadow"
               >
-                {capturandoIncidencia ? "Capturando..." : "🚨 Reportar incidencia"}
+                {capturandoIncidencia ? "Capturando..." : (
+                  <span className="flex items-center gap-1">
+                    <AlertTriangle size={14} /> Reportar incidencia
+                  </span>
+                )}
               </button>
               {mensajeCaptura && (
-                <span className={`text-xs font-medium ${mensajeCaptura.includes("✅") ? "text-green-400" : "text-red-400"}`}>
+                <span className={`text-xs font-medium ${mensajeCaptura.includes("registrada") ? "text-green-400" : "text-red-400"}`}>
                   {mensajeCaptura}
                 </span>
               )}

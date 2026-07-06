@@ -20,7 +20,6 @@ export default defineConfig({
       "/zonas": { target: "http://localhost:8000", changeOrigin: true },
       "/camaras": { target: "http://localhost:8000", changeOrigin: true },
       "/alertas": { target: "http://localhost:8000", changeOrigin: true },
-      "/sirenas": { target: "http://localhost:8000", changeOrigin: true },
       "/tipos-epp": { target: "http://localhost:8000", changeOrigin: true },
       "/resoluciones": { target: "http://localhost:8000", changeOrigin: true },
       "/conteos": { target: "http://localhost:8000", changeOrigin: true },

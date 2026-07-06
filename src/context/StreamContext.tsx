@@ -48,7 +48,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
 
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const base = `${protocol}//${window.location.host}/stream`;
+    const base = `${protocol}//localhost:8000/stream`;
     const url =
       source === "view"
         ? `${base}/view/${camaraId}?token=${token}`
@@ -128,7 +128,6 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // Reconectar cuando la pestaña vuelve a estar visible
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
@@ -137,7 +136,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
             const source = sourceRef.current.get(camaraId) ?? "rtsp";
             const ws = wsRefs.current.get(camaraId);
             if (ws && ws.readyState !== WebSocket.OPEN) {
-              try { ws.close(); } catch { /* ignorar */ }
+              try { ws.close(); } catch {  }
               wsRefs.current.delete(camaraId);
             }
             openConnection(camaraId, source);
@@ -149,7 +148,6 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [openConnection]);
 
-  // Heartbeat: reconecta si no llegan frames en 20s
   useEffect(() => {
     const interval = setInterval(() => {
       const ahora = Date.now();
@@ -160,7 +158,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
           const source = sourceRef.current.get(camaraId) ?? "rtsp";
           const ws = wsRefs.current.get(camaraId);
           if (ws) {
-            try { ws.close(); } catch { /* ignorar */ }
+            try { ws.close(); } catch {  }
             wsRefs.current.delete(camaraId);
           }
           openConnection(camaraId, source);

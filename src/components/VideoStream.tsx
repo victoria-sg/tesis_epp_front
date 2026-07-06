@@ -1,5 +1,5 @@
-import { Camera, Wifi, WifiOff } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Camera, Wifi } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { DeteccionOverlay } from "./DeteccionOverlay";
 import { useVideoStream } from "../hooks/useVideoStream";
 

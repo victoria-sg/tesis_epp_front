@@ -1,4 +1,3 @@
-// ─── Interfaces para Cámaras ──────────────────────────────────────────────────
 
 export interface Camara {
   id_camara: number;
@@ -6,6 +5,9 @@ export interface Camara {
   codigo_camara: string;
   tipo_fuente: string;
   ip_direccion?: string | null;
+  puerto?: number | null;
+  usuario_rtsp?: string | null;
+  password_rtsp?: string | null;
   estado_conexion?: string | null;
   ultima_conexion?: string | null;
   zona_nombre?: string;
@@ -16,7 +18,9 @@ export interface CamaraCreate {
   codigo_camara: string;
   tipo_fuente: string;
   ip_direccion?: string | null;
-  estado_conexion?: string | null;
+  puerto?: number | null;
+  usuario_rtsp?: string | null;
+  password_rtsp?: string | null;
 }
 
 export interface CamaraUpdate {
@@ -24,6 +28,9 @@ export interface CamaraUpdate {
   codigo_camara?: string;
   tipo_fuente?: string;
   ip_direccion?: string | null;
+  puerto?: number | null;
+  usuario_rtsp?: string | null;
+  password_rtsp?: string | null;
   estado_conexion?: string | null;
 }
 
@@ -31,6 +38,7 @@ export const CAMARA_ESTADOS = ["activo", "inactivo", "mantenimiento"] as const;
 
 export const TIPOS_FUENTE = [
   { value: "hikvision", label: "Hikvision RTSP" },
+  { value: "ezviz", label: "EZVIZ RTSP" },
   { value: "rtsp_generic", label: "Cámara RTSP Genérica" },
   { value: "fallback_phone", label: "Teléfono (Fallback)" },
 ] as const;

@@ -46,7 +46,6 @@ const COLORES_ZONA: Record<string, string> = {
   bajo: "#22c55e",
 };
 
-// ─── ADMIN ────────────────────────────────────────────────────────────────────
 const AdminCharts = ({ stats, rango, setRango }: {
   stats: DashboardStats;
   rango: Rango;
@@ -54,7 +53,7 @@ const AdminCharts = ({ stats, rango, setRango }: {
 }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
 
-    {/* Alertas por rango — ocupa las 2 columnas */}
+    
     <div className="bg-white border border-[#e5e5e5] rounded-lg p-5 lg:col-span-2">
       <div className="flex items-center justify-between mb-4">
         <div style={{ fontSize: 13, fontWeight: 600, color: "#000" }}>
@@ -87,7 +86,7 @@ const AdminCharts = ({ stats, rango, setRango }: {
       </ResponsiveContainer>
     </div>
 
-    {/* Alertas por zona */}
+    
     <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
       <div style={{ fontSize: 13, fontWeight: 600, color: "#000", marginBottom: 16 }}>
         Alertas por Zona
@@ -107,7 +106,7 @@ const AdminCharts = ({ stats, rango, setRango }: {
       </ResponsiveContainer>
     </div>
 
-    {/* Estado alertas */}
+    
     <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
       <div style={{ fontSize: 13, fontWeight: 600, color: "#000", marginBottom: 16 }}>
         Estado de Alertas
@@ -150,7 +149,7 @@ const AdminCharts = ({ stats, rango, setRango }: {
       </div>
     </div>
 
-    {/* Comparativa semanas */}
+    
     <div className="bg-white border border-[#e5e5e5] rounded-lg p-5 lg:col-span-2">
       <div style={{ fontSize: 13, fontWeight: 600, color: "#000", marginBottom: 16 }}>
         Esta semana vs Semana anterior
@@ -174,7 +173,6 @@ const AdminCharts = ({ stats, rango, setRango }: {
   </div>
 );
 
-// ─── SUPERVISOR ───────────────────────────────────────────────────────────────
 const SupervisorCharts = ({ stats }: { stats: DashboardStats }) => (
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
     <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
@@ -221,7 +219,7 @@ const SupervisorCharts = ({ stats }: { stats: DashboardStats }) => (
       <div className="space-y-2">
         {stats.ultimas_alertas.length === 0 ? (
           <div style={{ fontSize: 13, color: "#6b6b6b", textAlign: "center", padding: "20px 0" }}>
-            ✓ Sin alertas recientes
+             Sin alertas recientes
           </div>
         ) : stats.ultimas_alertas.map((a) => (
           <div key={a.id} className="flex items-center gap-3 px-3 py-2 rounded-md bg-[#f9f9f9] border border-[#ececec]">
@@ -250,7 +248,6 @@ const SupervisorCharts = ({ stats }: { stats: DashboardStats }) => (
   </div>
 );
 
-// ─── JEFE DE PLANTA (SSO) ─────────────────────────────────────────────────────
 const JefePlantaCharts = ({ stats }: { stats: DashboardStats }) => {
   const variacion = stats.resumen.semana_anterior > 0
     ? Math.round(((stats.resumen.semana_actual - stats.resumen.semana_anterior) / stats.resumen.semana_anterior) * 100)
@@ -322,18 +319,19 @@ const JefePlantaCharts = ({ stats }: { stats: DashboardStats }) => {
   );
 };
 
-// ─── COMPONENTE PRINCIPAL ─────────────────────────────────────────────────────
-export const DashboardCharts = ({ rol }: { rol: string }) => {
+export const DashboardCharts = ({ rol, idZona }: { rol: string; idZona?: number | null }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [rango, setRango] = useState<Rango>("7d");
 
   useEffect(() => {
     setLoading(true);
-    api.get<DashboardStats>(`/stats/dashboard?rango=${rango}`)
+    let url = `/stats/dashboard?rango=${rango}`;
+    if (idZona) url += `&id_zona=${idZona}`;
+    api.get<DashboardStats>(url)
       .then((r) => { setStats(r.data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [rango]);
+  }, [rango, idZona]);
 
   if (loading) return (
     <div className="mt-4 h-32 flex items-center justify-center text-[#6b6b6b]">

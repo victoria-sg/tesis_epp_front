@@ -10,15 +10,20 @@ interface AuthState {
   user: LoggedUser | null;
   token: string | null;
   isAuthenticated: boolean;
+  primerInicioSesion: boolean;
 }
 
 const storedUser = localStorage.getItem(USER_KEY);
 const storedToken = localStorage.getItem(TOKEN_KEY);
+const parsedUser: LoggedUser | null = storedUser
+  ? (JSON.parse(storedUser) as LoggedUser)
+  : null;
 
 const initialState: AuthState = {
-  user: storedUser ? (JSON.parse(storedUser) as LoggedUser) : null,
+  user: parsedUser,
   token: storedToken ?? null,
   isAuthenticated: !!storedToken,
+  primerInicioSesion: parsedUser?.primer_inicio_sesion ?? false,
 };
 
 const authSlice = createSlice({
@@ -29,6 +34,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      state.primerInicioSesion = action.payload.user.primer_inicio_sesion;
       localStorage.setItem(USER_KEY, JSON.stringify(action.payload.user));
       localStorage.setItem(TOKEN_KEY, action.payload.token);
     },
@@ -36,6 +42,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.primerInicioSesion = false;
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(REFRESH_TOKEN_KEY);

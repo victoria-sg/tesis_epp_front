@@ -36,7 +36,6 @@ export const RolesView = () => {
     pageSize: PAGE_SIZE,
   });
 
-  // ─── Estado de permisos del rol que se está editando ──────────────────────
   const [permisosSeleccionados, setPermisosSeleccionados] = useState<number[]>([]);
   const [permisosLoading, setPermisosLoading] = useState(false);
   const [permisosError, setPermisosError] = useState<string | null>(null);
@@ -191,7 +190,7 @@ export const RolesView = () => {
         />
       </div>
 
-      {/* Modal */}
+      
       <CustomModal
         open={crud.modalOpen}
         onClose={crud.closeModal}
@@ -219,7 +218,7 @@ export const RolesView = () => {
             touched={formik.touched.descripcion as boolean | undefined}
           />
 
-          {/* ─── Permisos (solo al editar) ─────────────────────────── */}
+          
           {crud.isEditing && (
             <div>
               <div

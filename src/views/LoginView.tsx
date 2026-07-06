@@ -8,7 +8,7 @@ import type { Rol } from "../models/auth.model";
 import { ROLE_STYLES } from "../models/auth.model";
 
 const backgroundImg =
-  "https://images.unsplash.com/photo-1662447176130-60356c625453?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920";
+  "";
 
 interface Props {
   selectedRol: Rol;
@@ -43,7 +43,7 @@ export const LoginView = ({
       />
 
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-between gap-10 px-6 py-10 md:px-16 lg:px-24">
-        {/* Branding */}
+        
         <div className="text-black max-w-xl text-center lg:ml-36">
           <div className="flex flex-col items-center gap-5">
             <div className="h-32 w-32 rounded-3xl bg-white/70 backdrop-blur-md ring-2 ring-black/20 flex items-center justify-center shadow-2xl">
@@ -66,9 +66,9 @@ export const LoginView = ({
           </div>
         </div>
 
-        {/* Login card */}
+        
         <div className="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-12 md:p-16">
-          {/* Role badge */}
+          
           <div className="flex items-center justify-between mb-6">
             <button
               type="button"
@@ -92,7 +92,7 @@ export const LoginView = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
+            
             <div>
               <label className="block mb-1.5 text-[12px] text-[#1a1a1a] font-semibold">
                 Correo electrónico
@@ -121,7 +121,7 @@ export const LoginView = ({
               )}
             </div>
 
-            {/* Password */}
+            
             <div>
               <label className="block mb-1.5 text-[12px] text-[#1a1a1a] font-semibold">
                 Contraseña

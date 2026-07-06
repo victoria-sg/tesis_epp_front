@@ -11,14 +11,12 @@ import {
   USER_KEY,
 } from "../constants/authStorageConstants";
 
-// ─── Instancia centralizada de Axios ──────────────────────────────────────────
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: API_TIMEOUT,
   headers: { "Content-Type": API_CONTENT_TYPE },
 });
 
-// ─── Interceptor de request (adjunta token si existe) ──────────────────────────
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -32,14 +30,6 @@ const cerrarSesion = () => {
   window.location.href = APP_LOGIN;
 };
 
-// El access_token dura poco (30 min por defecto) a propósito; en vez de
-// cerrar la sesión en cuanto expira, usamos el refresh_token para pedir uno
-// nuevo de forma transparente y reintentar la petición original. Solo se
-// cierra la sesión si el refresh también falla (o no hay refresh_token).
-//
-// `refreshEnCurso` evita que, si varias peticiones expiran al mismo tiempo
-// (por ejemplo, al cargar el dashboard), se disparen varios refresh en
-// paralelo: todas comparten la misma promesa.
 let refreshEnCurso: Promise<string | null> | null = null;
 
 const solicitarNuevoAccessToken = async (): Promise<string | null> => {
@@ -58,9 +48,13 @@ const solicitarNuevoAccessToken = async (): Promise<string | null> => {
   }
 };
 
-// ─── Interceptor de response (maneja errores globales) ────────────────────────
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data && typeof response.data === "object" && "ok" in response.data) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as
       | (InternalAxiosRequestConfig & { _retried?: boolean })

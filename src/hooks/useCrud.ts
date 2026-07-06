@@ -30,7 +30,6 @@ const getItemId = (item: unknown): number => {
     (obj["id_zona"] as number) ??
     (obj["id_camara"] as number) ??
     (obj["id_tipo_epp"] as number) ??
-    (obj["id_sirena"] as number) ??
     (obj["id_alerta"] as number) ??
     (obj["id_resolucion"] as number) ??
     (obj["id"] as number)
@@ -50,7 +49,6 @@ export const useCrud = <T, TCreate, TUpdate>(
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<T | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -120,7 +118,7 @@ export const useCrud = <T, TCreate, TUpdate>(
         await fetchItems();
       } catch (err: unknown) {
         const detail =
-          (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+          (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg;
         if (detail) {
           setError(detail);
         } else {

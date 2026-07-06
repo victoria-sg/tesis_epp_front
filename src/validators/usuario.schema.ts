@@ -1,8 +1,5 @@
 import * as Yup from "yup";
 
-// ─── Esquema de validación del formulario de usuarios ────────────────────────
-// La contraseña ya no se pide al crear: el backend la genera automáticamente
-// a partir de cédula + iniciales + carácter especial, y la envía por correo.
 export const buildUsuarioSchema = (isEditing: boolean) =>
   Yup.object({
     nombre: Yup.string()

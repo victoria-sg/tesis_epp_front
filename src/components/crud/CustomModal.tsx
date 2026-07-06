@@ -27,7 +27,7 @@ export const CustomModal = ({
         className={`bg-white rounded-xl shadow-2xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#ececec] shrink-0">
           <div
             style={{
@@ -47,7 +47,7 @@ export const CustomModal = ({
           </button>
         </div>
 
-        {/* Body */}
+        
         <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
       </div>
     </div>

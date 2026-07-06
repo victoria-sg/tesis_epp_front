@@ -14,7 +14,6 @@ export const useReportes = () => {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  // Estado del modal de resolución
   const [alertaResolviendo, setAlertaResolviendo] = useState<AlertaReporte | null>(null);
   const [comentario, setComentario] = useState("");
   const [resolviendoLoading, setResolviendoLoading] = useState(false);
@@ -49,14 +48,12 @@ export const useReportes = () => {
     );
   }, [data, query]);
 
-  // Estadísticas
   const stats = useMemo(() => ({
     total: data.length,
     pendientes: data.filter((a) => a.estado_alerta === "Pendiente").length,
     resueltas: data.filter((a) => a.estado_alerta === "Resuelta").length,
   }), [data]);
 
-  // Abrir modal de resolución
   const abrirModalResolucion = useCallback((alerta: AlertaReporte) => {
     setAlertaResolviendo(alerta);
     setComentario("");
@@ -69,7 +66,6 @@ export const useReportes = () => {
     setResolviendoError(null);
   }, []);
 
-  // Resolver alerta
   const resolverAlerta = useCallback(async () => {
     if (!alertaResolviendo) return;
     if (!comentario.trim()) {

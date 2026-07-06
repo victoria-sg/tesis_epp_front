@@ -8,17 +8,17 @@ import {
   LayoutDashboard,
   LogOut,
   MapPin,
+  Scan,
   Search,
   Shield,
   ShieldCheck,
   Shirt,
-  Siren,
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { APP_LOGIN } from "../../constants/authRoutesConstants";
+import { APP_CAMBIAR_CONTRASENA, APP_LOGIN } from "../../constants/authRoutesConstants";
 import type { RootState } from "../../store";
 import { logout } from "../../store/authSlice";
 
@@ -36,8 +36,8 @@ const ROLE_NAV_ITEMS: Record<string, NavItem[]> = {
     { path: "/admin/zonas", label: "Zonas", icon: <MapPin size={16} /> },
     { path: "/admin/camaras", label: "Cámaras", icon: <Camera size={16} /> },
     { path: "/admin/tipos-epp", label: "Tipos de EPP", icon: <Shirt size={16} /> },
-    { path: "/admin/sirenas", label: "Bocinas", icon: <Siren size={16} /> },
     { path: "/admin/reportes", label: "Reportes", icon: <FileText size={16} /> },
+    { path: "/admin/deteccion", label: "Detección", icon: <Scan size={16} /> },
   ],
   supervisor: [
     { path: "/dashboard", label: "Dashboard Operativo", icon: <Activity size={16} /> },
@@ -72,6 +72,7 @@ export const AppLayout = () => {
 
   useEffect(() => {
     if (!user) navigate(APP_LOGIN, { replace: true });
+    else if (user.primer_inicio_sesion) navigate(APP_CAMBIAR_CONTRASENA, { replace: true });
   }, [user, navigate]);
 
   if (!user) return null;
@@ -88,11 +89,11 @@ export const AppLayout = () => {
   return (
     <div className="h-screen flex bg-[#f5f5f5] overflow-hidden">
 
-      {/* ─── SIDEBAR ────────────────────────────────────────────────── */}
+      
       <aside
         className={`${sidebarOpen ? "w-64" : "w-16"} shrink-0 h-screen bg-gradient-to-b from-[#0a1628] via-[#0f2744] to-[#1a3a5c] text-white flex flex-col transition-all duration-300`}
       >
-        {/* Logo */}
+        
         <div className={`px-4 py-5 border-b border-white/10 flex items-center ${sidebarOpen ? "gap-3" : "justify-center"}`}>
           <div className="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center ring-1 ring-white/20 shadow-md">
             <ShieldCheck className="h-5 w-5 text-white" strokeWidth={2.25} />
@@ -109,7 +110,7 @@ export const AppLayout = () => {
           )}
         </div>
 
-        {/* Role badge */}
+        
         {sidebarOpen && (
           <div className="mx-3 mt-3 mb-1 px-3 py-2 rounded-md bg-white/5 border border-white/10">
             <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
@@ -122,7 +123,7 @@ export const AppLayout = () => {
           </div>
         )}
 
-        {/* Nav */}
+        
         <nav className="flex-1 px-2 py-2 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = location.pathname === item.path;
@@ -145,7 +146,7 @@ export const AppLayout = () => {
           })}
         </nav>
 
-        {/* User */}
+        
         <div className="p-3 border-t border-white/10">
           {sidebarOpen ? (
             <div className="flex items-center gap-3 px-2 py-2">
@@ -183,12 +184,12 @@ export const AppLayout = () => {
         </div>
       </aside>
 
-      {/* ─── MAIN ───────────────────────────────────────────────────── */}
+      
       <div className="flex-1 flex flex-col min-w-0 h-screen">
-        {/* Header */}
+        
         <header className="bg-white border-b border-[#e5e5e5] px-4 h-14 flex items-center gap-3 shrink-0">
 
-          {/* Botón toggle sidebar */}
+          
           <button
             onClick={() => setSidebarOpen((prev) => !prev)}
             className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#3b82f6] hover:bg-blue-50 flex items-center justify-center transition-colors shrink-0"
@@ -225,7 +226,7 @@ export const AppLayout = () => {
           </div>
         </header>
 
-        {/* Content */}
+        
         <main className="flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>

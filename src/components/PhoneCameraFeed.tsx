@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AlertTriangle, Camera, Check, Square } from "lucide-react";
 import { capturarIncidencia } from "../services/alerta.service";
 
 interface PhoneCameraFeedProps {
@@ -33,7 +34,7 @@ export const PhoneCameraFeed = ({
   const connectWs = useCallback(() => {
     const token = localStorage.getItem("epp_token") || "";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    let url = `${protocol}//${window.location.host}/stream/fallback/${deviceId}?token=${token}`;
+    let url = `${protocol}//localhost:8000/stream/fallback/${deviceId}?token=${token}`;
     if (camaraId !== undefined) url += `&camara_id=${camaraId}`;
     const ws = new WebSocket(url);
     ws.onopen = () => setWsStatus("connected");
@@ -195,7 +196,6 @@ export const PhoneCameraFeed = ({
       className={`relative bg-black overflow-hidden ${className}`}
       style={{ touchAction: "none" }}
     >
-      {/* Video */}
       <video
         ref={videoRef}
         autoPlay
@@ -204,11 +204,10 @@ export const PhoneCameraFeed = ({
         className="w-full h-full object-cover"
       />
 
-      {/* Overlay sin stream */}
       {!isActive && !error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/95 text-gray-400 gap-6 px-6 pb-24">
           <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center">
-            <span className="text-3xl">📷</span>
+            <Camera size={32} className="text-gray-500" />
           </div>
           <div className="text-center">
             <p className="text-white text-sm font-semibold mb-1">Cámara lista para transmitir</p>
@@ -217,21 +216,18 @@ export const PhoneCameraFeed = ({
         </div>
       )}
 
-      {/* Error */}
       {error && (
-        <div className="absolute inset-x-4 top-16 text-white text-sm px-4 py-3 rounded-lg bg-red-600/90 leading-relaxed">
-          ⚠️ {error}
+        <div className="absolute inset-x-4 top-16 text-white text-sm px-4 py-3 rounded-lg bg-red-600/90 leading-relaxed flex items-center gap-2">
+          <AlertTriangle size={16} /> {error}
         </div>
       )}
 
-      {/* Notificación de captura exitosa */}
       {capturaExito && (
-        <div className="absolute inset-x-4 top-16 text-white text-sm px-4 py-3 rounded-lg bg-green-600/90 leading-relaxed text-center">
-          ✅ Incidencia registrada correctamente
+        <div className="absolute inset-x-4 top-16 text-white text-sm px-4 py-3 rounded-lg bg-green-600/90 leading-relaxed text-center flex items-center justify-center gap-2">
+          <Check size={16} /> Incidencia registrada correctamente
         </div>
       )}
 
-      {/* Indicador estado */}
       <div className="absolute top-3 left-3 flex items-center gap-1.5">
         <span className={`w-2 h-2 rounded-full ${
           wsStatus === "connected" && isActive ? "bg-green-500 animate-pulse"
@@ -243,7 +239,6 @@ export const PhoneCameraFeed = ({
         </span>
       </div>
 
-      {/* Botones */}
       <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-5">
         {isActive ? (
           <>
@@ -255,14 +250,14 @@ export const PhoneCameraFeed = ({
             >
               {capturando
                 ? <span className="text-[10px] font-bold">...</span>
-                : <span className="text-xl">🚨</span>
+                : <AlertTriangle size={20} />
               }
             </button>
             <button
               onClick={stopStreaming}
               className="w-10 h-10 rounded-full bg-red-600/70 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             >
-              <span className="text-sm">⏹</span>
+              <Square size={14} />
             </button>
           </>
         ) : (
@@ -273,7 +268,7 @@ export const PhoneCameraFeed = ({
           >
             {wsStatus === "connecting"
               ? <span className="text-[10px] font-bold">...</span>
-              : <span className="text-2xl">📷</span>
+              : <Camera size={28} />
             }
           </button>
         )}

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Lock, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
@@ -196,7 +196,6 @@ export const UsuariosView = () => {
         />
       </div>
 
-      {/* Modal */}
       <CustomModal
         open={crud.modalOpen}
         onClose={crud.closeModal}
@@ -258,7 +257,7 @@ export const UsuariosView = () => {
               className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-[#f5f3ff]"
               style={{ fontSize: 12, color: "#6b6b6b", lineHeight: 1.5 }}
             >
-              🔐 La contraseña se generará automáticamente a partir de la
+              <span className="flex items-center gap-1"><Lock size={14} /></span> La contraseña se generará automáticamente a partir de la
               cédula e iniciales del nombre, y se enviará al correo registrado.
             </div>
           )}

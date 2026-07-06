@@ -1,4 +1,3 @@
-// ─── Interfaces para Roles ────────────────────────────────────────────────────
 
 export interface Rol {
   id_rol: number;
@@ -20,8 +19,6 @@ export interface RolConPermisos extends Rol {
   permisos: number[];
 }
 
-// ─── Permisos disponibles en el sistema ──────────────────────────────────────
-// Deben coincidir con EPP_P_PERMISO en la base de datos.
 export const PERMISOS_DISPONIBLES: { id: number; descripcion: string; etiqueta: string }[] = [
   { id: 1, descripcion: "GESTIONAR_USUARIOS",  etiqueta: "Gestionar usuarios" },
   { id: 2, descripcion: "GESTIONAR_ZONAS",     etiqueta: "Gestionar zonas" },

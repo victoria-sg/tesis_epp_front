@@ -1,14 +1,11 @@
-// ─── Tipo de rol interno (para UI) ────────────────────────────────────────────
 export type Rol = "supervisor" | "sso" | "admin";
 
-// ─── Etiquetas de rol ─────────────────────────────────────────────────────────
 export const ROL_LABELS: Record<Rol, string> = {
   supervisor: "SUPERVISOR DE TURNO",
   sso: "JEFE DE PLANTA",
   admin: "ADMINISTRADOR TI",
 };
 
-// ─── Mapeo del nombre de rol del backend → Rol interno ───────────────────────
 export const ROL_MAP: Record<string, Rol> = {
   Administrador: "admin",
   "Supervisor de Turno": "supervisor",
@@ -17,7 +14,6 @@ export const ROL_MAP: Record<string, Rol> = {
   "Jefe de Planta": "sso",
 };
 
-// ─── Request / Response del backend ───────────────────────────────────────────
 export interface LoginRequest {
   correo: string;
   contrasena: string;
@@ -30,6 +26,7 @@ export interface UsuarioFromBackend {
   correo: string;
   rol: string;
   permisos: string[];
+  primer_inicio_sesion: boolean;
 }
 
 export interface LoginResponse {
@@ -39,7 +36,6 @@ export interface LoginResponse {
   usuario: UsuarioFromBackend;
 }
 
-// ─── Recuperación de contraseña ────────────────────────────────────────────
 export interface SolicitarRecuperacionRequest {
   correo: string;
 }
@@ -53,7 +49,6 @@ export interface MensajeResponse {
   mensaje: string;
 }
 
-// ─── Usuario de sesión (transformado del backend) ─────────────────────────────
 export interface LoggedUser {
   id_usuario: number;
   nombre: string;
@@ -62,16 +57,20 @@ export interface LoggedUser {
   rol: Rol;
   rolLabel: string;
   permisos: string[];
+  primer_inicio_sesion: boolean;
 }
 
-// ─── Roles disponibles para el selector ────────────────────────────────────────
+export interface CambiarPasswordPrimerInicioRequest {
+  password_actual: string;
+  nueva_contrasena: string;
+}
+
 export const AVAILABLE_ROLES: { rol: Rol; rolLabel: string }[] = [
   { rol: "supervisor", rolLabel: ROL_LABELS.supervisor },
   { rol: "sso", rolLabel: ROL_LABELS.sso },
   { rol: "admin", rolLabel: ROL_LABELS.admin },
 ];
 
-// ─── Info visual por rol ──────────────────────────────────────────────────────
 export interface RoleStyle {
   gradient: string;
   ring: string;
@@ -119,7 +118,7 @@ export const ROLE_INFO: Record<Rol, RoleInfo> = {
   supervisor: {
     title: "Supervisor de Turno",
     subtitle: "Operación en tiempo real",
-    desc: "Monitorea alertas activas, mapa de calor y respuesta de sirena en planta.",
+    desc: "Monitorea alertas activas, mapa de calor y respuesta en planta.",
     perks: ["Alertas en vivo", "Mapa de zonas", "Justificación"],
   },
   sso: {

@@ -15,7 +15,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-slate-900/40">
       <div className="relative z-10 w-full max-w-2xl my-auto bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 p-12">
-        {/* Header */}
+        
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-md flex items-center justify-center">
@@ -39,7 +39,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
           </p>
         </div>
 
-        {/* Role list */}
+        
         <div className="flex flex-col gap-4">
           {roles.map(({ rol }) => {
             const style = ROLE_STYLES[rol];
@@ -74,7 +74,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
           })}
         </div>
 
-        {/* Footer */}
+        
         <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
           <Lock className="w-3.5 h-3.5" />
           <span className="text-[11px]">

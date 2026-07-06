@@ -7,14 +7,11 @@ export const zonaSchema = Yup.object({
   nivel_riesgo: Yup.string()
     .nullable()
     .oneOf(["bajo", "medio", "alto"], "Nivel de riesgo no válido"),
-  capacidad_max: Yup.number()
-    .nullable()
-    .typeError("Debe ser un número")
-    .min(1, "Mínimo 1"),
   tiempo_toleracia_segundo: Yup.number()
     .nullable()
     .typeError("Debe ser un número")
     .min(0, "Mínimo 0"),
+  epp_ids: Yup.array().of(Yup.number()).nullable(),
 });
 
 export type ZonaFormValues = Yup.InferType<typeof zonaSchema>;

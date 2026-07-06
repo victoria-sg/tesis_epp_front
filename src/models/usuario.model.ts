@@ -1,4 +1,3 @@
-// ─── Interfaces para Usuarios ────────────────────────────────────────────────
 
 export interface Usuario {
   id_usuario: number;
@@ -17,7 +16,6 @@ export interface UsuarioCreate {
   correo: string;
   id_rol: number;
   cedula: string;
-  // La contraseña se genera automáticamente en el backend
 }
 
 export interface UsuarioUpdate {

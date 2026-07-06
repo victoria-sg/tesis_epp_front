@@ -1,5 +1,5 @@
-import { AlertTriangle, Plus, Shield, ShieldAlert } from "lucide-react";
-import { useMemo } from "react";
+import { AlertTriangle, Plus, Shield, ShieldAlert, Shirt } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
 import { CustomInput } from "../../components/crud/CustomInput";
@@ -17,21 +17,23 @@ import {
   NIVEL_RIESGO_CONFIG,
   ZONA_NIVELES_RIESGO,
 } from "../../models/zona.model";
+import type { TipoEPP } from "../../models/tipo.model";
+import { tipoService } from "../../services/tipo.service";
 import { zonaService } from "../../services/zona.service";
 import { zonaSchema, type ZonaFormValues } from "../../validators/zona.schema";
 
 const INITIAL_VALUES: ZonaFormValues = {
   nombre_zona: "",
   nivel_riesgo: null,
-  capacidad_max: null,
   tiempo_toleracia_segundo: null,
+  epp_ids: [],
 };
 
 const FIELD_MAPPING: Record<string, string> = {
   nombre_zona: "nombre_zona",
   nivel_riesgo: "nivel_riesgo",
-  capacidad_max: "capacidad_max",
   tiempo_toleracia_segundo: "tiempo_toleracia_segundo",
+  epp_ids: "epp_ids",
 };
 
 const PAGE_SIZE = 10;
@@ -56,6 +58,14 @@ export const ZonasView = () => {
     pageSize: PAGE_SIZE,
   });
 
+  const [tiposEpp, setTiposEpp] = useState<TipoEPP[]>([]);
+
+  useEffect(() => {
+    if (crud.modalOpen && tiposEpp.length === 0) {
+      tipoService.getAll().then(setTiposEpp).catch(() => {});
+    }
+  }, [crud.modalOpen, tiposEpp.length]);
+
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<ZonaFormValues>({
       isEditing: crud.isEditing,
@@ -64,13 +74,12 @@ export const ZonasView = () => {
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
       onSubmit: async (values) => {
-        // Si no eligió nivel, inferirlo del nombre
         const nivel = values.nivel_riesgo || inferirNivelRiesgo(values.nombre_zona);
         const data = {
           ...values,
           nivel_riesgo: nivel,
-          capacidad_max: values.capacidad_max || null,
           tiempo_toleracia_segundo: values.tiempo_toleracia_segundo || null,
+          epp_ids: values.epp_ids || [],
         };
         if (crud.isEditing) {
           await crud.handleSubmit(data as ZonaUpdate);
@@ -80,7 +89,6 @@ export const ZonasView = () => {
       },
     });
 
-  // Nivel inferido en tiempo real mientras escribe el nombre
   const nivelInferido = useMemo(
     () => (!formik.values.nivel_riesgo && formik.values.nombre_zona
       ? inferirNivelRiesgo(formik.values.nombre_zona)
@@ -96,12 +104,20 @@ export const ZonasView = () => {
     );
   }, [crud.items, crud.filters.query]);
 
-  // Contadores por nivel
   const contadores = useMemo(() => ({
     alto: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "alto").length,
     medio: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "medio").length,
     bajo: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "bajo").length,
   }), [filteredItems]);
+
+  const toggleEpp = (id: number) => {
+    const selected = formik.values.epp_ids ?? [];
+    if (selected.includes(id)) {
+      formik.setFieldValue("epp_ids", selected.filter((v) => v !== id));
+    } else {
+      formik.setFieldValue("epp_ids", [...selected, id]);
+    }
+  };
 
   const columns: Column<Zona>[] = [
     {
@@ -141,12 +157,28 @@ export const ZonasView = () => {
       render: (z) => <NivelRiesgoBadge nivel={z.nivel_riesgo} />,
     },
     {
-      key: "capacidad_max",
-      header: "Capacidad Máx",
-      align: "center",
-      render: (z) => z.capacidad_max
-        ? <span>{z.capacidad_max} <span style={{ color: "#9ca3af", fontSize: 11 }}>personas</span></span>
-        : "—",
+      key: "epp",
+      header: "EPP Requeridos",
+      render: (z) => {
+        const ids = z.epp_ids ?? [];
+        if (ids.length === 0) return <span style={{ color: "#b0b0b0" }}>—</span>;
+        const nombres = ids
+          .map((id) => tiposEpp.find((t) => t.id_tipo_epp === id)?.nombre_epp)
+          .filter(Boolean);
+        return (
+          <div className="flex flex-wrap gap-1">
+            {nombres.map((n, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+              >
+                <Shirt size={11} />
+                {n}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       key: "acciones",
@@ -178,7 +210,7 @@ export const ZonasView = () => {
         }
       />
 
-      {/* Resumen por nivel */}
+      
       <div className="grid grid-cols-3 gap-3 mb-4">
         {(["alto", "medio", "bajo"] as const).map((nivel) => {
           const config = NIVEL_RIESGO_CONFIG[nivel];
@@ -236,7 +268,7 @@ export const ZonasView = () => {
         />
       </div>
 
-      {/* Modal */}
+      
       <CustomModal
         open={crud.modalOpen}
         onClose={crud.closeModal}
@@ -278,17 +310,6 @@ export const ZonasView = () => {
           </div>
 
           <CustomInput
-            label="Capacidad Máxima"
-            name="capacidad_max"
-            type="number"
-            placeholder="Ej: 50"
-            value={formik.values.capacidad_max ?? ""}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.errors.capacidad_max}
-            touched={formik.touched.capacidad_max as boolean | undefined}
-          />
-          <CustomInput
             label="Tiempo de Tolerancia (segundos)"
             name="tiempo_toleracia_segundo"
             type="number"
@@ -299,6 +320,38 @@ export const ZonasView = () => {
             error={formik.errors.tiempo_toleracia_segundo}
             touched={formik.touched.tiempo_toleracia_segundo as boolean | undefined}
           />
+
+          {tiposEpp.length > 0 && (
+            <div>
+              <label className="block mb-1.5 text-[12px] text-[#1a1a1a] font-semibold">
+                EPP Requeridos
+              </label>
+              <div className="flex flex-wrap gap-2 p-2 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
+                {tiposEpp.map((tipo) => {
+                  const selected = (formik.values.epp_ids ?? []).includes(tipo.id_tipo_epp);
+                  return (
+                    <label
+                      key={tipo.id_tipo_epp}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-colors text-[13px] ${
+                        selected
+                          ? "bg-blue-100 text-blue-800 border border-blue-300"
+                          : "bg-white text-[#4a4a4a] border border-[#e5e5e5] hover:border-blue-200"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => toggleEpp(tipo.id_tipo_epp)}
+                        className="sr-only"
+                      />
+                      <Shirt size={14} />
+                      {tipo.nombre_epp}
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           {crud.error && (
             <div className="text-[12px] text-red-600 text-center">{crud.error}</div>
           )}

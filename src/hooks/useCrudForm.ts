@@ -35,7 +35,7 @@ export const useCrudForm = <TFormValues extends Record<string, unknown>>({
     initialValues: computedInitialValues,
     validationSchema: validationSchema as never,
     validateOnBlur: true,
-    validateOnChange: false,
+    validateOnChange: true,
     enableReinitialize: true,
     onSubmit: async (values) => {
       await onSubmit(values);
