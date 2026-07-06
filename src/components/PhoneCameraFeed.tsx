@@ -34,7 +34,8 @@ export const PhoneCameraFeed = ({
   const connectWs = useCallback(() => {
     const token = localStorage.getItem("epp_token") || "";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    let url = `${protocol}//localhost:8000/stream/fallback/${deviceId}?token=${token}`;
+    const host = window.location.host;
+    let url = `${protocol}//${host}/stream/fallback/${deviceId}?token=${token}`;
     if (camaraId !== undefined) url += `&camara_id=${camaraId}`;
     const ws = new WebSocket(url);
     ws.onopen = () => setWsStatus("connected");

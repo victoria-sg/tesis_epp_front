@@ -48,11 +48,11 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
 
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const base = `${protocol}//localhost:8000/stream`;
+    const host = window.location.host;
     const url =
       source === "view"
-        ? `${base}/view/${camaraId}?token=${token}`
-        : `${base}/${camaraId}?token=${token}`;
+        ? `${protocol}//${host}/stream/view/${camaraId}?token=${token}`
+        : `${protocol}//${host}/stream/${camaraId}?token=${token}`;
 
     const ws = new WebSocket(url);
 

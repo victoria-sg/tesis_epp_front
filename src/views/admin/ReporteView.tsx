@@ -82,6 +82,16 @@ export const ReportesView = () => {
       render: (a) => formatearDuracion(a.segundos_transcurridos),
     },
     {
+      key: "detalle_infraccion",
+      header: "Infracción",
+      render: (a) =>
+        a.detalle_infraccion ? (
+          <span className="text-xs text-red-600 font-medium">{a.detalle_infraccion}</span>
+        ) : (
+          <span style={{ color: "#9a9a9a", fontSize: 12 }}>—</span>
+        ),
+    },
+    {
       key: "estado_alerta",
       header: "Estado",
       render: (a) =>

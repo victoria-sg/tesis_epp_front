@@ -6,6 +6,7 @@ export interface AlertaReporte {
   codigo_camara: string;
   nombre_zona: string;
   captura_frame: string | null;
+  detalle_infraccion: string | null;
   comentario_resolucion: string | null;
   fecha_hora_resolucion: string | null;
   resuelto_por: string | null;
