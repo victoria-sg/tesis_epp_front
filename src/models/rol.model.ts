@@ -28,4 +28,5 @@ export const PERMISOS_DISPONIBLES: { id: number; descripcion: string; etiqueta: 
   { id: 6, descripcion: "EXPORTAR_REPORTES",   etiqueta: "Exportar reportes" },
   { id: 7, descripcion: "JUSTIFICAR_ALERTA",   etiqueta: "Justificar alerta" },
   { id: 8, descripcion: "VER_ZONAS",           etiqueta: "Ver zonas" },
+  { id: 9, descripcion: "USAR_CAMARA_FALLBACK", etiqueta: "Cámara fallback (teléfono)" },
 ];

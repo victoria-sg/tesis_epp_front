@@ -82,6 +82,9 @@ export const DashboardView = () => {
       .then((data) => setZonas(data))
       .catch(() => {});
     cargarAlertas();
+
+    const intervalo = setInterval(cargarAlertas, 30000);
+    return () => clearInterval(intervalo);
   }, []);
 
   const camarasOnline = camaras.filter((c) => c.estado_conexion === "activo").length;

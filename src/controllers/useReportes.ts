@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AlertaReporte } from "../models/reporte.model";
 import { getReporteAlertas } from "../services/reporte.service";
+import { zonaService } from "../services/zona.service";
+import { camaraService } from "../services/camara.service";
+import type { Zona } from "../models/zona.model";
+import type { Camara } from "../models/camara.model";
 import api from "../services/api";
 
 const escaparCeldaCsv = (valor: string | number | null): string => {
@@ -13,6 +17,11 @@ export const useReportes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [filtroZona, setFiltroZona] = useState<string>("");
+  const [filtroEstado, setFiltroEstado] = useState<string>("");
+  const [filtroCamara, setFiltroCamara] = useState<string>("");
+  const [zonas, setZonas] = useState<Zona[]>([]);
+  const [camaras, setCamaras] = useState<Camara[]>([]);
 
   const [alertaResolviendo, setAlertaResolviendo] = useState<AlertaReporte | null>(null);
   const [comentario, setComentario] = useState("");
@@ -36,17 +45,31 @@ export const useReportes = () => {
 
   useEffect(() => {
     cargarReporte();
+    zonaService.getAll().then(setZonas).catch(() => {});
+    camaraService.getAll().then(setCamaras).catch(() => {});
   }, [cargarReporte]);
+
+  const zonasUnicas = useMemo(
+    () => [...new Set(data.map((a) => a.nombre_zona).filter(Boolean))],
+    [data],
+  );
+
+  const camarasUnicas = useMemo(
+    () => [...new Set(data.map((a) => a.codigo_camara).filter(Boolean))],
+    [data],
+  );
 
   const filteredData = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return data;
-    return data.filter((a) =>
-      `${a.nombre_zona} ${a.codigo_camara} ${a.estado_alerta ?? ""} ${a.comentario_resolucion ?? ""} ${a.resuelto_por ?? ""}`
-        .toLowerCase()
-        .includes(q),
-    );
-  }, [data, query]);
+    return data.filter((a) => {
+      if (q && !`${a.nombre_zona} ${a.codigo_camara} ${a.estado_alerta ?? ""} ${a.comentario_resolucion ?? ""} ${a.resuelto_por ?? ""}`
+          .toLowerCase().includes(q)) return false;
+      if (filtroZona && a.nombre_zona !== filtroZona) return false;
+      if (filtroEstado && a.estado_alerta !== filtroEstado) return false;
+      if (filtroCamara && a.codigo_camara !== filtroCamara) return false;
+      return true;
+    });
+  }, [data, query, filtroZona, filtroEstado, filtroCamara]);
 
   const stats = useMemo(() => ({
     total: data.length,
@@ -131,6 +154,14 @@ export const useReportes = () => {
     error,
     query,
     setQuery,
+    filtroZona,
+    setFiltroZona,
+    filtroEstado,
+    setFiltroEstado,
+    filtroCamara,
+    setFiltroCamara,
+    zonas: zonasUnicas,
+    camaras: camarasUnicas,
     exportarCsv,
     stats,
     alertaResolviendo,

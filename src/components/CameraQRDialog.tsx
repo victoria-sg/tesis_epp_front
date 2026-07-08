@@ -27,11 +27,34 @@ export const CameraQRDialog = ({
       .catch(() => setPublicUrl(window.location.origin));
   }, [open]);
 
+  const [fallbackToken, setFallbackToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setTokenLoading(true);
+    fetch("/auth/fallback-token", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("epp_token") || ""}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok && data.data?.access_token) {
+          setFallbackToken(data.data.access_token);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setTokenLoading(false));
+  }, [open]);
+
   const qrUrl = useMemo(() => {
-    const token = localStorage.getItem("epp_token") || "";
+    const token = fallbackToken || localStorage.getItem("epp_token") || "";
     const origin = publicUrl || window.location.origin;
     return `${origin}/phone-camera/${camaraId}?token=${token}`;
-  }, [camaraId, publicUrl]);
+  }, [camaraId, publicUrl, fallbackToken]);
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(qrUrl).then(() => {

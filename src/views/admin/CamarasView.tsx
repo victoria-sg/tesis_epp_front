@@ -25,8 +25,8 @@ import {
   type CamaraFormValues,
 } from "../../validators/camara.schema";
 
-const INITIAL_VALUES: CamaraFormValues = {
-  id_zona: 0,
+const INITIAL_VALUES = {
+  id_zona: "",
   codigo_camara: "",
   tipo_fuente: "hikvision",
   ip_direccion: "",
@@ -34,7 +34,7 @@ const INITIAL_VALUES: CamaraFormValues = {
   usuario_rtsp: "",
   password_rtsp: "",
   estado_conexion: null,
-};
+} as CamaraFormValues;
 
 const FIELD_MAPPING: Record<string, string> = {
   id_zona: "id_zona",

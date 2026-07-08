@@ -1,5 +1,5 @@
 import {
-  Activity,
+  AlarmClock,
   Bell,
   Camera,
   ChevronLeft,
@@ -15,7 +15,7 @@ import {
   Shirt,
   Users,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { APP_CAMBIAR_CONTRASENA, APP_LOGIN } from "../../constants/authRoutesConstants";
@@ -28,27 +28,16 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
-const ROLE_NAV_ITEMS: Record<string, NavItem[]> = {
-  admin: [
-    { path: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} /> },
-    { path: "/admin/usuarios", label: "Gestión de Usuarios", icon: <Users size={16} /> },
-    { path: "/admin/roles", label: "Roles", icon: <Shield size={16} /> },
-    { path: "/admin/zonas", label: "Zonas", icon: <MapPin size={16} /> },
-    { path: "/admin/camaras", label: "Cámaras", icon: <Camera size={16} /> },
-    { path: "/admin/tipos-epp", label: "Tipos de EPP", icon: <Shirt size={16} /> },
-    { path: "/admin/reportes", label: "Reportes", icon: <FileText size={16} /> },
-    { path: "/admin/deteccion", label: "Detección", icon: <Scan size={16} /> },
-  ],
-  supervisor: [
-    { path: "/dashboard", label: "Dashboard Operativo", icon: <Activity size={16} /> },
-    { path: "/admin/camaras", label: "Cámaras en vivo", icon: <Camera size={16} /> },
-  ],
-  sso: [
-    { path: "/dashboard", label: "Dashboard Analítico", icon: <Activity size={16} /> },
-    { path: "/admin/camaras", label: "Cámaras", icon: <Camera size={16} /> },
-    { path: "/admin/reportes", label: "Reportes", icon: <FileText size={16} /> },
-  ],
-};
+const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
+  { permiso: "VER_DASHBOARD", item: { path: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} /> } },
+  { permiso: "GESTIONAR_USUARIOS", item: { path: "/admin/usuarios", label: "Gestión de Usuarios", icon: <Users size={16} /> } },
+  { permiso: "GESTIONAR_USUARIOS", item: { path: "/admin/roles", label: "Roles", icon: <Shield size={16} /> } },
+  { permiso: "VER_ZONAS", item: { path: "/admin/zonas", label: "Zonas", icon: <MapPin size={16} /> } },
+  { permiso: "VER_DASHBOARD", item: { path: "/admin/camaras", label: "Cámaras", icon: <Camera size={16} /> } },
+  { permiso: "GESTIONAR_ZONAS", item: { path: "/admin/tipos-epp", label: "Tipos de EPP", icon: <Shirt size={16} /> } },
+  { permiso: "EXPORTAR_REPORTES", item: { path: "/admin/reportes", label: "Reportes", icon: <FileText size={16} /> } },
+  { permiso: "GESTIONAR_ALERTAS", item: { path: "/admin/deteccion", label: "Detección", icon: <Scan size={16} /> } },
+];
 
 const ROLE_GRADIENT: Record<string, string> = {
   supervisor: "from-[#3b82f6] to-[#2563eb]",
@@ -62,6 +51,14 @@ const ROLE_COLOR: Record<string, string> = {
   admin: "#8b5cf6",
 };
 
+interface NotificacionAlerta {
+  id_alerta: number;
+  id_camara: number;
+  detalle_infraccion: string;
+  fecha_hora_deteccion: string | null;
+  estado_alerta: string;
+}
+
 export const AppLayout = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
@@ -69,6 +66,61 @@ export const AppLayout = () => {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [notificaciones, setNotificaciones] = useState<NotificacionAlerta[]>([]);
+  const [notificacionesOpen, setNotificacionesOpen] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const conectarNotificaciones = useCallback(() => {
+    if (!user || wsRef.current?.readyState === WebSocket.OPEN) return;
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const token = localStorage.getItem("epp_token") || "";
+    const url = `${protocol}//${window.location.host}/stream/alertas?token=${token}`;
+
+    try {
+      const ws = new WebSocket(url);
+      ws.onopen = () => {
+        wsRef.current = ws;
+      };
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data && data.id_alerta) {
+            setNotificaciones((prev) => [data as NotificacionAlerta, ...prev].slice(0, 20));
+          }
+        } catch {
+          // ignorar mensajes no JSON (pong, etc)
+        }
+      };
+      ws.onclose = () => {
+        wsRef.current = null;
+        setTimeout(conectarNotificaciones, 5000);
+      };
+      ws.onerror = () => {
+        ws.close();
+      };
+    } catch {
+      setTimeout(conectarNotificaciones, 5000);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    conectarNotificaciones();
+    return () => {
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [conectarNotificaciones]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setNotificacionesOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!user) navigate(APP_LOGIN, { replace: true });
@@ -77,7 +129,9 @@ export const AppLayout = () => {
 
   if (!user) return null;
 
-  const navItems = ROLE_NAV_ITEMS[user.rol] ?? ROLE_NAV_ITEMS.admin;
+  const navItems = PERMISSION_NAV_MAP
+    .filter(({ permiso }) => !permiso || user.permisos.includes(permiso))
+    .map(({ item }) => item);
   const gradient = ROLE_GRADIENT[user.rol] ?? ROLE_GRADIENT.admin;
   const color = ROLE_COLOR[user.rol] ?? ROLE_COLOR.admin;
 
@@ -220,9 +274,64 @@ export const AppLayout = () => {
               <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-[#10b981] to-[#059669] animate-pulse shadow-sm shadow-green-500/50" />
               Sistema en línea
             </span>
-            <button className="relative h-9 w-9 rounded-md border border-[#d4d4d4] hover:border-[#ef4444] flex items-center justify-center transition-colors">
-              <Bell size={15} className="text-[#6b6b6b]" />
-            </button>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setNotificacionesOpen((prev) => !prev)}
+                className="relative h-9 w-9 rounded-md border border-[#d4d4d4] hover:border-[#ef4444] flex items-center justify-center transition-colors"
+              >
+                <Bell size={15} className="text-[#6b6b6b]" />
+                {notificaciones.length > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-md">
+                    {notificaciones.length > 99 ? "99+" : notificaciones.length}
+                  </span>
+                )}
+              </button>
+              {notificacionesOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[#e5e5e5] rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+                  <div className="px-4 py-3 border-b border-[#ececec] flex items-center justify-between">
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#000" }}>
+                      Alertas recientes
+                    </span>
+                    <button
+                      onClick={() => setNotificaciones([])}
+                      className="text-[10px] text-blue-600 hover:underline"
+                    >
+                      Limpiar
+                    </button>
+                  </div>
+                  {notificaciones.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-[12px] text-[#6b6b6b]">
+                      No hay alertas nuevas
+                    </div>
+                  ) : (
+                    notificaciones.slice(0, 10).map((n) => (
+                      <div
+                        key={n.id_alerta}
+                        className="px-4 py-3 border-b border-[#f0f0f0] hover:bg-[#fafafa] transition-colors cursor-pointer"
+                        onClick={() => {
+                          navigate("/admin/reportes");
+                          setNotificacionesOpen(false);
+                        }}
+                      >
+                        <div className="flex items-start gap-2">
+                          <AlarmClock size={14} className="text-red-500 mt-0.5 shrink-0" />
+                          <div>
+                            <div style={{ fontSize: 12, fontWeight: 500, color: "#000", lineHeight: 1.3 }}>
+                              {n.detalle_infraccion || "Infracción detectada"}
+                            </div>
+                            <div style={{ fontSize: 10, color: "#6b6b6b", marginTop: 2 }}>
+                              {n.fecha_hora_deteccion
+                                ? new Date(n.fecha_hora_deteccion).toLocaleString("es-EC", { timeZone: "America/Guayaquil" })
+                                : "—"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { AlertTriangle, CheckCircle, Clock, Download, FileWarning, X } from "lucide-react";
+import { AlertTriangle, CheckCircle, Clock, Download, FileWarning, Filter, X } from "lucide-react";
+import { useSelector } from "react-redux";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useReportes } from "../../controllers/useReportes";
 import type { AlertaReporte } from "../../models/reporte.model";
+import type { RootState } from "../../store";
 
 const formatearFecha = (iso: string | null): string => {
   if (!iso) return "—";
@@ -31,6 +33,8 @@ const formatearDuracion = (segundos: number | null): string => {
 };
 
 export const ReportesView = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const puedeResolver = user?.permisos.includes("JUSTIFICAR_ALERTA") ?? false;
   const {
     data,
     totalSinFiltrar,
@@ -38,6 +42,14 @@ export const ReportesView = () => {
     error,
     query,
     setQuery,
+    filtroZona,
+    setFiltroZona,
+    filtroEstado,
+    setFiltroEstado,
+    filtroCamara,
+    setFiltroCamara,
+    zonas,
+    camaras,
     exportarCsv,
     stats,
     alertaResolviendo,
@@ -118,7 +130,7 @@ export const ReportesView = () => {
       align: "center",
       width: "100px",
       render: (a) =>
-        a.estado_alerta === "Pendiente" ? (
+        a.estado_alerta === "Pendiente" && puedeResolver ? (
           <button
             onClick={() => abrirModalResolucion(a)}
             className="px-3 py-1.5 rounded-md bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
@@ -126,10 +138,12 @@ export const ReportesView = () => {
           >
             Resolver
           </button>
-        ) : (
+        ) : a.estado_alerta === "Resuelta" ? (
           <span className="flex items-center justify-center gap-1 text-green-600" style={{ fontSize: 11 }}>
             <CheckCircle size={12} /> Resuelta
           </span>
+        ) : (
+          <span style={{ color: "#b0b0b0", fontSize: 11 }}>—</span>
         ),
     },
   ];
@@ -183,16 +197,48 @@ export const ReportesView = () => {
       </div>
 
       <div className="bg-white border border-[#e5e5e5] rounded-lg">
-        <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
+        <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 flex-wrap">
           <div style={{ fontSize: 15, fontWeight: 600, color: "#000" }}>
             Alertas{" "}
             <span style={{ color: "#6b6b6b", fontWeight: 400 }}>· {data.length}</span>
           </div>
-          <SearchBar
-            value={query}
-            onChange={setQuery}
-            placeholder="Buscar por zona, cámara, estado…"
-          />
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter size={14} className="text-[#6b6b6b]" />
+            <select
+              value={filtroZona}
+              onChange={(e) => setFiltroZona(e.target.value)}
+              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
+            >
+              <option value="">Todas las zonas</option>
+              {zonas.map((z) => (
+                <option key={z} value={z}>{z}</option>
+              ))}
+            </select>
+            <select
+              value={filtroCamara}
+              onChange={(e) => setFiltroCamara(e.target.value)}
+              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
+            >
+              <option value="">Todas las cámaras</option>
+              {camaras.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <select
+              value={filtroEstado}
+              onChange={(e) => setFiltroEstado(e.target.value)}
+              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
+            >
+              <option value="">Todos los estados</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Resuelta">Resuelta</option>
+            </select>
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              placeholder="Buscar…"
+            />
+          </div>
         </div>
 
         {loading ? (

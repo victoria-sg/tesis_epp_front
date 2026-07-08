@@ -1,4 +1,3 @@
-import { Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
@@ -56,7 +55,11 @@ export const RolesView = () => {
     getRolConPermisos(idRol)
       .then((r) => {
         if (activo) {
-          setPermisosSeleccionados(r.permisos);
+          setPermisosSeleccionados(
+            crud.editingItem?.id_rol === 4
+              ? r.permisos.filter((pid) => pid === 9)
+              : r.permisos.filter((pid) => pid !== 9)
+          );
           setPermisosLoading(false);
         }
       })
@@ -148,15 +151,6 @@ export const RolesView = () => {
       <PageHeader
         title="Roles"
         subtitle="Administre los roles del sistema y sus permisos"
-        action={
-          <button
-            onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-md bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
-            style={{ fontSize: 13, fontWeight: 600 }}
-          >
-            <Plus size={16} /> Nuevo Rol
-          </button>
-        }
       />
 
       <div className="bg-white border border-[#e5e5e5] rounded-lg">
@@ -206,6 +200,7 @@ export const RolesView = () => {
             onBlur={formik.handleBlur}
             error={formik.errors.nombre_rol}
             touched={formik.touched.nombre_rol as boolean | undefined}
+            disabled={crud.isEditing}
           />
           <CustomInput
             label="Descripción"
@@ -237,7 +232,10 @@ export const RolesView = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {PERMISOS_DISPONIBLES.map((p) => (
+                  {PERMISOS_DISPONIBLES.filter((p) => {
+                    if (crud.editingItem?.id_rol === 4) return p.id === 9;
+                    return p.id !== 9;
+                  }).map((p) => (
                     <label
                       key={p.id}
                       className="flex items-center gap-2 px-3 py-2 rounded-md border border-[#e5e5e5] hover:border-[#8b5cf6] hover:bg-[#f5f3ff] cursor-pointer transition-colors"

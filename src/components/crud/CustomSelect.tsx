@@ -42,7 +42,7 @@ export const CustomSelect = ({
       )}
       <div className="relative">
         <select
-          value={value ?? ""}
+          value={value === 0 ? "" : (value ?? "")}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
           className={`h-12 w-full appearance-none rounded-md border-[1.5px] bg-white px-3 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 ${

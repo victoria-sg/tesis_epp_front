@@ -69,7 +69,6 @@ export const UsuariosView = () => {
             nombre: values.nombre,
             apelido: values.apelido,
             correo: values.correo,
-            id_rol: Number(values.id_rol),
             cedula: values.cedula?.trim() || undefined,
           };
           await crud.handleSubmit(updateData);
@@ -243,15 +242,17 @@ export const UsuariosView = () => {
             error={formik.errors.cedula}
             touched={formik.touched.cedula as boolean | undefined}
           />
-          <CustomSelect
-            label="Rol"
-            value={formik.values.id_rol}
-            onChange={(v) => formik.setFieldValue("id_rol", v)}
-            options={ROLES_ASIGNABLES}
-            placeholder="Seleccionar rol…"
-            error={formik.errors.id_rol}
-            touched={formik.touched.id_rol as boolean | undefined}
-          />
+          {!crud.isEditing && (
+            <CustomSelect
+              label="Rol"
+              value={formik.values.id_rol}
+              onChange={(v) => formik.setFieldValue("id_rol", v)}
+              options={ROLES_ASIGNABLES}
+              placeholder="Seleccionar rol…"
+              error={formik.errors.id_rol}
+              touched={formik.touched.id_rol as boolean | undefined}
+            />
+          )}
           {!crud.isEditing && (
             <div
               className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-[#f5f3ff]"

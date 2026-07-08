@@ -304,7 +304,14 @@ export const ZonasView = () => {
                 <span style={{ fontSize: 11, color: "#6b6b6b" }}>
                   Se detectará automáticamente:
                 </span>
-                <NivelRiesgoBadge nivel={nivelInferido} />
+                <button
+                  type="button"
+                  onClick={() => formik.setFieldValue("nivel_riesgo", nivelInferido)}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                  title="Haz clic para seleccionar este nivel"
+                >
+                  <NivelRiesgoBadge nivel={nivelInferido} />
+                </button>
               </div>
             )}
           </div>
