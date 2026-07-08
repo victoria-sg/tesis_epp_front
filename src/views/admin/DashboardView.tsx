@@ -11,14 +11,16 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
 import { DashboardCharts } from "../../components/DashboardCharts";
 import { VideoStream } from "../../components/VideoStream";
-import { useStreamContext } from "../../context/StreamContext";
-import type { Camara } from "../../models/camara.model";
-import type { Zona } from "../../models/zona.model";
+import { useStreamContext } from "../../context/useStreamContext";
 import { capturarIncidencia } from "../../services/alerta.service";
 import { camaraService } from "../../services/camara.service";
 import { zonaService } from "../../services/zona.service";
+
+import type { Camara } from "../../models/camara.model";
+import type { Zona } from "../../models/zona.model";
 import type { RootState } from "../../store";
 
 export const DashboardView = () => {
@@ -66,8 +68,8 @@ export const DashboardView = () => {
     })
       .then((r) => r.json())
       .then((data) => {
-        setAlertasHoy(data.alertas_hoy ?? 0);
-        setAlertasPendientes(data.pendientes ?? 0);
+        setAlertasHoy(data.data?.alertas_hoy ?? 0);
+        setAlertasPendientes(data.data?.pendientes ?? 0);
       })
       .catch(() => {});
   };
@@ -75,7 +77,10 @@ export const DashboardView = () => {
   useEffect(() => {
     camaraService
       .getAll()
-      .then((data) => { setCamaras(data); setLoading(false); })
+      .then((data) => {
+        setCamaras(data);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
     zonaService
       .getAll()
@@ -87,12 +92,21 @@ export const DashboardView = () => {
     return () => clearInterval(intervalo);
   }, []);
 
-  const camarasOnline = camaras.filter((c) => c.estado_conexion === "activo").length;
+  const camarasOnline = camaras.filter(
+    (c) => c.estado_conexion === "activo",
+  ).length;
 
   return (
     <div>
       <div className="mb-6">
-        <div style={{ fontSize: 24, fontWeight: 700, color: "#000", letterSpacing: "-0.01em" }}>
+        <div
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            color: "#000",
+            letterSpacing: "-0.01em",
+          }}
+        >
           Dashboard
         </div>
         <div className="mt-1" style={{ fontSize: 13, color: "#6b6b6b" }}>
@@ -100,18 +114,32 @@ export const DashboardView = () => {
         </div>
       </div>
 
-      
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
           <div className="flex items-center justify-between mb-3">
-            <span style={{ fontSize: 11, color: "#6b6b6b", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#6b6b6b",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                fontWeight: 500,
+              }}
+            >
               Cámaras Online
             </span>
             <div className="h-8 w-8 rounded-md bg-green-50 flex items-center justify-center">
               <Camera size={16} className="text-green-600" />
             </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#000", fontVariantNumeric: "tabular-nums" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#000",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {camarasOnline}
           </div>
           <div className="mt-1" style={{ fontSize: 12, color: "#6b6b6b" }}>
@@ -121,67 +149,123 @@ export const DashboardView = () => {
 
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
           <div className="flex items-center justify-between mb-3">
-            <span style={{ fontSize: 11, color: "#6b6b6b", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#6b6b6b",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                fontWeight: 500,
+              }}
+            >
               Alertas Hoy
             </span>
             <div className="h-8 w-8 rounded-md bg-red-50 flex items-center justify-center">
               <AlertTriangle size={16} className="text-red-600" />
             </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#000", fontVariantNumeric: "tabular-nums" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#000",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {alertasHoy}
           </div>
-          <div className="mt-1" style={{ fontSize: 12, color: alertasPendientes > 0 ? "#dc2626" : "#10b981" }}>
-            {alertasPendientes > 0
-              ? (
-                <span className="flex items-center gap-1">
-                  <AlertTriangle size={14} /> {alertasPendientes} pendiente{alertasPendientes !== 1 ? "s" : ""}
-                </span>
-              )
-              : (
-                <span className="flex items-center gap-1">
-                  <Check size={14} /> Sin infracciones
-                </span>
-              )}
+          <div
+            className="mt-1"
+            style={{
+              fontSize: 12,
+              color: alertasPendientes > 0 ? "#dc2626" : "#10b981",
+            }}
+          >
+            {alertasPendientes > 0 ? (
+              <span className="flex items-center gap-1">
+                <AlertTriangle size={14} /> {alertasPendientes} pendiente
+                {alertasPendientes !== 1 ? "s" : ""}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <Check size={14} /> Sin infracciones
+              </span>
+            )}
           </div>
         </div>
 
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
           <div className="flex items-center justify-between mb-3">
-            <span style={{ fontSize: 11, color: "#6b6b6b", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#6b6b6b",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                fontWeight: 500,
+              }}
+            >
               Zonas
             </span>
             <div className="h-8 w-8 rounded-md bg-blue-50 flex items-center justify-center">
               <Activity size={16} className="text-blue-600" />
             </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#000", fontVariantNumeric: "tabular-nums" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#000",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             {new Set(camaras.map((c) => c.id_zona)).size}
           </div>
-          <div className="mt-1" style={{ fontSize: 12, color: "#6b6b6b" }}>zonas activas</div>
+          <div className="mt-1" style={{ fontSize: 12, color: "#6b6b6b" }}>
+            zonas activas
+          </div>
         </div>
 
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
           <div className="flex items-center justify-between mb-3">
-            <span style={{ fontSize: 11, color: "#6b6b6b", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#6b6b6b",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                fontWeight: 500,
+              }}
+            >
               Sistema
             </span>
             <div className="h-8 w-8 rounded-md bg-blue-50 flex items-center justify-center">
               <ShieldCheck size={16} className="text-blue-600" />
             </div>
           </div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: "#000", fontVariantNumeric: "tabular-nums" }}>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 700,
+              color: "#000",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
             Operativo
           </div>
-          <div className="mt-1" style={{ fontSize: 12, color: "#6b6b6b" }}>100% disponibilidad</div>
+          <div className="mt-1" style={{ fontSize: 12, color: "#6b6b6b" }}>
+            100% disponibilidad
+          </div>
         </div>
       </div>
 
-      
       <div className="mb-4 flex items-center justify-between">
-        <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>Transmisión en Vivo</div>
+        <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>
+          Transmisión en Vivo
+        </div>
         <span style={{ fontSize: 12, color: "#6b6b6b" }}>
-          {camarasOnline} cámara{camarasOnline !== 1 ? "s" : ""} activa{camarasOnline !== 1 ? "s" : ""}
+          {camarasOnline} cámara{camarasOnline !== 1 ? "s" : ""} activa
+          {camarasOnline !== 1 ? "s" : ""}
         </span>
       </div>
 
@@ -193,7 +277,11 @@ export const DashboardView = () => {
         <div className="flex flex-col items-center justify-center h-64 text-[#6b6b6b] gap-2">
           <Camera size={48} />
           <span>No hay cámaras configuradas</span>
-          <a href="/admin/camaras" style={{ color: "#3b82f6", fontSize: 13 }} className="hover:underline">
+          <a
+            href="/admin/camaras"
+            style={{ color: "#3b82f6", fontSize: 13 }}
+            className="hover:underline"
+          >
             Configurar cámaras
           </a>
         </div>
@@ -210,7 +298,9 @@ export const DashboardView = () => {
                   camaraId={cam.id_camara}
                   label={cam.codigo_camara}
                   height="h-44"
-                  source={cam.tipo_fuente === "fallback_phone" ? "view" : "rtsp"}
+                  source={
+                    cam.tipo_fuente === "fallback_phone" ? "view" : "rtsp"
+                  }
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 rounded-full p-2">
@@ -221,29 +311,47 @@ export const DashboardView = () => {
               <div className="px-4 py-3 border-t border-[#ececec]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: "#000" }}>{cam.codigo_camara}</div>
-                    <div style={{ fontSize: 12, color: "#6b6b6b" }}>{cam.zona_nombre || "Sin zona"}</div>
+                    <div
+                      style={{ fontSize: 13, fontWeight: 500, color: "#000" }}
+                    >
+                      {cam.codigo_camara}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#6b6b6b" }}>
+                      {cam.zona_nombre || "Sin zona"}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1.5">
                     {cam.estado_conexion === "activo" ? (
                       <>
                         <Wifi size={14} className="text-green-500" />
-                        <span style={{ fontSize: 11, color: "#059669" }} className="font-medium">Online</span>
+                        <span
+                          style={{ fontSize: 11, color: "#059669" }}
+                          className="font-medium"
+                        >
+                          Online
+                        </span>
                       </>
                     ) : (
                       <>
                         <WifiOff size={14} style={{ color: "#ccc" }} />
-                        <span style={{ fontSize: 11, color: "#9ca3af" }}>Offline</span>
+                        <span style={{ fontSize: 11, color: "#9ca3af" }}>
+                          Offline
+                        </span>
                       </>
                     )}
                   </div>
                 </div>
-                <div style={{ fontSize: 11, color: "#ccc" }} className="font-mono mt-1">
+                <div
+                  style={{ fontSize: 11, color: "#ccc" }}
+                  className="font-mono mt-1"
+                >
                   {cam.tipo_fuente === "fallback_phone" ? (
                     <span className="flex items-center gap-1">
                       <Smartphone size={12} /> Cámara virtual
                     </span>
-                  ) : (cam.ip_direccion ?? "")}
+                  ) : (
+                    (cam.ip_direccion ?? "")
+                  )}
                 </div>
               </div>
             </div>
@@ -251,15 +359,20 @@ export const DashboardView = () => {
         </div>
       )}
 
-      
       {user && (
         <div className="mt-8">
           <div className="mb-3 flex items-center gap-2">
-            <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>Estadísticas</div>
+            <div style={{ fontSize: 17, fontWeight: 600, color: "#000" }}>
+              Estadísticas
+            </div>
             {zonas.length > 0 && (
               <select
                 value={zonaSeleccionada ?? ""}
-                onChange={(e) => setZonaSeleccionada(e.target.value ? Number(e.target.value) : null)}
+                onChange={(e) =>
+                  setZonaSeleccionada(
+                    e.target.value ? Number(e.target.value) : null,
+                  )
+                }
                 className="h-8 px-3 rounded-md border border-[#e5e5e5] bg-white text-[13px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
               >
                 <option value="">Todas las zonas</option>
@@ -270,7 +383,15 @@ export const DashboardView = () => {
                 ))}
               </select>
             )}
-            <span style={{ fontSize: 11, color: "#6b6b6b", background: "#f5f5f5", padding: "2px 8px", borderRadius: 99 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#6b6b6b",
+                background: "#f5f5f5",
+                padding: "2px 8px",
+                borderRadius: 99,
+              }}
+            >
               {user.rolLabel}
             </span>
           </div>
@@ -278,7 +399,6 @@ export const DashboardView = () => {
         </div>
       )}
 
-      
       {camaraExpandida && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex flex-col"
@@ -289,8 +409,12 @@ export const DashboardView = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div>
-              <div className="text-white font-semibold text-lg">{camaraExpandida.codigo_camara}</div>
-              <div className="text-zinc-400 text-sm">{camaraExpandida.zona_nombre || "Sin zona"}</div>
+              <div className="text-white font-semibold text-lg">
+                {camaraExpandida.codigo_camara}
+              </div>
+              <div className="text-zinc-400 text-sm">
+                {camaraExpandida.zona_nombre || "Sin zona"}
+              </div>
             </div>
             <button
               onClick={() => setCamaraExpandida(null)}
@@ -309,7 +433,11 @@ export const DashboardView = () => {
                 camaraId={camaraExpandida.id_camara}
                 label={camaraExpandida.codigo_camara}
                 height="h-[60vh]"
-                source={camaraExpandida.tipo_fuente === "fallback_phone" ? "view" : "rtsp"}
+                source={
+                  camaraExpandida.tipo_fuente === "fallback_phone"
+                    ? "view"
+                    : "rtsp"
+                }
                 readonly={true}
               />
             </div>
@@ -326,30 +454,42 @@ export const DashboardView = () => {
                 <WifiOff size={14} className="text-zinc-600" />
               )}
               <span className="text-zinc-400 text-xs">
-                {camaraExpandida.estado_conexion === "activo" ? "Online" : "Offline"}
+                {camaraExpandida.estado_conexion === "activo"
+                  ? "Online"
+                  : "Offline"}
               </span>
             </div>
             {camaraExpandida.ip_direccion && (
-              <span className="text-zinc-600 text-xs font-mono">{camaraExpandida.ip_direccion}</span>
+              <span className="text-zinc-600 text-xs font-mono">
+                {camaraExpandida.ip_direccion}
+              </span>
             )}
             <div className="ml-auto flex items-center gap-3">
               <button
-                onClick={() => capturarIncidenciaDashboard(camaraExpandida.id_camara)}
+                onClick={() =>
+                  capturarIncidenciaDashboard(camaraExpandida.id_camara)
+                }
                 disabled={capturandoIncidencia}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-500/90 hover:bg-yellow-500 disabled:bg-gray-600 text-white text-xs font-semibold transition-colors shadow"
               >
-                {capturandoIncidencia ? "Capturando..." : (
+                {capturandoIncidencia ? (
+                  "Capturando..."
+                ) : (
                   <span className="flex items-center gap-1">
                     <AlertTriangle size={14} /> Reportar incidencia
                   </span>
                 )}
               </button>
               {mensajeCaptura && (
-                <span className={`text-xs font-medium ${mensajeCaptura.includes("registrada") ? "text-green-400" : "text-red-400"}`}>
+                <span
+                  className={`text-xs font-medium ${mensajeCaptura.includes("registrada") ? "text-green-400" : "text-red-400"}`}
+                >
                   {mensajeCaptura}
                 </span>
               )}
-              <span className="text-zinc-600 text-xs">Haz clic fuera para cerrar</span>
+              <span className="text-zinc-600 text-xs">
+                Haz clic fuera para cerrar
+              </span>
             </div>
           </div>
         </div>

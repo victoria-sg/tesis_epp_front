@@ -1,5 +1,6 @@
 import { Plus, Smartphone } from "lucide-react";
 import { useMemo, useState } from "react";
+
 import { CameraQRDialog } from "../../components/CameraQRDialog";
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
@@ -7,26 +8,27 @@ import { CustomInput } from "../../components/crud/CustomInput";
 import { CustomModal } from "../../components/crud/CustomModal";
 import { CustomPagination } from "../../components/crud/CustomPagination";
 import { CustomSelect } from "../../components/crud/CustomSelect";
-import { CustomTable, type Column } from "../../components/crud/CustomTable";
+import { CustomTable } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
+import { CAMARA_ESTADOS, TIPOS_FUENTE } from "../../models/camara.model";
+import { camaraService } from "../../services/camara.service";
+import { camaraSchema } from "../../validators/camara.schema";
+
+import type { Column } from "../../components/crud/CustomTable";
+import type { CamaraFormValues } from "../../validators/camara.schema";
+
 import type {
   Camara,
   CamaraCreate,
   CamaraUpdate,
 } from "../../models/camara.model";
-import { CAMARA_ESTADOS, TIPOS_FUENTE } from "../../models/camara.model";
-import { camaraService } from "../../services/camara.service";
-import {
-  camaraSchema,
-  type CamaraFormValues,
-} from "../../validators/camara.schema";
 
-const INITIAL_VALUES = {
-  id_zona: "",
+const INITIAL_VALUES: CamaraFormValues = {
+  id_zona: 0,
   codigo_camara: "",
   tipo_fuente: "hikvision",
   ip_direccion: "",
@@ -34,7 +36,7 @@ const INITIAL_VALUES = {
   usuario_rtsp: "",
   password_rtsp: "",
   estado_conexion: null,
-} as CamaraFormValues;
+};
 
 const FIELD_MAPPING: Record<string, string> = {
   id_zona: "id_zona",
@@ -208,7 +210,7 @@ export const CamarasView = () => {
         action={
           <button
             onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-md bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
+            className="h-10 px-4 rounded-md bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
             style={{ fontSize: 13, fontWeight: 600 }}
           >
             <Plus size={16} /> Nueva Cámara
@@ -380,7 +382,7 @@ export const CamarasView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

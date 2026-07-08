@@ -325,7 +325,6 @@ export const DashboardCharts = ({ rol, idZona }: { rol: string; idZona?: number 
   const [rango, setRango] = useState<Rango>("7d");
 
   useEffect(() => {
-    setLoading(true);
     let url = `/stats/dashboard?rango=${rango}`;
     if (idZona) url += `&id_zona=${idZona}`;
     api.get<DashboardStats>(url)

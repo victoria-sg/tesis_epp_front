@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AlertaReporte } from "../models/reporte.model";
 import { getReporteAlertas } from "../services/reporte.service";
-import { zonaService } from "../services/zona.service";
-import { camaraService } from "../services/camara.service";
-import type { Zona } from "../models/zona.model";
-import type { Camara } from "../models/camara.model";
 import api from "../services/api";
 
 const escaparCeldaCsv = (valor: string | number | null): string => {
@@ -20,8 +16,6 @@ export const useReportes = () => {
   const [filtroZona, setFiltroZona] = useState<string>("");
   const [filtroEstado, setFiltroEstado] = useState<string>("");
   const [filtroCamara, setFiltroCamara] = useState<string>("");
-  const [zonas, setZonas] = useState<Zona[]>([]);
-  const [camaras, setCamaras] = useState<Camara[]>([]);
 
   const [alertaResolviendo, setAlertaResolviendo] = useState<AlertaReporte | null>(null);
   const [comentario, setComentario] = useState("");
@@ -29,24 +23,20 @@ export const useReportes = () => {
   const [resolviendoError, setResolviendoError] = useState<string | null>(null);
 
   const cargarReporte = useCallback(async () => {
-    setLoading(true);
     setError(null);
-    let activo = true;
     try {
       const reporte = await getReporteAlertas();
-      if (activo) setData(reporte);
+      setData(reporte);
     } catch {
-      if (activo) setError("No se pudo cargar el reporte de alertas. Intenta de nuevo.");
+      setError("No se pudo cargar el reporte de alertas. Intenta de nuevo.");
     } finally {
-      if (activo) setLoading(false);
+      setLoading(false);
     }
-    return () => { activo = false; };
   }, []);
 
   useEffect(() => {
-    cargarReporte();
-    zonaService.getAll().then(setZonas).catch(() => {});
-    camaraService.getAll().then(setCamaras).catch(() => {});
+    const timer = setTimeout(cargarReporte, 0);
+    return () => clearTimeout(timer);
   }, [cargarReporte]);
 
   const zonasUnicas = useMemo(

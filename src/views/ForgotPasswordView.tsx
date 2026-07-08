@@ -11,10 +11,10 @@ export const ForgotPasswordView = ({ onBackToLogin }: Props) => {
   const { formik, enviado, serverError, handleSubmit } = useForgotPassword();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
       <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
+          <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
             <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
           </div>
           <div className="text-2xl font-bold text-slate-900 text-center tracking-[-0.01em]">
@@ -31,8 +31,7 @@ export const ForgotPasswordView = ({ onBackToLogin }: Props) => {
             <MailCheck className="h-10 w-10 text-emerald-600" />
             <div className="text-[14px] text-slate-700">
               Te enviamos un enlace de recuperación a tu correo. Revisa tu
-              bandeja de entrada (y la carpeta de spam) en los próximos
-              minutos.
+              bandeja de entrada (y la carpeta de spam) en los próximos minutos.
             </div>
             <button
               type="button"
@@ -81,7 +80,7 @@ export const ForgotPasswordView = ({ onBackToLogin }: Props) => {
             <Button
               type="submit"
               disabled={!formik.isValid || formik.isSubmitting}
-              className="w-full h-12 rounded-md bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
+              className="w-full h-12 rounded-mdbg-linear-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.02em" }}
             >
               {formik.isSubmitting ? "Enviando..." : "Enviar enlace"}

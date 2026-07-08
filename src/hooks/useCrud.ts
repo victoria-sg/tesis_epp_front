@@ -44,7 +44,7 @@ export const useCrud = <T, TCreate, TUpdate>(
 
   const [items, setItems] = useState<T[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +68,6 @@ export const useCrud = <T, TCreate, TUpdate>(
   );
 
   const fetchItems = useCallback(async () => {
-    setLoading(true);
     setError(null);
     try {
       const skip = (safePage - 1) * pageSize;
@@ -85,7 +84,8 @@ export const useCrud = <T, TCreate, TUpdate>(
   }, [service, safePage, pageSize, filters]);
 
   useEffect(() => {
-    fetchItems();
+    const timer = setTimeout(fetchItems, 0);
+    return () => clearTimeout(timer);
   }, [fetchItems]);
 
   const openCreateModal = useCallback(() => {

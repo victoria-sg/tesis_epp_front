@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useStreamContext } from "../context/StreamContext";
+import { useStreamContext } from "../context/useStreamContext";
 
 interface UseVideoStreamOptions {
   camaraId: number;

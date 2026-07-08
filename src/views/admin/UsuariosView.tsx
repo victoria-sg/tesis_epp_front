@@ -1,28 +1,29 @@
 import { Lock, Plus } from "lucide-react";
 import { useMemo } from "react";
+
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
 import { CustomInput } from "../../components/crud/CustomInput";
 import { CustomModal } from "../../components/crud/CustomModal";
 import { CustomPagination } from "../../components/crud/CustomPagination";
 import { CustomSelect } from "../../components/crud/CustomSelect";
-import { CustomTable, type Column } from "../../components/crud/CustomTable";
+import { CustomTable } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
+import { usuarioService } from "../../services/usuario.service";
+import { buildUsuarioSchema } from "../../validators/usuario.schema";
+
+import type { Column } from "../../components/crud/CustomTable";
+import type { UsuarioFormValues } from "../../validators/usuario.schema";
+
 import type {
   Usuario,
   UsuarioCreate,
   UsuarioUpdate,
 } from "../../models/usuario.model";
-import { usuarioService } from "../../services/usuario.service";
-import {
-  buildUsuarioSchema,
-  type UsuarioFormValues,
-} from "../../validators/usuario.schema";
-
 const INITIAL_VALUES: UsuarioFormValues = {
   nombre: "",
   apelido: "",
@@ -59,7 +60,10 @@ export const UsuariosView = () => {
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<UsuarioFormValues>({
       isEditing: crud.isEditing,
-      editingItem: crud.editingItem as unknown as Record<string, unknown> | null,
+      editingItem: crud.editingItem as unknown as Record<
+        string,
+        unknown
+      > | null,
       validationSchema: usuarioSchema,
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
@@ -113,7 +117,7 @@ export const UsuariosView = () => {
       render: (u) => (
         <div className="flex items-center gap-3">
           <div
-            className="h-8 w-8 rounded-full bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] text-white flex items-center justify-center shadow-md shadow-purple-500/30"
+            className="h-8 w-8 rounded-full bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] text-white flex items-center justify-center shadow-md shadow-purple-500/30"
             style={{ fontSize: 11, fontWeight: 700 }}
           >
             {u.nombre[0]}
@@ -156,7 +160,7 @@ export const UsuariosView = () => {
         action={
           <button
             onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-md bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all"
+            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all"
             style={{ fontSize: 13, fontWeight: 600 }}
           >
             <Plus size={16} /> Nuevo Usuario
@@ -258,8 +262,11 @@ export const UsuariosView = () => {
               className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-[#f5f3ff]"
               style={{ fontSize: 12, color: "#6b6b6b", lineHeight: 1.5 }}
             >
-              <span className="flex items-center gap-1"><Lock size={14} /></span> La contraseña se generará automáticamente a partir de la
-              cédula e iniciales del nombre, y se enviará al correo registrado.
+              <span className="flex items-center gap-1">
+                <Lock size={14} />
+              </span>{" "}
+              La contraseña se generará automáticamente a partir de la cédula e
+              iniciales del nombre, y se enviará al correo registrado.
             </div>
           )}
           {crud.error && (
@@ -278,7 +285,7 @@ export const UsuariosView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-purple-500/30"
+              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-purple-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

@@ -28,11 +28,9 @@ export const CameraQRDialog = ({
   }, [open]);
 
   const [fallbackToken, setFallbackToken] = useState<string | null>(null);
-  const [tokenLoading, setTokenLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setTokenLoading(true);
     fetch("/auth/fallback-token", {
       method: "POST",
       headers: {
@@ -46,8 +44,7 @@ export const CameraQRDialog = ({
           setFallbackToken(data.data.access_token);
         }
       })
-      .catch(() => {})
-      .finally(() => setTokenLoading(false));
+      .catch(() => {});
   }, [open]);
 
   const qrUrl = useMemo(() => {

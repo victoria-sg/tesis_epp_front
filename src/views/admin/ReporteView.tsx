@@ -1,5 +1,13 @@
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Download,
+  FileWarning,
+  Filter,
+  X,
+} from "lucide-react";
 import React, { useState } from "react";
-import { AlertTriangle, CheckCircle, Clock, Download, FileWarning, Filter, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
@@ -98,7 +106,9 @@ export const ReportesView = () => {
       header: "Infracción",
       render: (a) =>
         a.detalle_infraccion ? (
-          <span className="text-xs text-red-600 font-medium">{a.detalle_infraccion}</span>
+          <span className="text-xs text-red-600 font-medium">
+            {a.detalle_infraccion}
+          </span>
         ) : (
           <span style={{ color: "#9a9a9a", fontSize: 12 }}>—</span>
         ),
@@ -133,13 +143,16 @@ export const ReportesView = () => {
         a.estado_alerta === "Pendiente" && puedeResolver ? (
           <button
             onClick={() => abrirModalResolucion(a)}
-            className="px-3 py-1.5 rounded-md bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
+            className="px-3 py-1.5 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
             style={{ fontSize: 11, fontWeight: 600 }}
           >
             Resolver
           </button>
         ) : a.estado_alerta === "Resuelta" ? (
-          <span className="flex items-center justify-center gap-1 text-green-600" style={{ fontSize: 11 }}>
+          <span
+            className="flex items-center justify-center gap-1 text-green-600"
+            style={{ fontSize: 11 }}
+          >
             <CheckCircle size={12} /> Resuelta
           </span>
         ) : (
@@ -157,7 +170,7 @@ export const ReportesView = () => {
           <button
             onClick={exportarCsv}
             disabled={data.length === 0}
-            className="h-10 px-4 rounded-md bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all disabled:opacity-40 disabled:shadow-none"
+            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all disabled:opacity-40 disabled:shadow-none"
             style={{ fontSize: 13, fontWeight: 600 }}
           >
             <Download size={16} /> Exportar CSV
@@ -165,14 +178,15 @@ export const ReportesView = () => {
         }
       />
 
-      
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
             <AlertTriangle size={18} className="text-blue-600" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>{stats.total}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+              {stats.total}
+            </div>
             <div style={{ fontSize: 11, color: "#6b6b6b" }}>Total alertas</div>
           </div>
         </div>
@@ -181,7 +195,9 @@ export const ReportesView = () => {
             <Clock size={18} className="text-red-500" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>{stats.pendientes}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+              {stats.pendientes}
+            </div>
             <div style={{ fontSize: 11, color: "#6b6b6b" }}>Pendientes</div>
           </div>
         </div>
@@ -190,7 +206,9 @@ export const ReportesView = () => {
             <CheckCircle size={18} className="text-green-600" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>{stats.resueltas}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+              {stats.resueltas}
+            </div>
             <div style={{ fontSize: 11, color: "#6b6b6b" }}>Resueltas</div>
           </div>
         </div>
@@ -200,7 +218,9 @@ export const ReportesView = () => {
         <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 flex-wrap">
           <div style={{ fontSize: 15, fontWeight: 600, color: "#000" }}>
             Alertas{" "}
-            <span style={{ color: "#6b6b6b", fontWeight: 400 }}>· {data.length}</span>
+            <span style={{ color: "#6b6b6b", fontWeight: 400 }}>
+              · {data.length}
+            </span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={14} className="text-[#6b6b6b]" />
@@ -211,7 +231,9 @@ export const ReportesView = () => {
             >
               <option value="">Todas las zonas</option>
               {zonas.map((z) => (
-                <option key={z} value={z}>{z}</option>
+                <option key={z} value={z}>
+                  {z}
+                </option>
               ))}
             </select>
             <select
@@ -221,7 +243,9 @@ export const ReportesView = () => {
             >
               <option value="">Todas las cámaras</option>
               {camaras.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ))}
             </select>
             <select
@@ -242,7 +266,10 @@ export const ReportesView = () => {
         </div>
 
         {loading ? (
-          <div className="px-4 py-16 text-center" style={{ fontSize: 13, color: "#6b6b6b" }}>
+          <div
+            className="px-4 py-16 text-center"
+            style={{ fontSize: 13, color: "#6b6b6b" }}
+          >
             Cargando reporte…
           </div>
         ) : error ? (
@@ -264,7 +291,6 @@ export const ReportesView = () => {
         )}
       </div>
 
-      
       {alertaResolviendo && (
         <div
           className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
@@ -276,9 +302,12 @@ export const ReportesView = () => {
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-semibold text-lg text-gray-900">Resolver alerta</h3>
+                <h3 className="font-semibold text-lg text-gray-900">
+                  Resolver alerta
+                </h3>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Cámara: {alertaResolviendo.codigo_camara} · Zona: {alertaResolviendo.nombre_zona}
+                  Cámara: {alertaResolviendo.codigo_camara} · Zona:{" "}
+                  {alertaResolviendo.nombre_zona}
                 </p>
               </div>
               <button
@@ -323,7 +352,7 @@ export const ReportesView = () => {
               <button
                 onClick={resolverAlerta}
                 disabled={resolviendoLoading || !comentario.trim()}
-                className="h-10 px-4 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold disabled:opacity-50 shadow-lg shadow-purple-500/30 transition-all"
+                className="h-10 px-4 rounded-lgbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold disabled:opacity-50 shadow-lg shadow-purple-500/30 transition-all"
               >
                 {resolviendoLoading ? "Guardando…" : "Marcar como resuelta"}
               </button>
@@ -332,7 +361,6 @@ export const ReportesView = () => {
         </div>
       )}
 
-      
       {imagenExpandida && (
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"

@@ -12,7 +12,9 @@ export const PhoneCameraView = () => {
   const [streamActive, setStreamActive] = useState(false);
   const tokenProcessed = useRef(false);
   const [isReady, setIsReady] = useState(false);
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem(TOKEN_KEY),
+  );
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -20,7 +22,10 @@ export const PhoneCameraView = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const numericId = useMemo(() => (camaraId ? Number(camaraId) : NaN), [camaraId]);
+  const numericId = useMemo(
+    () => (camaraId ? Number(camaraId) : NaN),
+    [camaraId],
+  );
   const isAuthenticated = !!token;
 
   useEffect(() => {
@@ -29,56 +34,60 @@ export const PhoneCameraView = () => {
     if (tokenFromUrl) {
       tokenProcessed.current = true;
       localStorage.setItem(TOKEN_KEY, tokenFromUrl);
-      setToken(tokenFromUrl);
       window.location.href = `/phone-camera/${camaraId}`;
       return;
     }
-    setIsReady(true);
+    setTimeout(() => setIsReady(true), 0);
   }, [searchParams, camaraId]);
 
   const handleStreamChange = useCallback((active: boolean) => {
     setStreamActive(active);
   }, []);
 
-  const handleLogin = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoginError(null);
-    setLoginLoading(true);
-    try {
-      const response = await api.post(AUTH_LOGIN, {
-        correo: loginEmail,
-        contrasena: loginPassword,
-      });
-      const { access_token } = response.data;
-      localStorage.setItem(TOKEN_KEY, access_token);
-      setToken(access_token);
-    } catch {
-      setLoginError("Credenciales incorrectas. Intenta de nuevo.");
-    } finally {
-      setLoginLoading(false);
-    }
-  }, [loginEmail, loginPassword]);
+  const handleLogin = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoginError(null);
+      setLoginLoading(true);
+      try {
+        const response = await api.post(AUTH_LOGIN, {
+          correo: loginEmail,
+          contrasena: loginPassword,
+        });
+        const { access_token } = response.data;
+        localStorage.setItem(TOKEN_KEY, access_token);
+        setToken(access_token);
+      } catch {
+        setLoginError("Credenciales incorrectas. Intenta de nuevo.");
+      } finally {
+        setLoginLoading(false);
+      }
+    },
+    [loginEmail, loginPassword],
+  );
 
   if (!isReady && searchParams.get("token")) {
     return (
       <div className="h-screen w-screen bg-black flex items-center justify-center">
-        <span className="text-white text-sm animate-pulse">Autenticando...</span>
+        <span className="text-white text-sm animate-pulse">
+          Autenticando...
+        </span>
       </div>
     );
   }
 
   return (
     <div className="h-screen w-screen bg-black flex flex-col overflow-hidden">
-
-      
       {isAuthenticated && (
         <div className="bg-zinc-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-b border-zinc-800/50">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+            <div className="h-7 w-7 rounded-lg bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center">
               <Camera size={14} className="text-white" />
             </div>
             <div>
-              <div className="text-white text-xs font-semibold">EPP Monitor</div>
+              <div className="text-white text-xs font-semibold">
+                EPP Monitor
+              </div>
               <div className="text-zinc-500 text-[9px] uppercase tracking-wider">
                 Cámara #{camaraId}
               </div>
@@ -88,22 +97,24 @@ export const PhoneCameraView = () => {
             {streamActive ? (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-green-400 text-[10px] font-medium">EN VIVO</span>
+                <span className="text-green-400 text-[10px] font-medium">
+                  EN VIVO
+                </span>
               </>
             ) : (
               <>
                 <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-                <span className="text-zinc-500 text-[10px] font-medium">DETENIDO</span>
+                <span className="text-zinc-500 text-[10px] font-medium">
+                  DETENIDO
+                </span>
               </>
             )}
           </div>
         </div>
       )}
 
-      
       {isAuthenticated ? (
         <>
-          
           <div className="flex-1 relative flex items-center justify-center overflow-hidden">
             <div className="w-full h-full">
               {!isNaN(numericId) ? (
@@ -122,7 +133,6 @@ export const PhoneCameraView = () => {
             </div>
           </div>
 
-          
           <div className="bg-zinc-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-t border-zinc-800/50">
             <div className="flex items-center gap-1.5">
               {streamActive ? (
@@ -145,7 +155,8 @@ export const PhoneCameraView = () => {
                 Usa tu teléfono como cámara de seguridad
               </p>
               <p className="text-zinc-500 text-xs mb-6 leading-relaxed">
-                Escanea el código QR desde el panel de administración, o inicia sesión con tu cuenta.
+                Escanea el código QR desde el panel de administración, o inicia
+                sesión con tu cuenta.
               </p>
             </div>
 
@@ -190,7 +201,9 @@ export const PhoneCameraView = () => {
               </div>
 
               {loginError && (
-                <div className="text-[12px] text-red-400 text-center">{loginError}</div>
+                <div className="text-[12px] text-red-400 text-center">
+                  {loginError}
+                </div>
               )}
 
               <button
@@ -204,7 +217,6 @@ export const PhoneCameraView = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

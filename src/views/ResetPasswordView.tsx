@@ -1,26 +1,26 @@
-import { CheckCircle2, Eye, EyeOff, ShieldAlert, ShieldCheck } from "lucide-react";
+import {
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  ShieldAlert,
+  ShieldCheck,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useResetPassword } from "../controllers/useResetPassword";
 
 export const ResetPasswordView = () => {
-  const {
-    formik,
-    serverError,
-    exito,
-    handleSubmit,
-    tokenPresente,
-    goToLogin,
-  } = useResetPassword();
+  const { formik, serverError, exito, handleSubmit, tokenPresente, goToLogin } =
+    useResetPassword();
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
       <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
+          <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
             <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
           </div>
           <div className="text-2xl font-bold text-slate-900 text-center tracking-[-0.01em]">
@@ -32,8 +32,8 @@ export const ResetPasswordView = () => {
           <div className="flex flex-col items-center gap-3 py-4 text-center">
             <ShieldAlert className="h-10 w-10 text-amber-500" />
             <div className="text-[14px] text-slate-700">
-              Este enlace no es válido. Solicita uno nuevo desde la pantalla
-              de inicio de sesión.
+              Este enlace no es válido. Solicita uno nuevo desde la pantalla de
+              inicio de sesión.
             </div>
             <button
               type="button"
@@ -52,7 +52,7 @@ export const ResetPasswordView = () => {
             <Button
               type="button"
               onClick={goToLogin}
-              className="w-full h-12 rounded-md bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg"
+              className="w-full h-12 rounded-mdbg-linear-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg"
               style={{ fontSize: 14, fontWeight: 600 }}
             >
               Iniciar sesión
@@ -140,8 +140,8 @@ export const ResetPasswordView = () => {
             </div>
 
             <div className="text-[11px] text-[#6b6b6b] -mt-1">
-              Mínimo 8 caracteres, con mayúscula, minúscula, número y
-              carácter especial.
+              Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter
+              especial.
             </div>
 
             {serverError && (
@@ -153,10 +153,12 @@ export const ResetPasswordView = () => {
             <Button
               type="submit"
               disabled={!formik.isValid || formik.isSubmitting}
-              className="w-full h-12 rounded-md bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
+              className="w-full h-12 rounded-mdbg-linear-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.02em" }}
             >
-              {formik.isSubmitting ? "Guardando..." : "Guardar nueva contraseña"}
+              {formik.isSubmitting
+                ? "Guardando..."
+                : "Guardar nueva contraseña"}
             </Button>
           </form>
         )}

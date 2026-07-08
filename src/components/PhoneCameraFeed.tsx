@@ -30,6 +30,7 @@ export const PhoneCameraFeed = ({
   const [capturando, setCapturando] = useState(false);
   const [capturaExito, setCapturaExito] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const connectWsRef = useRef<typeof connectWs>(null!);
 
   const connectWs = useCallback(() => {
     const token = localStorage.getItem("epp_token") || "";
@@ -45,7 +46,7 @@ export const PhoneCameraFeed = ({
       if (isActiveRef.current) {
         setTimeout(() => {
           if (isActiveRef.current && wsRef.current === null) {
-            const newWs = connectWs();
+            const newWs = connectWsRef.current();
             wsRef.current = newWs;
           }
         }, 2000);
@@ -58,6 +59,10 @@ export const PhoneCameraFeed = ({
     wsRef.current = ws;
     return ws;
   }, [deviceId, camaraId]);
+
+  useEffect(() => {
+    connectWsRef.current = connectWs;
+  });
 
   const capturarFrame = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current || !ctxRef.current) return;

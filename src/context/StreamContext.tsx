@@ -1,30 +1,29 @@
 import {
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
+
+/* eslint-disable react-refresh/only-export-components */
 import { TOKEN_KEY } from "../constants/authStorageConstants";
 
 interface StreamFrame {
   [camaraId: number]: string;
 }
 
-interface StreamContextType {
+export interface StreamContextType {
   frames: StreamFrame;
   subscribeCamera: (camaraId: number, source: "rtsp" | "view") => void;
   unsubscribeCamera: (camaraId: number) => void;
 }
 
-const StreamContext = createContext<StreamContextType>({
+export const StreamContext = createContext<StreamContextType>({
   frames: {},
   subscribeCamera: () => {},
   unsubscribeCamera: () => {},
 });
-
-export const useStreamContext = () => useContext(StreamContext);
 
 export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   const [frames, setFrames] = useState<StreamFrame>({});
@@ -33,6 +32,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   const sourceRef = useRef<Map<number, "rtsp" | "view">>(new Map());
   const closeTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const lastFrameTime = useRef<Map<number, number>>(new Map());
+  const openConnectionRef = useRef<typeof openConnection>(null!);
 
   const openConnection = useCallback((camaraId: number, source: "rtsp" | "view") => {
     const existing = wsRefs.current.get(camaraId);
@@ -70,7 +70,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
         (subscribersRef.current.get(camaraId) ?? 0) > 0
       ) {
         setTimeout(
-          () => openConnection(camaraId, sourceRef.current.get(camaraId) ?? "rtsp"),
+          () => openConnectionRef.current(camaraId, sourceRef.current.get(camaraId) ?? "rtsp"),
           3000,
         );
       }
@@ -82,6 +82,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
     sourceRef.current.set(camaraId, source);
     lastFrameTime.current.set(camaraId, Date.now());
   }, []);
+
+  useEffect(() => {
+    openConnectionRef.current = openConnection;
+  });
 
   const subscribeCamera = useCallback(
     (camaraId: number, source: "rtsp" | "view") => {
@@ -136,10 +140,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
             const source = sourceRef.current.get(camaraId) ?? "rtsp";
             const ws = wsRefs.current.get(camaraId);
             if (ws && ws.readyState !== WebSocket.OPEN) {
-              try { ws.close(); } catch {  }
+              try { ws.close(); } catch { /* noop */ }
               wsRefs.current.delete(camaraId);
             }
-            openConnection(camaraId, source);
+            openConnectionRef.current(camaraId, source);
           }
         });
       }
@@ -158,10 +162,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
           const source = sourceRef.current.get(camaraId) ?? "rtsp";
           const ws = wsRefs.current.get(camaraId);
           if (ws) {
-            try { ws.close(); } catch {  }
+            try { ws.close(); } catch { /* noop */ }
             wsRefs.current.delete(camaraId);
           }
-          openConnection(camaraId, source);
+          openConnectionRef.current(camaraId, source);
         }
       });
     }, 10_000);
@@ -170,10 +174,12 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   }, [openConnection]);
 
   useEffect(() => {
+    const timers = closeTimers.current;
+    const sockets = wsRefs.current;
     return () => {
-      closeTimers.current.forEach((t) => clearTimeout(t));
-      wsRefs.current.forEach((ws) => ws.close(1000));
-      wsRefs.current.clear();
+      timers.forEach((t) => clearTimeout(t));
+      sockets.forEach((ws) => ws.close(1000));
+      sockets.clear();
     };
   }, []);
 

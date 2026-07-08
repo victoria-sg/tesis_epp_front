@@ -7,8 +7,7 @@ import { useLogin } from "../controllers/useLogin";
 import type { Rol } from "../models/auth.model";
 import { ROLE_STYLES } from "../models/auth.model";
 
-const backgroundImg =
-  "";
+const backgroundImg = "";
 
 interface Props {
   selectedRol: Rol;
@@ -43,7 +42,6 @@ export const LoginView = ({
       />
 
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-between gap-10 px-6 py-10 md:px-16 lg:px-24">
-        
         <div className="text-black max-w-xl text-center lg:ml-36">
           <div className="flex flex-col items-center gap-5">
             <div className="h-32 w-32 rounded-3xl bg-white/70 backdrop-blur-md ring-2 ring-black/20 flex items-center justify-center shadow-2xl">
@@ -66,9 +64,7 @@ export const LoginView = ({
           </div>
         </div>
 
-        
         <div className="w-full max-w-xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-12 md:p-16">
-          
           <div className="flex items-center justify-between mb-6">
             <button
               type="button"
@@ -78,7 +74,7 @@ export const LoginView = ({
               <ChevronLeft size={16} /> Cambiar rol
             </button>
             <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${accentGradient} text-white shadow-lg`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-fullbg-linear-to-r ${accentGradient} text-white shadow-lg`}
             >
               <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-pulse" />
               <span className="text-[12px] font-bold tracking-[0.04em]">
@@ -92,7 +88,6 @@ export const LoginView = ({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
             <div>
               <label className="block mb-1.5 text-[12px] text-[#1a1a1a] font-semibold">
                 Correo electrónico
@@ -121,7 +116,6 @@ export const LoginView = ({
               )}
             </div>
 
-            
             <div>
               <label className="block mb-1.5 text-[12px] text-[#1a1a1a] font-semibold">
                 Contraseña
@@ -181,7 +175,7 @@ export const LoginView = ({
             <Button
               type="submit"
               disabled={!formik.isValid || formik.isSubmitting}
-              className={`w-full h-12 rounded-md bg-gradient-to-r ${accentGradient} text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all`}
+              className={`w-full h-12 rounded-mdbg-linear-to-r ${accentGradient} text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all`}
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.02em" }}
             >
               {formik.isSubmitting ? "Ingresando..." : "Ingresar"}

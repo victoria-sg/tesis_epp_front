@@ -1,5 +1,5 @@
+import { Image, Scan, Video } from "lucide-react";
 import { useState } from "react";
-import { Image, Video, Scan } from "lucide-react";
 import { ImageDetectionUploader } from "../../components/ImageDetectionUploader";
 import { VideoDetectionUploader } from "../../components/VideoDetectionUploader";
 
@@ -11,13 +11,14 @@ export const DeteccionView = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-md">
+        <div className="h-10 w-10 rounded-lg bg-linear-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-md">
           <Scan className="h-5 w-5 text-white" />
         </div>
         <div>
           <h1 className="text-xl font-bold text-[#1a1a1a]">Detección EPP</h1>
           <p className="text-sm text-[#6b6b6b]">
-            Prueba el modelo de detección con imágenes o videos de manera temporal
+            Prueba el modelo de detección con imágenes o videos de manera
+            temporal
           </p>
         </div>
       </div>

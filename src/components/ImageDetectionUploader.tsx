@@ -1,6 +1,16 @@
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Scan,
+  Upload,
+  User,
+  XCircle,
+} from "lucide-react";
 import { useRef, useState } from "react";
-import { Upload, Scan, AlertTriangle, CheckCircle2, XCircle, User } from "lucide-react";
-import { analizarImagen, type DeteccionResult } from "../services/deteccionService";
+import {
+  analizarImagen,
+  type DeteccionResult,
+} from "../services/deteccionService";
 import { getColorForClass, translateClass } from "../utils/detectionColors";
 
 export const ImageDetectionUploader = () => {
@@ -80,7 +90,9 @@ export const ImageDetectionUploader = () => {
             className="border-2 border-dashed border-[#d4d4d4] hover:border-violet-400 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#fafafa] hover:bg-violet-50/30"
           >
             <Upload size={32} className="text-[#9b9b9b] mb-3" />
-            <p className="text-sm font-medium text-[#1a1a1a]">Haz clic para subir una imagen</p>
+            <p className="text-sm font-medium text-[#1a1a1a]">
+              Haz clic para subir una imagen
+            </p>
             <p className="text-xs text-[#9b9b9b] mt-1">JPG, PNG • Máx. 10 MB</p>
             <input
               ref={fileInputRef}
@@ -125,7 +137,7 @@ export const ImageDetectionUploader = () => {
             <button
               onClick={handleAnalyze}
               disabled={!previewUrl || loading}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2bg-linear-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Scan size={16} />
               {loading ? "Analizando..." : "Analizar imagen"}
@@ -166,18 +178,36 @@ export const ImageDetectionUploader = () => {
             </h3>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
-                <div className="text-xl font-bold text-violet-700">{resultado.personas_detectadas}</div>
+                <div className="text-xl font-bold text-violet-700">
+                  {resultado.personas_detectadas}
+                </div>
                 <div className="text-xs text-[#6b6b6b]">Personas</div>
               </div>
               <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-green-600">
-                  {resultado.detecciones.filter((d) => !["NO-Hardhat", "NO-Safety Vest", "NO-Mask", "Person"].includes(d.clase)).length}
+                  {
+                    resultado.detecciones.filter(
+                      (d) =>
+                        ![
+                          "NO-Hardhat",
+                          "NO-Safety Vest",
+                          "NO-Mask",
+                          "Person",
+                        ].includes(d.clase),
+                    ).length
+                  }
                 </div>
                 <div className="text-xs text-[#6b6b6b]">EPP correcto</div>
               </div>
               <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-red-500">
-                  {resultado.detecciones.filter((d) => ["NO-Hardhat", "NO-Safety Vest", "NO-Mask"].includes(d.clase)).length}
+                  {
+                    resultado.detecciones.filter((d) =>
+                      ["NO-Hardhat", "NO-Safety Vest", "NO-Mask"].includes(
+                        d.clase,
+                      ),
+                    ).length
+                  }
                 </div>
                 <div className="text-xs text-[#6b6b6b]">Alertas</div>
               </div>
@@ -190,7 +220,9 @@ export const ImageDetectionUploader = () => {
               Cumplimiento por trabajador
             </h3>
             {resultado.trabajadores.length === 0 ? (
-              <p className="text-xs text-[#9b9b9b]">No se detectaron trabajadores</p>
+              <p className="text-xs text-[#9b9b9b]">
+                No se detectaron trabajadores
+              </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">

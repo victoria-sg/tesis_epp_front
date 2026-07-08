@@ -35,8 +35,10 @@ export const RolesView = () => {
     pageSize: PAGE_SIZE,
   });
 
-  const [permisosSeleccionados, setPermisosSeleccionados] = useState<number[]>([]);
-  const [permisosLoading, setPermisosLoading] = useState(false);
+  const [permisosSeleccionados, setPermisosSeleccionados] = useState<number[]>(
+    [],
+  );
+  const [permisosLoading, setPermisosLoading] = useState(true);
   const [permisosError, setPermisosError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,14 +53,13 @@ export const RolesView = () => {
     const idRol = crud.editingItem.id_rol;
     let activo = true;
 
-    setPermisosLoading(true);
     getRolConPermisos(idRol)
       .then((r) => {
         if (activo) {
           setPermisosSeleccionados(
             crud.editingItem?.id_rol === 4
               ? r.permisos.filter((pid) => pid === 9)
-              : r.permisos.filter((pid) => pid !== 9)
+              : r.permisos.filter((pid) => pid !== 9),
           );
           setPermisosLoading(false);
         }
@@ -84,7 +85,10 @@ export const RolesView = () => {
   const { formik, handleSubmit: handleFormSubmit } = useCrudForm<RolFormValues>(
     {
       isEditing: crud.isEditing,
-      editingItem: crud.editingItem as unknown as Record<string, unknown> | null,
+      editingItem: crud.editingItem as unknown as Record<
+        string,
+        unknown
+      > | null,
       validationSchema: rolSchema,
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
@@ -184,7 +188,6 @@ export const RolesView = () => {
         />
       </div>
 
-      
       <CustomModal
         open={crud.modalOpen}
         onClose={crud.closeModal}
@@ -213,7 +216,6 @@ export const RolesView = () => {
             touched={formik.touched.descripcion as boolean | undefined}
           />
 
-          
           {crud.isEditing && (
             <div>
               <div
@@ -272,7 +274,7 @@ export const RolesView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

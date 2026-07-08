@@ -57,6 +57,33 @@ export const VideoDetectionUploader = () => {
     return `${protocol}//${host}/deteccion/ws/temporal`;
   };
 
+  const drawPreviewOverlay = (detecciones: DeteccionWsItem[]) => {
+    const canvas = previewCanvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) return;
+    const ctx = canvas.getContext("2d")!;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const det of detecciones) {
+      const [x1, y1, x2, y2] = det.caja;
+      const color = getColorForClass(det.clase);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(2, Math.min(canvas.width, canvas.height) / 300);
+      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+
+      const label = `${translateClass(det.clase)} ${(det.confianza * 100).toFixed(0)}%`;
+      ctx.font = `bold ${Math.max(12, Math.min(canvas.width, canvas.height) / 50)}px sans-serif`;
+      const textMetrics = ctx.measureText(label);
+      const textH = Math.max(18, Math.min(canvas.width, canvas.height) / 40);
+      ctx.fillStyle = color;
+      ctx.fillRect(x1, y1 - textH, textMetrics.width + 12, textH);
+      ctx.fillStyle = "#fff";
+      ctx.fillText(label, x1 + 6, y1 - 4);
+    }
+  };
+
   const connectWs = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
     const ws = new WebSocket(getWsUrl());
@@ -105,33 +132,6 @@ export const VideoDetectionUploader = () => {
     frameCountRef.current = 0;
   };
 
-  const drawPreviewOverlay = (detecciones: DeteccionWsItem[]) => {
-    const canvas = previewCanvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video) return;
-    const ctx = canvas.getContext("2d")!;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (const det of detecciones) {
-      const [x1, y1, x2, y2] = det.caja;
-      const color = getColorForClass(det.clase);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = Math.max(2, Math.min(canvas.width, canvas.height) / 300);
-      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-
-      const label = `${translateClass(det.clase)} ${(det.confianza * 100).toFixed(0)}%`;
-      ctx.font = `bold ${Math.max(12, Math.min(canvas.width, canvas.height) / 50)}px sans-serif`;
-      const textMetrics = ctx.measureText(label);
-      const textH = Math.max(18, Math.min(canvas.width, canvas.height) / 40);
-      ctx.fillStyle = color;
-      ctx.fillRect(x1, y1 - textH, textMetrics.width + 12, textH);
-      ctx.fillStyle = "#fff";
-      ctx.fillText(label, x1 + 6, y1 - 4);
-    }
-  };
-
   const processFrame = useCallback(() => {
     const video = videoRef.current;
     const hiddenCanvas = hiddenCanvasRef.current;
@@ -156,11 +156,16 @@ export const VideoDetectionUploader = () => {
     ws.send(JSON.stringify({ frame: base64, confianza, iou }));
   }, [confianza, iou, fps, frameSkip]);
 
+  const loopRef = useRef<() => void>(null!);
   const loop = useCallback(() => {
     if (!playing) return;
     processFrame();
-    animationRef.current = requestAnimationFrame(loop);
+    animationRef.current = requestAnimationFrame(loopRef.current);
   }, [playing, processFrame]);
+
+  useEffect(() => {
+    loopRef.current = loop;
+  });
 
   useEffect(() => {
     if (playing) {

@@ -1,26 +1,30 @@
 import { AlertTriangle, Plus, Shield, ShieldAlert, Shirt } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
 import { CustomInput } from "../../components/crud/CustomInput";
 import { CustomModal } from "../../components/crud/CustomModal";
 import { CustomPagination } from "../../components/crud/CustomPagination";
 import { CustomSelect } from "../../components/crud/CustomSelect";
-import { CustomTable, type Column } from "../../components/crud/CustomTable";
+import { CustomTable } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
-import type { Zona, ZonaCreate, ZonaUpdate } from "../../models/zona.model";
 import {
   inferirNivelRiesgo,
   NIVEL_RIESGO_CONFIG,
   ZONA_NIVELES_RIESGO,
 } from "../../models/zona.model";
-import type { TipoEPP } from "../../models/tipo.model";
 import { tipoService } from "../../services/tipo.service";
 import { zonaService } from "../../services/zona.service";
-import { zonaSchema, type ZonaFormValues } from "../../validators/zona.schema";
+import { zonaSchema } from "../../validators/zona.schema";
+
+import type { Column } from "../../components/crud/CustomTable";
+import type { TipoEPP } from "../../models/tipo.model";
+import type { Zona, ZonaCreate, ZonaUpdate } from "../../models/zona.model";
+import type { ZonaFormValues } from "../../validators/zona.schema";
 
 const INITIAL_VALUES: ZonaFormValues = {
   nombre_zona: "",
@@ -42,7 +46,8 @@ const NivelRiesgoBadge = ({ nivel }: { nivel: string | null | undefined }) => {
   if (!nivel) return <span style={{ color: "#b0b0b0" }}>—</span>;
   const key = nivel.toLowerCase() as keyof typeof NIVEL_RIESGO_CONFIG;
   const config = NIVEL_RIESGO_CONFIG[key] ?? NIVEL_RIESGO_CONFIG.bajo;
-  const Icon = key === "alto" ? ShieldAlert : key === "medio" ? AlertTriangle : Shield;
+  const Icon =
+    key === "alto" ? ShieldAlert : key === "medio" ? AlertTriangle : Shield;
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${config.badge}`}
@@ -61,20 +66,25 @@ export const ZonasView = () => {
   const [tiposEpp, setTiposEpp] = useState<TipoEPP[]>([]);
 
   useEffect(() => {
-    if (crud.modalOpen && tiposEpp.length === 0) {
-      tipoService.getAll().then(setTiposEpp).catch(() => {});
-    }
-  }, [crud.modalOpen, tiposEpp.length]);
+    tipoService
+      .getAll()
+      .then(setTiposEpp)
+      .catch(() => {});
+  }, []);
 
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<ZonaFormValues>({
       isEditing: crud.isEditing,
-      editingItem: crud.editingItem as unknown as Record<string, unknown> | null,
+      editingItem: crud.editingItem as unknown as Record<
+        string,
+        unknown
+      > | null,
       validationSchema: zonaSchema,
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
       onSubmit: async (values) => {
-        const nivel = values.nivel_riesgo || inferirNivelRiesgo(values.nombre_zona);
+        const nivel =
+          values.nivel_riesgo || inferirNivelRiesgo(values.nombre_zona);
         const data = {
           ...values,
           nivel_riesgo: nivel,
@@ -90,9 +100,10 @@ export const ZonasView = () => {
     });
 
   const nivelInferido = useMemo(
-    () => (!formik.values.nivel_riesgo && formik.values.nombre_zona
-      ? inferirNivelRiesgo(formik.values.nombre_zona)
-      : null),
+    () =>
+      !formik.values.nivel_riesgo && formik.values.nombre_zona
+        ? inferirNivelRiesgo(formik.values.nombre_zona)
+        : null,
     [formik.values.nombre_zona, formik.values.nivel_riesgo],
   );
 
@@ -104,16 +115,28 @@ export const ZonasView = () => {
     );
   }, [crud.items, crud.filters.query]);
 
-  const contadores = useMemo(() => ({
-    alto: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "alto").length,
-    medio: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "medio").length,
-    bajo: filteredItems.filter((z) => z.nivel_riesgo?.toLowerCase() === "bajo").length,
-  }), [filteredItems]);
+  const contadores = useMemo(
+    () => ({
+      alto: filteredItems.filter(
+        (z) => z.nivel_riesgo?.toLowerCase() === "alto",
+      ).length,
+      medio: filteredItems.filter(
+        (z) => z.nivel_riesgo?.toLowerCase() === "medio",
+      ).length,
+      bajo: filteredItems.filter(
+        (z) => z.nivel_riesgo?.toLowerCase() === "bajo",
+      ).length,
+    }),
+    [filteredItems],
+  );
 
   const toggleEpp = (id: number) => {
     const selected = formik.values.epp_ids ?? [];
     if (selected.includes(id)) {
-      formik.setFieldValue("epp_ids", selected.filter((v) => v !== id));
+      formik.setFieldValue(
+        "epp_ids",
+        selected.filter((v) => v !== id),
+      );
     } else {
       formik.setFieldValue("epp_ids", [...selected, id]);
     }
@@ -135,7 +158,9 @@ export const ZonasView = () => {
       key: "nombre_zona",
       header: "Nombre",
       render: (z) => {
-        const nivel = z.nivel_riesgo?.toLowerCase() as keyof typeof NIVEL_RIESGO_CONFIG | undefined;
+        const nivel = z.nivel_riesgo?.toLowerCase() as
+          | keyof typeof NIVEL_RIESGO_CONFIG
+          | undefined;
         const config = nivel ? NIVEL_RIESGO_CONFIG[nivel] : null;
         return (
           <div className="flex items-center gap-2">
@@ -161,7 +186,8 @@ export const ZonasView = () => {
       header: "EPP Requeridos",
       render: (z) => {
         const ids = z.epp_ids ?? [];
-        if (ids.length === 0) return <span style={{ color: "#b0b0b0" }}>—</span>;
+        if (ids.length === 0)
+          return <span style={{ color: "#b0b0b0" }}>—</span>;
         const nombres = ids
           .map((id) => tiposEpp.find((t) => t.id_tipo_epp === id)?.nombre_epp)
           .filter(Boolean);
@@ -202,7 +228,7 @@ export const ZonasView = () => {
         action={
           <button
             onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-md bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
+            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
             style={{ fontSize: 13, fontWeight: 600 }}
           >
             <Plus size={16} /> Nueva Zona
@@ -210,25 +236,36 @@ export const ZonasView = () => {
         }
       />
 
-      
       <div className="grid grid-cols-3 gap-3 mb-4">
         {(["alto", "medio", "bajo"] as const).map((nivel) => {
           const config = NIVEL_RIESGO_CONFIG[nivel];
-          const Icon = nivel === "alto" ? ShieldAlert : nivel === "medio" ? AlertTriangle : Shield;
+          const Icon =
+            nivel === "alto"
+              ? ShieldAlert
+              : nivel === "medio"
+                ? AlertTriangle
+                : Shield;
           return (
             <div
               key={nivel}
               className="rounded-lg border p-4 flex items-center gap-3"
               style={{ background: config.bg, borderColor: config.border }}
             >
-              <div className="h-9 w-9 rounded-lg flex items-center justify-center" style={{ background: config.color + "20" }}>
+              <div
+                className="h-9 w-9 rounded-lg flex items-center justify-center"
+                style={{ background: config.color + "20" }}
+              >
                 <Icon size={18} style={{ color: config.color }} />
               </div>
               <div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: config.color }}>
+                <div
+                  style={{ fontSize: 22, fontWeight: 700, color: config.color }}
+                >
                   {contadores[nivel]}
                 </div>
-                <div style={{ fontSize: 11, color: config.color, opacity: 0.8 }}>
+                <div
+                  style={{ fontSize: 11, color: config.color, opacity: 0.8 }}
+                >
                   Riesgo {config.label}
                 </div>
               </div>
@@ -268,7 +305,6 @@ export const ZonasView = () => {
         />
       </div>
 
-      
       <CustomModal
         open={crud.modalOpen}
         onClose={crud.closeModal}
@@ -306,7 +342,9 @@ export const ZonasView = () => {
                 </span>
                 <button
                   type="button"
-                  onClick={() => formik.setFieldValue("nivel_riesgo", nivelInferido)}
+                  onClick={() =>
+                    formik.setFieldValue("nivel_riesgo", nivelInferido)
+                  }
                   className="cursor-pointer hover:opacity-80 transition-opacity"
                   title="Haz clic para seleccionar este nivel"
                 >
@@ -325,7 +363,9 @@ export const ZonasView = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={formik.errors.tiempo_toleracia_segundo}
-            touched={formik.touched.tiempo_toleracia_segundo as boolean | undefined}
+            touched={
+              formik.touched.tiempo_toleracia_segundo as boolean | undefined
+            }
           />
 
           {tiposEpp.length > 0 && (
@@ -335,7 +375,9 @@ export const ZonasView = () => {
               </label>
               <div className="flex flex-wrap gap-2 p-2 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
                 {tiposEpp.map((tipo) => {
-                  const selected = (formik.values.epp_ids ?? []).includes(tipo.id_tipo_epp);
+                  const selected = (formik.values.epp_ids ?? []).includes(
+                    tipo.id_tipo_epp,
+                  );
                   return (
                     <label
                       key={tipo.id_tipo_epp}
@@ -360,7 +402,9 @@ export const ZonasView = () => {
             </div>
           )}
           {crud.error && (
-            <div className="text-[12px] text-red-600 text-center">{crud.error}</div>
+            <div className="text-[12px] text-red-600 text-center">
+              {crud.error}
+            </div>
           )}
           <div className="flex justify-end gap-3 pt-2">
             <button
@@ -373,9 +417,13 @@ export const ZonasView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lg bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
-              {crud.submitLoading ? "Guardando..." : crud.isEditing ? "Actualizar" : "Crear"}
+              {crud.submitLoading
+                ? "Guardando..."
+                : crud.isEditing
+                  ? "Actualizar"
+                  : "Crear"}
             </button>
           </div>
         </form>
