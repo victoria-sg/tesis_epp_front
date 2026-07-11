@@ -1,6 +1,5 @@
 import { ChevronLeft, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useState } from "react";
-import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useLogin } from "../controllers/useLogin";
@@ -35,11 +34,7 @@ export const LoginView = ({
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <ImageWithFallback
-        src={backgroundImg}
-        alt="Fondo EPP Monitor"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800" />
 
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-between gap-10 px-6 py-10 md:px-16 lg:px-24">
         <div className="text-black max-w-xl text-center lg:ml-36">
