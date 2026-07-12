@@ -3,9 +3,14 @@ import api from "./api";
 export interface TrabajadorCompliance {
   id: number;
   casco: string;
-  chaleco: string;
+  vestimenta_de_seguridad: string;
   mascarilla: string;
+  guantes: string;
+  botas: string;
+  orejera: string;
+  gafas_protectoras: string;
   bbox: number[];
+  [key: string]: unknown;
 }
 
 export interface DeteccionItem {

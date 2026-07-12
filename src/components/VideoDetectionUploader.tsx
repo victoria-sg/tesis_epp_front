@@ -12,9 +12,14 @@ interface DeteccionWsItem {
 interface TrabajadorWs {
   id: number;
   casco: string;
-  chaleco: string;
+  vestimenta_de_seguridad: string;
   mascarilla: string;
+  guantes: string;
+  botas: string;
+  orejera: string;
+  gafas_protectoras: string;
   bbox: number[];
+  [key: string]: unknown;
 }
 
 interface WsResult {
@@ -94,8 +99,8 @@ export const VideoDetectionUploader = () => {
         setLastResult(msg.data);
         setTotalStats((prev) => ({
           personas: Math.max(prev.personas, msg.data!.personas_detectadas),
-          eppOk: prev.eppOk + msg.data!.detecciones.filter((d) => !["NO-Hardhat", "NO-Safety Vest", "NO-Mask", "Person"].includes(d.clase)).length,
-          alertas: prev.alertas + msg.data!.detecciones.filter((d) => ["NO-Hardhat", "NO-Safety Vest", "NO-Mask"].includes(d.clase)).length,
+          eppOk: prev.eppOk + msg.data!.detecciones.filter((d) => !d.clase.startsWith("NO-") && d.clase !== "Persona").length,
+          alertas: prev.alertas + msg.data!.detecciones.filter((d) => d.clase.startsWith("NO-")).length,
         }));
         drawPreviewOverlay(msg.data.detecciones);
       }
@@ -377,13 +382,13 @@ export const VideoDetectionUploader = () => {
               </div>
               <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-green-600">
-                  {lastResult.detecciones.filter((d) => !["NO-Hardhat", "NO-Safety Vest", "NO-Mask", "Person"].includes(d.clase)).length}
+                  {lastResult.detecciones.filter((d) => !d.clase.startsWith("NO-") && d.clase !== "Persona").length}
                 </div>
                 <div className="text-xs text-[#6b6b6b]">EPP correcto</div>
               </div>
               <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-red-500">
-                  {lastResult.detecciones.filter((d) => ["NO-Hardhat", "NO-Safety Vest", "NO-Mask"].includes(d.clase)).length}
+                  {lastResult.detecciones.filter((d) => d.clase.startsWith("NO-")).length}
                 </div>
                 <div className="text-xs text-[#6b6b6b]">Alertas</div>
               </div>
@@ -399,32 +404,48 @@ export const VideoDetectionUploader = () => {
               <p className="text-xs text-[#9b9b9b]">No se detectaron trabajadores en el último frame</p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
-                      <th className="pb-2 font-medium">#</th>
-                      <th className="pb-2 font-medium">Casco</th>
-                      <th className="pb-2 font-medium">Chaleco</th>
-                      <th className="pb-2 font-medium">Mascarilla</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {lastResult.trabajadores.map((t) => (
-                      <tr key={t.id} className="border-b border-[#f0f0f0]">
-                        <td className="py-2 font-semibold">{t.id}</td>
-                        <td className="py-2">
-                          <StatusBadge status={t.casco} />
-                        </td>
-                        <td className="py-2">
-                          <StatusBadge status={t.chaleco} />
-                        </td>
-                        <td className="py-2">
-                          <StatusBadge status={t.mascarilla} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
+                          <th className="pb-2 font-medium">#</th>
+                          <th className="pb-2 font-medium">Casco</th>
+                          <th className="pb-2 font-medium">Vestimenta</th>
+                          <th className="pb-2 font-medium">Mascarilla</th>
+                          <th className="pb-2 font-medium">Guantes</th>
+                          <th className="pb-2 font-medium">Botas</th>
+                          <th className="pb-2 font-medium">Orejera</th>
+                          <th className="pb-2 font-medium">Gafas</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {lastResult.trabajadores.map((t) => (
+                          <tr key={t.id} className="border-b border-[#f0f0f0]">
+                            <td className="py-2 font-semibold">{t.id}</td>
+                            <td className="py-2">
+                              <StatusBadge status={t.casco} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.vestimenta_de_seguridad} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.mascarilla} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.guantes} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.botas} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.orejera} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.gafas_protectoras} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
               </div>
             )}
           </div>

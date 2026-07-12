@@ -5,6 +5,9 @@ import "./index.css";
 import { StreamProvider } from "./context/StreamContext";
 import { AppRouter } from "./router/AppRouter";
 import { store } from "./store";
+import { fetchClassInfo } from "./utils/detectionColors";
+
+fetchClassInfo();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

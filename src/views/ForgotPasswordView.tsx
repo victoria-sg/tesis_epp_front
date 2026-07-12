@@ -80,7 +80,7 @@ export const ForgotPasswordView = ({ onBackToLogin }: Props) => {
             <Button
               type="submit"
               disabled={!formik.isValid || formik.isSubmitting}
-              className="w-full h-12 rounded-mdbg-linear-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
+              className="w-full h-12 rounded-md bg-linear-to-r from-[#7c3aed] to-[#6d28d9] text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all"
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.02em" }}
             >
               {formik.isSubmitting ? "Enviando..." : "Enviar enlace"}

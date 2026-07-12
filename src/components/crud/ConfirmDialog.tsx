@@ -62,7 +62,7 @@ export const ConfirmDialog = ({
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 h-10 px-4 rounded-lgbg-linear-to-r from-[#ef4444] to-[#dc2626] text-white hover:from-[#dc2626] hover:to-[#b91c1c] text-sm font-semibold transition-colors disabled:opacity-50"
+            className="flex-1 h-10 px-4 rounded-lg bg-linear-to-r from-[#ef4444] to-[#dc2626] text-white hover:from-[#dc2626] hover:to-[#b91c1c] text-sm font-semibold transition-colors disabled:opacity-50"
           >
             {loading ? "Eliminando..." : confirmLabel}
           </button>

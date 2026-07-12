@@ -1,6 +1,5 @@
 import * as Yup from "yup";
 
-
 export const passwordSeguraSchema = Yup.string()
   .required("La contraseña es obligatoria")
   .min(8, "Mínimo 8 caracteres")

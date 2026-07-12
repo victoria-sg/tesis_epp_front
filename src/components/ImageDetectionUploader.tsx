@@ -137,7 +137,7 @@ export const ImageDetectionUploader = () => {
             <button
               onClick={handleAnalyze}
               disabled={!previewUrl || loading}
-              className="w-full flex items-center justify-center gap-2bg-linear-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Scan size={16} />
               {loading ? "Analizando..." : "Analizar imagen"}
@@ -187,13 +187,7 @@ export const ImageDetectionUploader = () => {
                 <div className="text-xl font-bold text-green-600">
                   {
                     resultado.detecciones.filter(
-                      (d) =>
-                        ![
-                          "NO-Hardhat",
-                          "NO-Safety Vest",
-                          "NO-Mask",
-                          "Person",
-                        ].includes(d.clase),
+                      (d) => !d.clase.startsWith("NO-") && d.clase !== "Persona",
                     ).length
                   }
                 </div>
@@ -203,9 +197,7 @@ export const ImageDetectionUploader = () => {
                 <div className="text-xl font-bold text-red-500">
                   {
                     resultado.detecciones.filter((d) =>
-                      ["NO-Hardhat", "NO-Safety Vest", "NO-Mask"].includes(
-                        d.clase,
-                      ),
+                      d.clase.startsWith("NO-"),
                     ).length
                   }
                 </div>
@@ -225,32 +217,48 @@ export const ImageDetectionUploader = () => {
               </p>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
-                      <th className="pb-2 font-medium">#</th>
-                      <th className="pb-2 font-medium">Casco</th>
-                      <th className="pb-2 font-medium">Chaleco</th>
-                      <th className="pb-2 font-medium">Mascarilla</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resultado.trabajadores.map((t) => (
-                      <tr key={t.id} className="border-b border-[#f0f0f0]">
-                        <td className="py-2 font-semibold">{t.id}</td>
-                        <td className="py-2">
-                          <StatusBadge status={t.casco} />
-                        </td>
-                        <td className="py-2">
-                          <StatusBadge status={t.chaleco} />
-                        </td>
-                        <td className="py-2">
-                          <StatusBadge status={t.mascarilla} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
+                          <th className="pb-2 font-medium">#</th>
+                          <th className="pb-2 font-medium">Casco</th>
+                          <th className="pb-2 font-medium">Vestimenta</th>
+                          <th className="pb-2 font-medium">Mascarilla</th>
+                          <th className="pb-2 font-medium">Guantes</th>
+                          <th className="pb-2 font-medium">Botas</th>
+                          <th className="pb-2 font-medium">Orejera</th>
+                          <th className="pb-2 font-medium">Gafas</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {resultado.trabajadores.map((t) => (
+                          <tr key={t.id} className="border-b border-[#f0f0f0]">
+                            <td className="py-2 font-semibold">{t.id}</td>
+                            <td className="py-2">
+                              <StatusBadge status={t.casco} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.vestimenta_de_seguridad} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.mascarilla} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.guantes} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.botas} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.orejera} />
+                            </td>
+                            <td className="py-2">
+                              <StatusBadge status={t.gafas_protectoras} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
               </div>
             )}
           </div>

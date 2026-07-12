@@ -14,6 +14,7 @@ import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useReportes } from "../../controllers/useReportes";
+import { PERM_ALERTAS_VER, PERM_ALERTAS_JUSTIFICAR, PERM_REPORTES_EXPORTAR } from "../../constants/permissionsConstants";
 import type { AlertaReporte } from "../../models/reporte.model";
 import type { RootState } from "../../store";
 
@@ -42,7 +43,10 @@ const formatearDuracion = (segundos: number | null): string => {
 
 export const ReportesView = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const puedeResolver = user?.permisos.includes("JUSTIFICAR_ALERTA") ?? false;
+  const puedeVerAlertas = user?.permisos.includes(PERM_ALERTAS_VER) ?? false;
+  const puedeJustificar = user?.permisos.includes(PERM_ALERTAS_JUSTIFICAR) ?? false;
+  const puedeResolver = puedeVerAlertas && puedeJustificar;
+  const puedeExportar = user?.permisos.includes(PERM_REPORTES_EXPORTAR) ?? false;
   const {
     data,
     totalSinFiltrar,
@@ -143,7 +147,7 @@ export const ReportesView = () => {
         a.estado_alerta === "Pendiente" && puedeResolver ? (
           <button
             onClick={() => abrirModalResolucion(a)}
-            className="px-3 py-1.5 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
+            className="px-3 py-1.5 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
             style={{ fontSize: 11, fontWeight: 600 }}
           >
             Resolver
@@ -167,14 +171,16 @@ export const ReportesView = () => {
         title="Reportes de Alertas"
         subtitle="Historial de alertas detectadas, su estado y justificación"
         action={
-          <button
-            onClick={exportarCsv}
-            disabled={data.length === 0}
-            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all disabled:opacity-40 disabled:shadow-none"
-            style={{ fontSize: 13, fontWeight: 600 }}
-          >
-            <Download size={16} /> Exportar CSV
-          </button>
+          puedeExportar ? (
+            <button
+              onClick={exportarCsv}
+              disabled={data.length === 0}
+              className="h-10 px-4 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all disabled:opacity-40 disabled:shadow-none"
+              style={{ fontSize: 13, fontWeight: 600 }}
+            >
+              <Download size={16} /> Exportar CSV
+            </button>
+          ) : undefined
         }
       />
 
@@ -352,7 +358,7 @@ export const ReportesView = () => {
               <button
                 onClick={resolverAlerta}
                 disabled={resolviendoLoading || !comentario.trim()}
-                className="h-10 px-4 rounded-lgbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold disabled:opacity-50 shadow-lg shadow-purple-500/30 transition-all"
+                className="h-10 px-4 rounded-lg bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold disabled:opacity-50 shadow-lg shadow-purple-500/30 transition-all"
               >
                 {resolviendoLoading ? "Guardando…" : "Marcar como resuelta"}
               </button>

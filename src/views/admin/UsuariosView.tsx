@@ -13,6 +13,8 @@ import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
+import { usePermission } from "../../hooks/usePermissions";
+import { PERM_USUARIOS_CREAR, PERM_USUARIOS_EDITAR, PERM_USUARIOS_ELIMINAR } from "../../constants/permissionsConstants";
 import { usuarioService } from "../../services/usuario.service";
 import { buildUsuarioSchema } from "../../validators/usuario.schema";
 
@@ -51,6 +53,10 @@ export const UsuariosView = () => {
   const crud = useCrud<Usuario, UsuarioCreate, UsuarioUpdate>(usuarioService, {
     pageSize: PAGE_SIZE,
   });
+
+  const puedeCrear = usePermission(PERM_USUARIOS_CREAR);
+  const puedeEditar = usePermission(PERM_USUARIOS_EDITAR);
+  const puedeEliminar = usePermission(PERM_USUARIOS_ELIMINAR);
 
   const usuarioSchema = useMemo(
     () => buildUsuarioSchema(crud.isEditing),
@@ -145,8 +151,8 @@ export const UsuariosView = () => {
       width: "100px",
       render: (u) => (
         <ActionButtons
-          onEdit={() => crud.openEditModal(u)}
-          onDelete={() => crud.confirmDelete(u.id_usuario)}
+          onEdit={puedeEditar ? () => crud.openEditModal(u) : undefined}
+          onDelete={puedeEliminar ? () => crud.confirmDelete(u.id_usuario) : undefined}
         />
       ),
     },
@@ -158,13 +164,15 @@ export const UsuariosView = () => {
         title="Gestión de Usuarios"
         subtitle="Administre los usuarios del sistema"
         action={
-          <button
-            onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all"
-            style={{ fontSize: 13, fontWeight: 600 }}
-          >
-            <Plus size={16} /> Nuevo Usuario
-          </button>
+          puedeCrear ? (
+            <button
+              onClick={crud.openCreateModal}
+              className="h-10 px-4 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all"
+              style={{ fontSize: 13, fontWeight: 600 }}
+            >
+              <Plus size={16} /> Nuevo Usuario
+            </button>
+          ) : undefined
         }
       />
 
@@ -285,7 +293,7 @@ export const UsuariosView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-purple-500/30"
+              className="h-10 px-4 rounded-lg bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-purple-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

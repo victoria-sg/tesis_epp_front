@@ -60,6 +60,12 @@ export interface LoggedUser {
   primer_inicio_sesion: boolean;
 }
 
+export interface RefreshTokenResponse {
+  access_token: string;
+  token_type: string;
+  usuario: UsuarioFromBackend;
+}
+
 export interface CambiarPasswordPrimerInicioRequest {
   password_actual: string;
   nueva_contrasena: string;

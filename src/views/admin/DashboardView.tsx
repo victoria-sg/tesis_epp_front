@@ -15,6 +15,8 @@ import { useSelector } from "react-redux";
 import { DashboardCharts } from "../../components/DashboardCharts";
 import { VideoStream } from "../../components/VideoStream";
 import { useStreamContext } from "../../context/useStreamContext";
+import { usePermission } from "../../hooks/usePermissions";
+import { PERM_ALERTAS_CREAR } from "../../constants/permissionsConstants";
 import { capturarIncidencia } from "../../services/alerta.service";
 import { camaraService } from "../../services/camara.service";
 import { zonaService } from "../../services/zona.service";
@@ -33,6 +35,7 @@ export const DashboardView = () => {
   const [capturandoIncidencia, setCapturandoIncidencia] = useState(false);
   const [mensajeCaptura, setMensajeCaptura] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.auth);
+  const puedeReportar = usePermission(PERM_ALERTAS_CREAR);
   const [zonas, setZonas] = useState<Zona[]>([]);
   const [zonaSeleccionada, setZonaSeleccionada] = useState<number | null>(null);
 
@@ -465,21 +468,23 @@ export const DashboardView = () => {
               </span>
             )}
             <div className="ml-auto flex items-center gap-3">
-              <button
-                onClick={() =>
-                  capturarIncidenciaDashboard(camaraExpandida.id_camara)
-                }
-                disabled={capturandoIncidencia}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-500/90 hover:bg-yellow-500 disabled:bg-gray-600 text-white text-xs font-semibold transition-colors shadow"
-              >
-                {capturandoIncidencia ? (
-                  "Capturando..."
-                ) : (
-                  <span className="flex items-center gap-1">
-                    <AlertTriangle size={14} /> Reportar incidencia
-                  </span>
-                )}
-              </button>
+              {puedeReportar && (
+                <button
+                  onClick={() =>
+                    capturarIncidenciaDashboard(camaraExpandida.id_camara)
+                  }
+                  disabled={capturandoIncidencia}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-500/90 hover:bg-yellow-500 disabled:bg-gray-600 text-white text-xs font-semibold transition-colors shadow"
+                >
+                  {capturandoIncidencia ? (
+                    "Capturando..."
+                  ) : (
+                    <span className="flex items-center gap-1">
+                      <AlertTriangle size={14} /> Reportar incidencia
+                    </span>
+                  )}
+                </button>
+              )}
               {mensajeCaptura && (
                 <span
                   className={`text-xs font-medium ${mensajeCaptura.includes("registrada") ? "text-green-400" : "text-red-400"}`}

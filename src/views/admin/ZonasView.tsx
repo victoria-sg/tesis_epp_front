@@ -10,8 +10,14 @@ import { CustomSelect } from "../../components/crud/CustomSelect";
 import { CustomTable } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
+import {
+  PERM_ZONAS_CREAR,
+  PERM_ZONAS_EDITAR,
+  PERM_ZONAS_ELIMINAR,
+} from "../../constants/permissionsConstants";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
+import { usePermission } from "../../hooks/usePermissions";
 import {
   inferirNivelRiesgo,
   NIVEL_RIESGO_CONFIG,
@@ -62,6 +68,10 @@ export const ZonasView = () => {
   const crud = useCrud<Zona, ZonaCreate, ZonaUpdate>(zonaService, {
     pageSize: PAGE_SIZE,
   });
+
+  const puedeCrear = usePermission(PERM_ZONAS_CREAR);
+  const puedeEditar = usePermission(PERM_ZONAS_EDITAR);
+  const puedeEliminar = usePermission(PERM_ZONAS_ELIMINAR);
 
   const [tiposEpp, setTiposEpp] = useState<TipoEPP[]>([]);
 
@@ -213,8 +223,10 @@ export const ZonasView = () => {
       width: "100px",
       render: (z) => (
         <ActionButtons
-          onEdit={() => crud.openEditModal(z)}
-          onDelete={() => crud.confirmDelete(z.id_zona)}
+          onEdit={puedeEditar ? () => crud.openEditModal(z) : undefined}
+          onDelete={
+            puedeEliminar ? () => crud.confirmDelete(z.id_zona) : undefined
+          }
         />
       ),
     },
@@ -226,13 +238,15 @@ export const ZonasView = () => {
         title="Zonas"
         subtitle="Administre las zonas de la planta"
         action={
-          <button
-            onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-mdbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
-            style={{ fontSize: 13, fontWeight: 600 }}
-          >
-            <Plus size={16} /> Nueva Zona
-          </button>
+          puedeCrear ? (
+            <button
+              onClick={crud.openCreateModal}
+              className="h-10 px-4 rounded-md bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
+              style={{ fontSize: 13, fontWeight: 600 }}
+            >
+              <Plus size={16} /> Nueva Zona
+            </button>
+          ) : undefined
         }
       />
 
@@ -417,7 +431,7 @@ export const ZonasView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="h-10 px-4 rounded-lg bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

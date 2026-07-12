@@ -6,8 +6,6 @@ import { useLogin } from "../controllers/useLogin";
 import type { Rol } from "../models/auth.model";
 import { ROLE_STYLES } from "../models/auth.model";
 
-const backgroundImg = "";
-
 interface Props {
   selectedRol: Rol;
   selectedRolLabel: string;
@@ -34,7 +32,7 @@ export const LoginView = ({
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-600 to-blue-800" />
+      <div className="absolute inset-0 w-full h-full bg-linear-to-br from-blue-600 to-blue-800" />
 
       <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-between gap-10 px-6 py-10 md:px-16 lg:px-24">
         <div className="text-black max-w-xl text-center lg:ml-36">
@@ -69,7 +67,7 @@ export const LoginView = ({
               <ChevronLeft size={16} /> Cambiar rol
             </button>
             <div
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-fullbg-linear-to-r ${accentGradient} text-white shadow-lg`}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-linear-to-r ${accentGradient} text-white shadow-lg`}
             >
               <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-pulse" />
               <span className="text-[12px] font-bold tracking-[0.04em]">
@@ -170,7 +168,7 @@ export const LoginView = ({
             <Button
               type="submit"
               disabled={!formik.isValid || formik.isSubmitting}
-              className={`w-full h-12 rounded-mdbg-linear-to-r ${accentGradient} text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all`}
+              className={`w-full h-12 rounded-md bg-linear-to-r ${accentGradient} text-white shadow-lg disabled:bg-[#d4d4d4] disabled:text-[#9a9a9a] disabled:shadow-none transition-all`}
               style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.02em" }}
             >
               {formik.isSubmitting ? "Ingresando..." : "Ingresar"}

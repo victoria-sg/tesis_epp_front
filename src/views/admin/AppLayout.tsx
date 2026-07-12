@@ -22,8 +22,15 @@ import {
   APP_CAMBIAR_CONTRASENA,
   APP_LOGIN,
 } from "../../constants/authRoutesConstants";
+import { REFRESH_TOKEN_KEY } from "../../constants/authStorageConstants";
+import {
+  PERM_DASHBOARD_VER, PERM_USUARIOS_VER, PERM_ROLES_VER,
+  PERM_ZONAS_VER, PERM_CAMARAS_VER, PERM_TIPOS_EPP_VER,
+  PERM_REPORTES_VER, PERM_DETECCION_VER,
+} from "../../constants/permissionsConstants";
 import type { RootState } from "../../store";
 import { logout } from "../../store/authSlice";
+import { solicitarNuevoAccessToken } from "../../services/api";
 
 interface NavItem {
   path: string;
@@ -33,7 +40,7 @@ interface NavItem {
 
 const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
   {
-    permiso: "VER_DASHBOARD",
+    permiso: PERM_DASHBOARD_VER,
     item: {
       path: "/dashboard",
       label: "Dashboard",
@@ -41,23 +48,23 @@ const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
     },
   },
   {
-    permiso: "GESTIONAR_USUARIOS",
+    permiso: PERM_USUARIOS_VER,
     item: {
       path: "/admin/usuarios",
-      label: "Gestión de Usuarios",
+      label: "Usuarios",
       icon: <Users size={16} />,
     },
   },
   {
-    permiso: "GESTIONAR_USUARIOS",
+    permiso: PERM_ROLES_VER,
     item: { path: "/admin/roles", label: "Roles", icon: <Shield size={16} /> },
   },
   {
-    permiso: "VER_ZONAS",
+    permiso: PERM_ZONAS_VER,
     item: { path: "/admin/zonas", label: "Zonas", icon: <MapPin size={16} /> },
   },
   {
-    permiso: "VER_DASHBOARD",
+    permiso: PERM_CAMARAS_VER,
     item: {
       path: "/admin/camaras",
       label: "Cámaras",
@@ -65,7 +72,7 @@ const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
     },
   },
   {
-    permiso: "GESTIONAR_ZONAS",
+    permiso: PERM_TIPOS_EPP_VER,
     item: {
       path: "/admin/tipos-epp",
       label: "Tipos de EPP",
@@ -73,7 +80,7 @@ const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
     },
   },
   {
-    permiso: "EXPORTAR_REPORTES",
+    permiso: PERM_REPORTES_VER,
     item: {
       path: "/admin/reportes",
       label: "Reportes",
@@ -81,7 +88,7 @@ const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
     },
   },
   {
-    permiso: "GESTIONAR_ALERTAS",
+    permiso: PERM_DETECCION_VER,
     item: {
       path: "/admin/deteccion",
       label: "Detección",
@@ -115,6 +122,9 @@ export const AppLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const [checkingAuth, setCheckingAuth] = useState(
+    !!localStorage.getItem(REFRESH_TOKEN_KEY),
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notificaciones, setNotificaciones] = useState<NotificacionAlerta[]>(
@@ -175,6 +185,16 @@ export const AppLayout = () => {
   }, [conectarNotificaciones]);
 
   useEffect(() => {
+    if (!checkingAuth) return;
+    solicitarNuevoAccessToken().then((nuevoToken) => {
+      if (!nuevoToken) {
+        dispatch(logout());
+      }
+      setCheckingAuth(false);
+    });
+  }, [checkingAuth, dispatch]);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -188,11 +208,13 @@ export const AppLayout = () => {
   }, []);
 
   useEffect(() => {
+    if (checkingAuth) return;
     if (!user) navigate(APP_LOGIN, { replace: true });
     else if (user.primer_inicio_sesion)
       navigate(APP_CAMBIAR_CONTRASENA, { replace: true });
-  }, [user, navigate]);
+  }, [user, navigate, checkingAuth]);
 
+  if (checkingAuth) return null;
   if (!user) return null;
 
   const navItems = PERMISSION_NAV_MAP.filter(
@@ -209,7 +231,7 @@ export const AppLayout = () => {
   return (
     <div className="h-screen flex bg-[#f5f5f5] overflow-hidden">
       <aside
-        className={`${sidebarOpen ? "w-64" : "w-16"} shrink-0 h-screen bg-gradient-to-b from-[#0a1628] via-[#0f2744] to-[#1a3a5c] text-white flex flex-col transition-all duration-300`}
+        className={`${sidebarOpen ? "w-64" : "w-16"} shrink-0 h-screen bg-linear-to-b from-[#0a1628] via-[#0f2744] to-[#1a3a5c] text-white flex flex-col transition-all duration-300`}
       >
         <div
           className={`px-4 py-5 border-b border-white/10 flex items-center ${sidebarOpen ? "gap-3" : "justify-center"}`}
@@ -278,7 +300,7 @@ export const AppLayout = () => {
                 title={!sidebarOpen ? item.label : undefined}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md transition-all ${
                   active
-                    ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
+                    ? `bg-linear-to-r ${gradient} text-white shadow-lg`
                     : "text-white/80 hover:bg-white/10 hover:text-white"
                 } ${!sidebarOpen ? "justify-center" : ""}`}
                 style={{ fontSize: 13, fontWeight: 500 }}
@@ -390,7 +412,7 @@ export const AppLayout = () => {
                 letterSpacing: "0.08em",
               }}
             >
-              <span className="h-1.5 w-1.5 rounded-fullbg-linear-to-r from-[#10b981] to-[#059669] animate-pulse shadow-sm shadow-green-500/50" />
+              <span className="h-1.5 w-1.5 rounded-full bg-linear-to-r from-[#10b981] to-[#059669] animate-pulse shadow-sm shadow-green-500/50" />
               Sistema en línea
             </span>
             <div className="relative" ref={dropdownRef}>

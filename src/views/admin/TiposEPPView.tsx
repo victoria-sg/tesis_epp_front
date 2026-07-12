@@ -3,6 +3,7 @@ import { CustomPagination } from "../../components/crud/CustomPagination";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { SearchBar } from "../../components/crud/SearchBar";
+import { usePermission } from "../../hooks/usePermissions";
 import type { TipoEPP } from "../../models/tipo.model";
 import { tipoService } from "../../services/tipo.service";
 

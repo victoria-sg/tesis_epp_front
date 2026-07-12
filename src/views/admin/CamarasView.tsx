@@ -14,6 +14,8 @@ import { SearchBar } from "../../components/crud/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
+import { usePermission } from "../../hooks/usePermissions";
+import { PERM_CAMARAS_CREAR, PERM_CAMARAS_EDITAR, PERM_CAMARAS_ELIMINAR } from "../../constants/permissionsConstants";
 import { CAMARA_ESTADOS, TIPOS_FUENTE } from "../../models/camara.model";
 import { camaraService } from "../../services/camara.service";
 import { camaraSchema } from "../../validators/camara.schema";
@@ -55,6 +57,10 @@ export const CamarasView = () => {
   const crud = useCrud<Camara, CamaraCreate, CamaraUpdate>(camaraService, {
     pageSize: PAGE_SIZE,
   });
+
+  const puedeCrear = usePermission(PERM_CAMARAS_CREAR);
+  const puedeEditar = usePermission(PERM_CAMARAS_EDITAR);
+  const puedeEliminar = usePermission(PERM_CAMARAS_ELIMINAR);
 
   const [qrCamara, setQrCamara] = useState<Camara | null>(null);
 
@@ -194,8 +200,8 @@ export const CamarasView = () => {
             </button>
           )}
           <ActionButtons
-            onEdit={() => crud.openEditModal(c)}
-            onDelete={() => crud.confirmDelete(c.id_camara)}
+            onEdit={puedeEditar ? () => crud.openEditModal(c) : undefined}
+            onDelete={puedeEliminar ? () => crud.confirmDelete(c.id_camara) : undefined}
           />
         </div>
       ),
@@ -208,13 +214,15 @@ export const CamarasView = () => {
         title="Cámaras"
         subtitle="Administre las cámaras del sistema"
         action={
-          <button
-            onClick={crud.openCreateModal}
-            className="h-10 px-4 rounded-md bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
-            style={{ fontSize: 13, fontWeight: 600 }}
-          >
-            <Plus size={16} /> Nueva Cámara
-          </button>
+          puedeCrear ? (
+            <button
+              onClick={crud.openCreateModal}
+              className="h-10 px-4 rounded-md bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all"
+              style={{ fontSize: 13, fontWeight: 600 }}
+            >
+              <Plus size={16} /> Nueva Cámara
+            </button>
+          ) : undefined
         }
       />
 
@@ -382,7 +390,7 @@ export const CamarasView = () => {
             <button
               type="submit"
               disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lgbg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
+              className="h-10 px-4 rounded-lg bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-blue-500/30"
             >
               {crud.submitLoading
                 ? "Guardando..."

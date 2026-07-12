@@ -17,7 +17,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
       <div className="relative z-10 w-full max-w-2xl my-auto bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 p-12">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <div className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-blue-700 shadow-md flex items-center justify-center">
+            <div className="w-14 h-14 rounded-xl  bg-gradient-to-br from-blue-500 to-blue-700 shadow-md flex items-center justify-center">
               <ShieldCheck className="w-8 h-8 text-white" strokeWidth={2} />
             </div>
             <div className="text-left">
@@ -51,7 +51,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
                 className={`group flex items-center gap-5 text-left rounded-xl bg-white border border-slate-200 px-5 py-4 transition-all hover:shadow-md ${style.ring}`}
               >
                 <div
-                  className={`shrink-0 w-14 h-14 rounded-xl bg-linear-to-br ${style.gradient} flex items-center justify-center shadow-md`}
+                  className={`shrink-0 w-14 h-14 rounded-xl  bg-gradient-to-br ${style.gradient} flex items-center justify-center shadow-md`}
                 >
                   <IconComponent className="w-7 h-7 text-white" />
                 </div>

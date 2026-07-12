@@ -57,7 +57,7 @@ export const CustomPagination = ({
               onClick={() => onPageChange(pageNum)}
               className={`h-8 min-w-8 rounded-md flex items-center justify-center text-sm transition-all ${
                 page === pageNum
-                  ? "bg-gradient-to-r from-[#3b82f6] to-[#2563eb] text-white shadow-md shadow-blue-500/20"
+                  ? "bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white shadow-md shadow-blue-500/20"
                   : "border border-[#d4d4d4] text-[#1a1a1a] hover:bg-[#f5f5f5]"
               }`}
               style={{ fontSize: 12, fontWeight: page === pageNum ? 600 : 400 }}

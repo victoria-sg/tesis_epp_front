@@ -10,6 +10,10 @@ import {
   TOKEN_KEY,
   USER_KEY,
 } from "../constants/authStorageConstants";
+import type { LoggedUser } from "../models/auth.model";
+import { ROL_LABELS, ROL_MAP } from "../models/auth.model";
+import { store } from "../store";
+import { login } from "../store/authSlice";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -30,19 +34,52 @@ const cerrarSesion = () => {
   window.location.href = APP_LOGIN;
 };
 
+const mapearUsuario = (usuario: {
+  id_usuario: number;
+  nombre: string;
+  apelido: string;
+  correo: string;
+  rol: string;
+  permisos: string[];
+  primer_inicio_sesion: boolean;
+}): LoggedUser | null => {
+  const mappedRol = ROL_MAP[usuario.rol];
+  if (!mappedRol) return null;
+  return {
+    id_usuario: usuario.id_usuario,
+    nombre: usuario.nombre,
+    apelido: usuario.apelido,
+    correo: usuario.correo,
+    rol: mappedRol,
+    rolLabel: ROL_LABELS[mappedRol],
+    permisos: usuario.permisos,
+    primer_inicio_sesion: usuario.primer_inicio_sesion,
+  };
+};
+
 let refreshEnCurso: Promise<string | null> | null = null;
 
-const solicitarNuevoAccessToken = async (): Promise<string | null> => {
+export const solicitarNuevoAccessToken = async (): Promise<string | null> => {
   const refreshTokenGuardado = localStorage.getItem(REFRESH_TOKEN_KEY);
   if (!refreshTokenGuardado) return null;
 
   try {
-    const { data } = await axios.post<{ access_token: string }>(
-      `${API_BASE_URL}${AUTH_REFRESH}`,
-      { refresh_token: refreshTokenGuardado },
-    );
-    localStorage.setItem(TOKEN_KEY, data.access_token);
-    return data.access_token;
+    const response = await axios.post<{
+      data: { access_token: string; usuario: Record<string, unknown> };
+    }>(`${API_BASE_URL}${AUTH_REFRESH}`, {
+      refresh_token: refreshTokenGuardado,
+    });
+    const { access_token, usuario } = response.data.data;
+
+    const user = mapearUsuario(usuario as Parameters<typeof mapearUsuario>[0]);
+    if (user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      localStorage.setItem(TOKEN_KEY, access_token);
+      store.dispatch(login({ user, token: access_token }));
+    } else {
+      localStorage.setItem(TOKEN_KEY, access_token);
+    }
+    return access_token;
   } catch {
     return null;
   }
