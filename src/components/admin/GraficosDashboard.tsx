@@ -14,7 +14,7 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import { AlertTriangle, Camera, CheckCircle, Clock } from "lucide-react";
-import api from "../services/api";
+import api from "../../services/api";
 
 interface DashboardStats {
   alertas_por_dia: { dia: string; alertas: number }[];
@@ -319,7 +319,7 @@ const JefePlantaCharts = ({ stats }: { stats: DashboardStats }) => {
   );
 };
 
-export const DashboardCharts = ({ rol, idZona }: { rol: string; idZona?: number | null }) => {
+export const GraficosDashboard = ({ rol, idZona }: { rol: string; idZona?: number | null }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [rango, setRango] = useState<Rango>("7d");

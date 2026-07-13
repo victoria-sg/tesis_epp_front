@@ -14,15 +14,20 @@ import {
   APP_RESET_PASSWORD_CONFIRM,
   APP_ROOT,
 } from "../constants/authRoutesConstants";
+import { RutaProtegida } from "../components/RutaProtegida";
+import {
+  PERM_DASHBOARD_VER, PERM_USUARIOS_VER, PERM_ROLES_VER,
+  PERM_ZONAS_VER, PERM_CAMARAS_VER, PERM_TIPOS_EPP_VER,
+  PERM_REPORTES_VER, PERM_DETECCION_VER,
+} from "../constants/permissionsConstants";
 import type { Rol } from "../models/auth.model";
 import { ROL_LABELS } from "../models/auth.model";
-import { ForgotPasswordView } from "../views/ForgotPasswordView";
-import { LoginView } from "../views/LoginView";
-import { PhoneCameraView } from "../views/PhoneCameraView";
-import { ResetPasswordView } from "../views/ResetPasswordView";
-import { RoleSelectorView } from "../views/RoleSelectorView";
-import { AppLayout } from "../views/admin/AppLayout";
-import { ChangePasswordFirstView } from "../views/ChangePasswordFirstView";
+import { CambiarPasswordPrimerInicioView } from "../views/auth/CambiarPasswordPrimerInicioView";
+import { CamaraTelefonoView } from "../views/auth/CamaraTelefonoView";
+import { InicioSesionView } from "../views/auth/InicioSesionView";
+import { OlvidePasswordView } from "../views/auth/OlvidePasswordView";
+import { RestablecerPasswordView } from "../views/auth/RestablecerPasswordView";
+import { SelectorRolView } from "../views/auth/SelectorRolView";
 import { CamarasView } from "../views/admin/CamarasView";
 import { DashboardView } from "../views/admin/DashboardView";
 import { ReportesView } from "../views/admin/ReporteView";
@@ -31,10 +36,11 @@ import { TiposEPPView } from "../views/admin/TiposEPPView";
 import { UsuariosView } from "../views/admin/UsuariosView";
 import { ZonasView } from "../views/admin/ZonasView";
 import { DeteccionView } from "../views/admin/DeteccionView";
+import { AppLayout } from "../views/admin/AppLayout";
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
-  return <ForgotPasswordView onBackToLogin={() => navigate(APP_LOGIN)} />;
+  return <OlvidePasswordView onBackToLogin={() => navigate(APP_LOGIN)} />;
 };
 
 const AuthRoutes = () => {
@@ -42,11 +48,11 @@ const AuthRoutes = () => {
   const navigate = useNavigate();
 
   if (!selectedRol) {
-    return <RoleSelectorView onSelect={setSelectedRol} />;
+    return <SelectorRolView onSelect={setSelectedRol} />;
   }
 
   return (
-    <LoginView
+    <InicioSesionView
       selectedRol={selectedRol}
       selectedRolLabel={ROL_LABELS[selectedRol]}
       onGoToReset={() => navigate(APP_RESET_PASSWORD)}
@@ -67,15 +73,15 @@ export const AppRouter = () => {
     },
     {
       path: APP_RESET_PASSWORD_CONFIRM,
-      element: <ResetPasswordView />,
+      element: <RestablecerPasswordView />,
     },
     {
       path: APP_CAMBIAR_CONTRASENA,
-      element: <ChangePasswordFirstView />,
+      element: <CambiarPasswordPrimerInicioView />,
     },
     {
       path: "/phone-camera/:camaraId",
-      element: <PhoneCameraView />,
+      element: <CamaraTelefonoView />,
     },
 
     {
@@ -88,35 +94,35 @@ export const AppRouter = () => {
         },
         {
           path: APP_DASHBOARD.replace("/", ""),
-          element: <DashboardView />,
+          element: <RutaProtegida permiso={PERM_DASHBOARD_VER}><DashboardView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.USUARIOS.replace("/", ""),
-          element: <UsuariosView />,
+          element: <RutaProtegida permiso={PERM_USUARIOS_VER}><UsuariosView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.ROLES.replace("/", ""),
-          element: <RolesView />,
+          element: <RutaProtegida permiso={PERM_ROLES_VER}><RolesView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.ZONAS.replace("/", ""),
-          element: <ZonasView />,
+          element: <RutaProtegida permiso={PERM_ZONAS_VER}><ZonasView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.CAMARAS.replace("/", ""),
-          element: <CamarasView />,
+          element: <RutaProtegida permiso={PERM_CAMARAS_VER}><CamarasView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.TIPOS_EPP.replace("/", ""),
-          element: <TiposEPPView />,
+          element: <RutaProtegida permiso={PERM_TIPOS_EPP_VER}><TiposEPPView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.REPORTES.replace("/", ""),
-          element: <ReportesView />,
+          element: <RutaProtegida permiso={PERM_REPORTES_VER}><ReportesView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.DETECCION.replace("/", ""),
-          element: <DeteccionView />,
+          element: <RutaProtegida permiso={PERM_DETECCION_VER}><DeteccionView /></RutaProtegida>,
         },
       ],
     },

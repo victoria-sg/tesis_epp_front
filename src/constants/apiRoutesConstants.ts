@@ -11,6 +11,7 @@ export const API_ROUTES = {
   ALERTAS: "/alertas",
   RESOLUCIONES: "/resoluciones",
   CONTEOS: "/conteos",
+  OPCIONES: "/opciones",
 } as const;
 
 

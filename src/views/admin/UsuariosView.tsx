@@ -1,24 +1,18 @@
-import { Lock, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useMemo } from "react";
 
-import { ActionButtons } from "../../components/crud/ActionButtons";
+import { Button } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
-import { CustomInput } from "../../components/crud/CustomInput";
-import { CustomModal } from "../../components/crud/CustomModal";
-import { CustomPagination } from "../../components/crud/CustomPagination";
-import { CustomSelect } from "../../components/crud/CustomSelect";
-import { CustomTable } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
-import { SearchBar } from "../../components/crud/SearchBar";
-import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useCrud } from "../../hooks/useCrud";
 import { useCrudForm } from "../../hooks/useCrudForm";
 import { usePermission } from "../../hooks/usePermissions";
 import { PERM_USUARIOS_CREAR, PERM_USUARIOS_EDITAR, PERM_USUARIOS_ELIMINAR } from "../../constants/permissionsConstants";
 import { usuarioService } from "../../services/usuario.service";
 import { buildUsuarioSchema } from "../../validators/usuario.schema";
+import { UsuariosTable } from "./components/UsuariosTable";
+import { UsuariosForm } from "./components/UsuariosForm";
 
-import type { Column } from "../../components/crud/CustomTable";
 import type { UsuarioFormValues } from "../../validators/usuario.schema";
 
 import type {
@@ -26,6 +20,7 @@ import type {
   UsuarioCreate,
   UsuarioUpdate,
 } from "../../models/usuario.model";
+
 const INITIAL_VALUES: UsuarioFormValues = {
   nombre: "",
   apelido: "",
@@ -33,11 +28,6 @@ const INITIAL_VALUES: UsuarioFormValues = {
   id_rol: "",
   cedula: "",
 };
-
-const ROLES_ASIGNABLES = [
-  { value: 2, label: "Supervisor de Turno" },
-  { value: 3, label: "Jefe de Planta" },
-];
 
 const FIELD_MAPPING: Record<string, string> = {
   nombre: "nombre",
@@ -105,59 +95,6 @@ export const UsuariosView = () => {
     );
   }, [crud.items, crud.filters.query]);
 
-  const columns: Column<Usuario>[] = [
-    {
-      key: "index",
-      header: "#",
-      width: "60px",
-      align: "center",
-      render: (_, i) => (
-        <span style={{ color: "#6b6b6b", fontVariantNumeric: "tabular-nums" }}>
-          {(crud.page - 1) * PAGE_SIZE + i + 1}
-        </span>
-      ),
-    },
-    {
-      key: "nombre",
-      header: "Nombre",
-      render: (u) => (
-        <div className="flex items-center gap-3">
-          <div
-            className="h-8 w-8 rounded-full bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] text-white flex items-center justify-center shadow-md shadow-purple-500/30"
-            style={{ fontSize: 11, fontWeight: 700 }}
-          >
-            {u.nombre[0]}
-            {u.apelido[0]}
-          </div>
-          <div style={{ fontWeight: 500 }}>
-            {u.nombre} {u.apelido}
-          </div>
-        </div>
-      ),
-    },
-    { key: "correo", header: "Correo" },
-    { key: "cedula", header: "Cédula", render: (u) => u.cedula ?? "—" },
-    { key: "rol_nombre", header: "Rol", render: (u) => u.rol_nombre ?? "—" },
-    {
-      key: "estado",
-      header: "Estado",
-      align: "center",
-      render: () => <StatusBadge estado="activo" />,
-    },
-    {
-      key: "acciones",
-      header: "Acciones",
-      align: "center",
-      width: "100px",
-      render: (u) => (
-        <ActionButtons
-          onEdit={puedeEditar ? () => crud.openEditModal(u) : undefined}
-          onDelete={puedeEliminar ? () => crud.confirmDelete(u.id_usuario) : undefined}
-        />
-      ),
-    },
-  ];
-
   return (
     <div>
       <PageHeader
@@ -165,145 +102,38 @@ export const UsuariosView = () => {
         subtitle="Administre los usuarios del sistema"
         action={
           puedeCrear ? (
-            <button
-              onClick={crud.openCreateModal}
-              className="h-10 px-4 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all"
-              style={{ fontSize: 13, fontWeight: 600 }}
-            >
-              <Plus size={16} /> Nuevo Usuario
-            </button>
+            <Button variant="primary" size="md" icon={<Plus size={16} />} onClick={crud.openCreateModal}>
+              Nuevo Usuario
+            </Button>
           ) : undefined
         }
       />
 
-      <div className="bg-white border border-[#e5e5e5] rounded-lg">
-        <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
-          <div style={{ fontSize: 15, fontWeight: 600, color: "#000" }}>
-            Usuarios{" "}
-            <span style={{ color: "#6b6b6b", fontWeight: 400 }}>
-              · {filteredItems.length}
-            </span>
-          </div>
-          <SearchBar
-            value={crud.filters.query}
-            onChange={crud.handleSearch}
-            placeholder="Buscar usuario…"
-          />
-        </div>
+      <UsuariosTable
+        items={filteredItems}
+        page={crud.page}
+        totalPages={crud.totalPages}
+        total={filteredItems.length}
+        query={crud.filters.query}
+        pageSize={PAGE_SIZE}
+        startIndex={(crud.page - 1) * PAGE_SIZE}
+        onSearch={crud.handleSearch}
+        onPageChange={crud.handlePageChange}
+        puedeEditar={puedeEditar}
+        puedeEliminar={puedeEliminar}
+        onEdit={(usuario) => crud.openEditModal(usuario)}
+        onDelete={(id) => crud.confirmDelete(id)}
+      />
 
-        <CustomTable
-          columns={columns}
-          data={filteredItems}
-          keyExtractor={(u) => u.id_usuario}
-          startIndex={(crud.page - 1) * PAGE_SIZE}
-        />
-
-        <CustomPagination
-          page={crud.page}
-          totalPages={crud.totalPages}
-          total={filteredItems.length}
-          pageSize={PAGE_SIZE}
-          onPageChange={crud.handlePageChange}
-        />
-      </div>
-
-      <CustomModal
+      <UsuariosForm
         open={crud.modalOpen}
+        isEditing={crud.isEditing}
         onClose={crud.closeModal}
-        title={crud.isEditing ? "Editar Usuario" : "Nuevo Usuario"}
-      >
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <CustomInput
-            label="Nombre"
-            name="nombre"
-            placeholder="Ingrese el nombre"
-            value={formik.values.nombre}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.errors.nombre}
-            touched={formik.touched.nombre as boolean | undefined}
-          />
-          <CustomInput
-            label="Apellido"
-            name="apelido"
-            placeholder="Ingrese el apellido"
-            value={formik.values.apelido}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.errors.apelido}
-            touched={formik.touched.apelido as boolean | undefined}
-          />
-          <CustomInput
-            label="Correo electrónico"
-            name="correo"
-            type="email"
-            placeholder="correo@empresa.com"
-            value={formik.values.correo}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.errors.correo}
-            touched={formik.touched.correo as boolean | undefined}
-          />
-          <CustomInput
-            label="Cédula"
-            name="cedula"
-            placeholder="10 dígitos numéricos"
-            value={formik.values.cedula ?? ""}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.errors.cedula}
-            touched={formik.touched.cedula as boolean | undefined}
-          />
-          {!crud.isEditing && (
-            <CustomSelect
-              label="Rol"
-              value={formik.values.id_rol}
-              onChange={(v) => formik.setFieldValue("id_rol", v)}
-              options={ROLES_ASIGNABLES}
-              placeholder="Seleccionar rol…"
-              error={formik.errors.id_rol}
-              touched={formik.touched.id_rol as boolean | undefined}
-            />
-          )}
-          {!crud.isEditing && (
-            <div
-              className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-[#f5f3ff]"
-              style={{ fontSize: 12, color: "#6b6b6b", lineHeight: 1.5 }}
-            >
-              <span className="flex items-center gap-1">
-                <Lock size={14} />
-              </span>{" "}
-              La contraseña se generará automáticamente a partir de la cédula e
-              iniciales del nombre, y se enviará al correo registrado.
-            </div>
-          )}
-          {crud.error && (
-            <div className="text-[12px] text-red-600 text-center">
-              {crud.error}
-            </div>
-          )}
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={crud.closeModal}
-              className="h-10 px-4 rounded-lg border border-[#d4d4d4] text-[#1a1a1a] hover:bg-[#f5f5f5] text-sm font-semibold transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={crud.submitLoading}
-              className="h-10 px-4 rounded-lg bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] text-sm font-semibold transition-colors disabled:opacity-50 shadow-lg shadow-purple-500/30"
-            >
-              {crud.submitLoading
-                ? "Guardando..."
-                : crud.isEditing
-                  ? "Actualizar"
-                  : "Crear"}
-            </button>
-          </div>
-        </form>
-      </CustomModal>
+        formik={formik}
+        onSubmit={handleFormSubmit}
+        submitLoading={crud.submitLoading}
+        error={crud.error}
+      />
 
       <ConfirmDialog
         open={crud.deleteConfirmOpen}

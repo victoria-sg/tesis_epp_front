@@ -14,6 +14,11 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       },
+      "/socket.io": {
+        target: "ws://localhost:8000",
+        ws: true,
+        changeOrigin: true,
+      },
       "/auth": { target: "http://localhost:8000", changeOrigin: true },
       "/usuarios": { target: "http://localhost:8000", changeOrigin: true },
       "/roles": { target: "http://localhost:8000", changeOrigin: true },

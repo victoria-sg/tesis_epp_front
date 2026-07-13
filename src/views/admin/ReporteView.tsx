@@ -5,13 +5,16 @@ import {
   Download,
   FileWarning,
   Filter,
-  X,
 } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
+import { ModalPrevisualizacion } from "../../components/admin/ModalPrevisualizacion";
+import { ModalResolverAlerta } from "../../components/admin/ModalResolverAlerta";
 import { useSelector } from "react-redux";
+import { Button } from "../../components/ui/Button";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
-import { SearchBar } from "../../components/crud/SearchBar";
+import { CustomSelect } from "../../components/form/CustomSelect";
+import { SearchBar } from "../../components/form/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useReportes } from "../../controllers/useReportes";
 import { PERM_ALERTAS_VER, PERM_ALERTAS_JUSTIFICAR, PERM_REPORTES_EXPORTAR } from "../../constants/permissionsConstants";
@@ -90,7 +93,7 @@ export const ReportesView = () => {
             className="w-14 h-10 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border border-[#e5e5e5]"
           />
         ) : (
-          <span style={{ color: "#d4d4d4", fontSize: 11 }}>Sin captura</span>
+          <span className="text-gray-300 text-xs">Sin captura</span>
         ),
     },
     {
@@ -114,7 +117,7 @@ export const ReportesView = () => {
             {a.detalle_infraccion}
           </span>
         ) : (
-          <span style={{ color: "#9a9a9a", fontSize: 12 }}>—</span>
+          <span className="text-gray-400 text-xs">—</span>
         ),
     },
     {
@@ -130,7 +133,7 @@ export const ReportesView = () => {
         a.comentario_resolucion ? (
           <span className="text-xs">{a.comentario_resolucion}</span>
         ) : (
-          <span style={{ color: "#9a9a9a", fontSize: 12 }}>Sin atender</span>
+          <span className="text-gray-400 text-xs">Sin atender</span>
         ),
     },
     {
@@ -145,22 +148,17 @@ export const ReportesView = () => {
       width: "100px",
       render: (a) =>
         a.estado_alerta === "Pendiente" && puedeResolver ? (
-          <button
-            onClick={() => abrirModalResolucion(a)}
-            className="px-3 py-1.5 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition-all shadow-sm"
-            style={{ fontSize: 11, fontWeight: 600 }}
-          >
+          <Button variant="secondary" size="sm" onClick={() => abrirModalResolucion(a)}>
             Resolver
-          </button>
+          </Button>
         ) : a.estado_alerta === "Resuelta" ? (
           <span
-            className="flex items-center justify-center gap-1 text-green-600"
-            style={{ fontSize: 11 }}
+            className="flex items-center justify-center gap-1 text-green-600 text-[11px]"
           >
             <CheckCircle size={12} /> Resuelta
           </span>
         ) : (
-          <span style={{ color: "#b0b0b0", fontSize: 11 }}>—</span>
+          <span className="text-gray-400 text-xs">—</span>
         ),
     },
   ];
@@ -172,14 +170,9 @@ export const ReportesView = () => {
         subtitle="Historial de alertas detectadas, su estado y justificación"
         action={
           puedeExportar ? (
-            <button
-              onClick={exportarCsv}
-              disabled={data.length === 0}
-              className="h-10 px-4 rounded-md bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all disabled:opacity-40 disabled:shadow-none"
-              style={{ fontSize: 13, fontWeight: 600 }}
-            >
-              <Download size={16} /> Exportar CSV
-            </button>
+            <Button variant="secondary" icon={<Download size={16} />} onClick={exportarCsv} disabled={data.length === 0}>
+              Exportar CSV
+            </Button>
           ) : undefined
         }
       />
@@ -190,10 +183,10 @@ export const ReportesView = () => {
             <AlertTriangle size={18} className="text-blue-600" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+            <div className="text-number-md">
               {stats.total}
             </div>
-            <div style={{ fontSize: 11, color: "#6b6b6b" }}>Total alertas</div>
+            <div className="text-xs text-gray-500">Total alertas</div>
           </div>
         </div>
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
@@ -201,10 +194,10 @@ export const ReportesView = () => {
             <Clock size={18} className="text-red-500" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+            <div className="text-number-md">
               {stats.pendientes}
             </div>
-            <div style={{ fontSize: 11, color: "#6b6b6b" }}>Pendientes</div>
+            <div className="text-xs text-gray-500">Pendientes</div>
           </div>
         </div>
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
@@ -212,57 +205,48 @@ export const ReportesView = () => {
             <CheckCircle size={18} className="text-green-600" />
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#000" }}>
+            <div className="text-number-md">
               {stats.resueltas}
             </div>
-            <div style={{ fontSize: 11, color: "#6b6b6b" }}>Resueltas</div>
+            <div className="text-xs text-gray-500">Resueltas</div>
           </div>
         </div>
       </div>
 
       <div className="bg-white border border-[#e5e5e5] rounded-lg">
         <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 flex-wrap">
-          <div style={{ fontSize: 15, fontWeight: 600, color: "#000" }}>
+          <div className="text-table-title">
             Alertas{" "}
-            <span style={{ color: "#6b6b6b", fontWeight: 400 }}>
+            <span className="text-table-count">
               · {data.length}
             </span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={14} className="text-[#6b6b6b]" />
-            <select
+            <CustomSelect
               value={filtroZona}
-              onChange={(e) => setFiltroZona(e.target.value)}
-              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
-            >
-              <option value="">Todas las zonas</option>
-              {zonas.map((z) => (
-                <option key={z} value={z}>
-                  {z}
-                </option>
-              ))}
-            </select>
-            <select
+              onChange={(v) => setFiltroZona(String(v))}
+              options={zonas.map((z) => ({ value: z, label: z }))}
+              placeholder="Todas las zonas"
+              size="sm"
+            />
+            <CustomSelect
               value={filtroCamara}
-              onChange={(e) => setFiltroCamara(e.target.value)}
-              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
-            >
-              <option value="">Todas las cámaras</option>
-              {camaras.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <select
+              onChange={(v) => setFiltroCamara(String(v))}
+              options={camaras.map((c) => ({ value: c, label: c }))}
+              placeholder="Todas las cámaras"
+              size="sm"
+            />
+            <CustomSelect
               value={filtroEstado}
-              onChange={(e) => setFiltroEstado(e.target.value)}
-              className="h-8 px-2 rounded-md border border-[#e5e5e5] bg-white text-[12px] text-[#4a4a4a] focus:outline-none focus:border-blue-400"
-            >
-              <option value="">Todos los estados</option>
-              <option value="Pendiente">Pendiente</option>
-              <option value="Resuelta">Resuelta</option>
-            </select>
+              onChange={(v) => setFiltroEstado(String(v))}
+              options={[
+                { value: "Pendiente", label: "Pendiente" },
+                { value: "Resuelta", label: "Resuelta" },
+              ]}
+              placeholder="Todos los estados"
+              size="sm"
+            />
             <SearchBar
               value={query}
               onChange={setQuery}
@@ -273,15 +257,14 @@ export const ReportesView = () => {
 
         {loading ? (
           <div
-            className="px-4 py-16 text-center"
-            style={{ fontSize: 13, color: "#6b6b6b" }}
+            className="px-4 py-16 text-center text-sm text-gray-500"
           >
             Cargando reporte…
           </div>
         ) : error ? (
           <div className="px-4 py-16 flex flex-col items-center gap-2 text-center">
             <FileWarning className="h-8 w-8 text-red-500" />
-            <div style={{ fontSize: 13, color: "#dc2626" }}>{error}</div>
+            <div className="text-sm text-red-600">{error}</div>
           </div>
         ) : (
           <CustomTable
@@ -298,110 +281,22 @@ export const ReportesView = () => {
       </div>
 
       {alertaResolviendo && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-          onClick={cerrarModalResolucion}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">
-                  Resolver alerta
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Cámara: {alertaResolviendo.codigo_camara} · Zona:{" "}
-                  {alertaResolviendo.nombre_zona}
-                </p>
-              </div>
-              <button
-                onClick={cerrarModalResolucion}
-                className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
-              >
-                <X size={16} className="text-gray-500" />
-              </button>
-            </div>
-
-            {alertaResolviendo.captura_frame && (
-              <img
-                src={alertaResolviendo.captura_frame}
-                alt="Captura de la incidencia"
-                className="w-full h-40 object-cover rounded-lg mb-4 border border-[#e5e5e5]"
-              />
-            )}
-
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Comentario / justificación *
-              </label>
-              <textarea
-                value={comentario}
-                onChange={(e) => setComentario(e.target.value)}
-                placeholder="Describe qué ocurrió y cómo se resolvió la incidencia…"
-                rows={4}
-                className="w-full px-3 py-2 rounded-lg border border-[#d4d4d4] focus:border-[#8b5cf6] focus:outline-none resize-none text-sm"
-              />
-              {resolviendoError && (
-                <p className="text-xs text-red-600 mt-1">{resolviendoError}</p>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={cerrarModalResolucion}
-                className="h-10 px-4 rounded-lg border border-[#d4d4d4] text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={resolverAlerta}
-                disabled={resolviendoLoading || !comentario.trim()}
-                className="h-10 px-4 rounded-lg bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold disabled:opacity-50 shadow-lg shadow-purple-500/30 transition-all"
-              >
-                {resolviendoLoading ? "Guardando…" : "Marcar como resuelta"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalResolverAlerta
+          alerta={alertaResolviendo}
+          comentario={comentario}
+          onComentarioChange={setComentario}
+          loading={resolviendoLoading}
+          error={resolviendoError}
+          onResolve={resolverAlerta}
+          onClose={cerrarModalResolucion}
+        />
       )}
 
       {imagenExpandida && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setImagenExpandida(null)}
-        >
-          <div
-            className="relative max-w-3xl w-full"
-            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setImagenExpandida(null)}
-              className="absolute -top-10 right-0 text-white/70 hover:text-white flex items-center gap-1 text-sm"
-            >
-              <X size={16} /> Cerrar
-            </button>
-            <img
-              src={imagenExpandida}
-              alt="Captura de incidencia"
-              className="w-full rounded-lg shadow-2xl"
-            />
-            <div className="mt-3 text-center">
-              <button
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = imagenExpandida;
-                  link.download = "captura-incidencia.jpg";
-                  link.click();
-                }}
-                className="text-blue-400 hover:text-blue-300 text-sm underline"
-              >
-                Descargar imagen
-              </button>
-            </div>
-          </div>
-        </div>
+        <ModalPrevisualizacion
+          src={imagenExpandida}
+          onClose={() => setImagenExpandida(null)}
+        />
       )}
     </div>
   );

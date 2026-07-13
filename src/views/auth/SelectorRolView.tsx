@@ -1,7 +1,7 @@
 import { ArrowRight, Cog, HardHat, Lock, ShieldCheck } from "lucide-react";
-import { useRoleSelector } from "../controllers/useRoleSelector";
-import type { Rol } from "../models/auth.model";
-import { ROLE_INFO, ROLE_STYLES } from "../models/auth.model";
+import { useRoleSelector } from "../../controllers/useRoleSelector";
+import type { Rol } from "../../models/auth.model";
+import { ROLE_INFO, ROLE_STYLES } from "../../models/auth.model";
 
 const ICONS = { HardHat, ShieldCheck, Cog };
 
@@ -9,7 +9,7 @@ interface Props {
   onSelect: (rol: Rol) => void;
 }
 
-export const RoleSelectorView = ({ onSelect }: Props) => {
+export const SelectorRolView = ({ onSelect }: Props) => {
   const { roles, onSelect: handleSelect } = useRoleSelector({ onSelect });
 
   return (
@@ -21,19 +21,19 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
               <ShieldCheck className="w-8 h-8 text-white" strokeWidth={2} />
             </div>
             <div className="text-left">
-              <div className="text-[22px] font-extrabold text-slate-900 tracking-[0.02em] leading-none">
+              <div className="text-2xl font-extrabold text-slate-900 tracking-[0.02em] leading-none">
                 EPP Monitor
               </div>
-              <div className="text-[11px] font-bold text-blue-600 tracking-[0.18em] uppercase mt-1.5">
+              <div className="text-xs font-bold text-blue-600 tracking-[0.18em] uppercase mt-1.5">
                 Sistema de Gestión
               </div>
             </div>
           </div>
 
-          <h1 className="text-[28px] font-extrabold text-slate-900 tracking-[-0.01em]">
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-[-0.01em]">
             Bienvenido al sistema
           </h1>
-          <p className="text-[15px] text-slate-500 mt-2">
+          <p className="text-sm text-slate-500 mt-2">
             Selecciona el perfil con el que deseas iniciar sesión
           </p>
         </div>
@@ -56,10 +56,10 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
                   <IconComponent className="w-7 h-7 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[16px] font-bold text-slate-900 leading-tight">
+                  <div className="text-base font-bold text-slate-900 leading-tight">
                     {info.title}
                   </div>
-                  <div className="text-[13px] text-slate-500 mt-1 leading-relaxed">
+                  <div className="text-sm text-slate-500 mt-1 leading-relaxed">
                     {info.subtitle}
                   </div>
                 </div>
@@ -74,7 +74,7 @@ export const RoleSelectorView = ({ onSelect }: Props) => {
 
         <div className="mt-6 flex items-center justify-center gap-2 text-slate-400">
           <Lock className="w-3.5 h-3.5" />
-          <span className="text-[11px]">
+          <span className="text-xs">
             Conexión segura · Seguridad que te protege, tecnología que te cuida.
           </span>
         </div>

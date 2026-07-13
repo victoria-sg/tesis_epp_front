@@ -1,13 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 
-/* eslint-disable react-refresh/only-export-components */
-import { TOKEN_KEY } from "../constants/authStorageConstants";
+import { useSocket } from "../hooks/useSocket";
+import {
+  SIO_EVENT_FRAME,
+  SIO_EVENT_SUBSCRIBE_CAMARA,
+  SIO_EVENT_UNSUBSCRIBE_CAMARA,
+} from "../constants/socketEvents";
 
 interface StreamFrame {
   [camaraId: number]: string;
@@ -27,78 +25,52 @@ export const StreamContext = createContext<StreamContextType>({
 
 export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   const [frames, setFrames] = useState<StreamFrame>({});
-  const wsRefs = useRef<Map<number, WebSocket>>(new Map());
   const subscribersRef = useRef<Map<number, number>>(new Map());
-  const sourceRef = useRef<Map<number, "rtsp" | "view">>(new Map());
   const closeTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const lastFrameTime = useRef<Map<number, number>>(new Map());
-  const openConnectionRef = useRef<typeof openConnection>(null!);
 
-  const openConnection = useCallback((camaraId: number, source: "rtsp" | "view") => {
-    const existing = wsRefs.current.get(camaraId);
-    if (existing) {
-      if (
-        existing.readyState === WebSocket.OPEN ||
-        existing.readyState === WebSocket.CONNECTING
-      ) {
-        return;
-      }
-      wsRefs.current.delete(camaraId);
-    }
-
-    const token = localStorage.getItem(TOKEN_KEY) || "";
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = window.location.host;
-    const url =
-      source === "view"
-        ? `${protocol}//${host}/stream/view/${camaraId}?token=${token}`
-        : `${protocol}//${host}/stream/${camaraId}?token=${token}`;
-
-    const ws = new WebSocket(url);
-
-    ws.onmessage = (event) => {
-      if (typeof event.data === "string" && event.data.startsWith("data:image")) {
-        lastFrameTime.current.set(camaraId, Date.now());
-        setFrames((prev) => ({ ...prev, [camaraId]: event.data }));
-      }
-    };
-
-    ws.onclose = (event) => {
-      wsRefs.current.delete(camaraId);
-      if (
-        event.code !== 1000 &&
-        (subscribersRef.current.get(camaraId) ?? 0) > 0
-      ) {
-        setTimeout(
-          () => openConnectionRef.current(camaraId, sourceRef.current.get(camaraId) ?? "rtsp"),
-          3000,
-        );
-      }
-    };
-
-    ws.onerror = () => ws.close();
-
-    wsRefs.current.set(camaraId, ws);
-    sourceRef.current.set(camaraId, source);
-    lastFrameTime.current.set(camaraId, Date.now());
-  }, []);
+  const { socket, online } = useSocket();
 
   useEffect(() => {
-    openConnectionRef.current = openConnection;
-  });
+    if (!socket) return;
+
+    const handleFrame = (payload: { camara_id: number; frame: string }) => {
+      console.log(`[STREAM FRAME] camara=${payload?.camara_id} len=${payload?.frame?.length ?? 0} preview=${payload?.frame?.substring(0, 60)}`);
+      if (!payload || !payload.frame?.startsWith("data:image")) return;
+      const { camara_id, frame } = payload;
+      lastFrameTime.current.set(camara_id, Date.now());
+      setFrames((prev) => ({ ...prev, [camara_id]: frame }));
+    };
+
+    socket.on(SIO_EVENT_FRAME, handleFrame);
+    return () => { socket.off(SIO_EVENT_FRAME, handleFrame); };
+  }, [socket]);
+
+  useEffect(() => {
+    if (!socket || !online) return;
+    subscribersRef.current.forEach((count, camaraId) => {
+      if (count > 0) {
+        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+      }
+    });
+  }, [socket, online]);
 
   const subscribeCamera = useCallback(
-    (camaraId: number, source: "rtsp" | "view") => {
+    (camaraId: number, _source: "rtsp" | "view") => {
       const pending = closeTimers.current.get(camaraId);
       if (pending) {
         clearTimeout(pending);
         closeTimers.current.delete(camaraId);
       }
+
       const count = subscribersRef.current.get(camaraId) ?? 0;
       subscribersRef.current.set(camaraId, count + 1);
-      openConnection(camaraId, source);
+
+      if (count === 0 && socket?.connected) {
+        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+      }
     },
-    [openConnection],
+    [socket],
   );
 
   const unsubscribeCamera = useCallback((camaraId: number) => {
@@ -113,16 +85,11 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
       const timer = setTimeout(() => {
         if ((subscribersRef.current.get(camaraId) ?? 0) <= 0) {
           subscribersRef.current.delete(camaraId);
-          const ws = wsRefs.current.get(camaraId);
-          if (ws) {
-            ws.close(1000);
-            wsRefs.current.delete(camaraId);
-          }
           lastFrameTime.current.delete(camaraId);
           setFrames((prev) => {
-            const next = { ...prev };
-            delete next[camaraId];
-            return next;
+            const updated = { ...prev };
+            delete updated[camaraId];
+            return updated;
           });
         }
         closeTimers.current.delete(camaraId);
@@ -133,53 +100,45 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        subscribersRef.current.forEach((count, camaraId) => {
-          if (count > 0) {
-            const source = sourceRef.current.get(camaraId) ?? "rtsp";
-            const ws = wsRefs.current.get(camaraId);
-            if (ws && ws.readyState !== WebSocket.OPEN) {
-              try { ws.close(); } catch { /* noop */ }
-              wsRefs.current.delete(camaraId);
-            }
-            openConnectionRef.current(camaraId, source);
-          }
-        });
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [openConnection]);
-
-  useEffect(() => {
+    if (!socket) return;
     const interval = setInterval(() => {
       const ahora = Date.now();
       subscribersRef.current.forEach((count, camaraId) => {
         if (count <= 0) return;
         const ultimo = lastFrameTime.current.get(camaraId) ?? 0;
-        if (ultimo > 0 && ahora - ultimo > 20_000) {
-          const source = sourceRef.current.get(camaraId) ?? "rtsp";
-          const ws = wsRefs.current.get(camaraId);
-          if (ws) {
-            try { ws.close(); } catch { /* noop */ }
-            wsRefs.current.delete(camaraId);
+        if (ultimo > 0 && ahora - ultimo > 25_000) {
+          lastFrameTime.current.delete(camaraId);
+          if (socket.connected) {
+            socket.emit(SIO_EVENT_UNSUBSCRIBE_CAMARA, { camara_id: camaraId });
+            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
           }
-          openConnectionRef.current(camaraId, source);
         }
       });
-    }, 10_000);
+    }, 15_000);
 
     return () => clearInterval(interval);
-  }, [openConnection]);
+  }, [socket]);
 
   useEffect(() => {
-    const timers = closeTimers.current;
-    const sockets = wsRefs.current;
+    if (!socket) return;
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        subscribersRef.current.forEach((count, camaraId) => {
+          if (count > 0 && socket.connected) {
+            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+          }
+        });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [socket]);
+
+  useEffect(() => {
     return () => {
-      timers.forEach((t) => clearTimeout(t));
-      sockets.forEach((ws) => ws.close(1000));
-      sockets.clear();
+      closeTimers.current.forEach((t) => clearTimeout(t));
+      closeTimers.current.clear();
     };
   }, []);
 

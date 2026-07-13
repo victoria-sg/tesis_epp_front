@@ -31,7 +31,6 @@ export interface CamaraUpdate {
   puerto?: number | null;
   usuario_rtsp?: string | null;
   password_rtsp?: string | null;
-  estado_conexion?: string | null;
 }
 
 export const CAMARA_ESTADOS = ["activo", "inactivo", "mantenimiento"] as const;

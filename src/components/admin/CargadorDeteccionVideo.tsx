@@ -1,6 +1,11 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Upload, Play, Pause, Scan, AlertTriangle, CheckCircle2, XCircle, User, RotateCcw } from "lucide-react";
-import { getColorForClass, translateClass } from "../utils/detectionColors";
+import { getColorForClass, translateClass } from "../../utils/detectionColors";
+import { useSocket } from "../../hooks/useSocket";
+import {
+  SIO_EVENT_DETECCION_FRAME,
+  SIO_EVENT_DETECCION_RESULT,
+} from "../../constants/socketEvents";
 
 interface DeteccionWsItem {
   clase: string;
@@ -33,7 +38,7 @@ interface WsResult {
   msg?: string;
 }
 
-export const VideoDetectionUploader = () => {
+export const CargadorDeteccionVideo = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -48,19 +53,10 @@ export const VideoDetectionUploader = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const animationRef = useRef<number | null>(null);
   const frameCountRef = useRef(0);
   const lastFrameTimeRef = useRef(0);
-
-  const getWsUrl = () => {
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = import.meta.env.VITE_API_URL
-      ? new URL(import.meta.env.VITE_API_URL).host
-      : "localhost:8000";
-    return `${protocol}//${host}/deteccion/ws/temporal`;
-  };
 
   const drawPreviewOverlay = (detecciones: DeteccionWsItem[]) => {
     const canvas = previewCanvasRef.current;
@@ -89,12 +85,12 @@ export const VideoDetectionUploader = () => {
     }
   };
 
-  const connectWs = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
-    const ws = new WebSocket(getWsUrl());
-    ws.onopen = () => console.log("[WS] Conectado a detección temporal");
-    ws.onmessage = (event) => {
-      const msg: WsResult = JSON.parse(event.data);
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleResult = (msg: WsResult) => {
       if (msg.ok && msg.data) {
         setLastResult(msg.data);
         setTotalStats((prev) => ({
@@ -106,24 +102,16 @@ export const VideoDetectionUploader = () => {
       }
       setLoading(false);
     };
-    ws.onerror = (e) => console.error("[WS] Error:", e);
-    ws.onclose = () => console.log("[WS] Desconectado");
-    wsRef.current = ws;
-  }, []);
 
-  const disconnectWs = useCallback(() => {
-    if (wsRef.current) {
-      wsRef.current.close();
-      wsRef.current = null;
-    }
-  }, []);
+    socket.on(SIO_EVENT_DETECCION_RESULT, handleResult);
+    return () => { socket.off(SIO_EVENT_DETECCION_RESULT, handleResult); };
+  }, [socket]);
 
   useEffect(() => {
     return () => {
-      disconnectWs();
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
-  }, [disconnectWs]);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,8 +128,7 @@ export const VideoDetectionUploader = () => {
   const processFrame = useCallback(() => {
     const video = videoRef.current;
     const hiddenCanvas = hiddenCanvasRef.current;
-    const ws = wsRef.current;
-    if (!video || !hiddenCanvas || !ws || ws.readyState !== WebSocket.OPEN) return;
+    if (!video || !hiddenCanvas || !socket?.connected) return;
 
     const now = performance.now();
     const interval = 1000 / fps;
@@ -158,8 +145,8 @@ export const VideoDetectionUploader = () => {
     const base64 = hiddenCanvas.toDataURL("image/jpeg", 0.85);
 
     setLoading(true);
-    ws.send(JSON.stringify({ frame: base64, confianza, iou }));
-  }, [confianza, iou, fps, frameSkip]);
+    socket.emit(SIO_EVENT_DETECCION_FRAME, { frame: base64, confianza, iou });
+  }, [socket, confianza, iou, fps, frameSkip]);
 
   const loopRef = useRef<() => void>(null!);
   const loop = useCallback(() => {
@@ -174,14 +161,13 @@ export const VideoDetectionUploader = () => {
 
   useEffect(() => {
     if (playing) {
-      connectWs();
       videoRef.current?.play();
       animationRef.current = requestAnimationFrame(loop);
     } else {
       videoRef.current?.pause();
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
     }
-  }, [playing, loop, connectWs]);
+  }, [playing, loop]);
 
   const togglePlay = () => {
     if (!videoUrl) return;
@@ -195,7 +181,6 @@ export const VideoDetectionUploader = () => {
     setTotalStats({ personas: 0, eppOk: 0, alertas: 0 });
     setProgress(0);
     frameCountRef.current = 0;
-    disconnectWs();
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -208,7 +193,6 @@ export const VideoDetectionUploader = () => {
 
   const handleVideoEnded = () => {
     setPlaying(false);
-    disconnectWs();
   };
 
   return (

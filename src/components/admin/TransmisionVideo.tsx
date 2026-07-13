@@ -1,7 +1,7 @@
 import { Camera, Wifi } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { DeteccionOverlay } from "./DeteccionOverlay";
-import { useVideoStream } from "../hooks/useVideoStream";
+import { SuperposicionDeteccion } from "./SuperposicionDeteccion";
+import { useVideoStream } from "../../hooks/useVideoStream";
 
 interface VideoStreamProps {
   camaraId: number;
@@ -13,7 +13,7 @@ interface VideoStreamProps {
   mostrarDeteccion?: boolean;
 }
 
-export const VideoStream = ({
+export const TransmisionVideo = ({
   camaraId,
   label,
   source = "rtsp",
@@ -52,7 +52,7 @@ export const VideoStream = ({
             }}
           />
           {mostrarDeteccion && (
-            <DeteccionOverlay camaraId={camaraId} activo={status === "connected"} />
+            <SuperposicionDeteccion camaraId={camaraId} activo={status === "connected"} />
           )}
         </div>
       ) : (

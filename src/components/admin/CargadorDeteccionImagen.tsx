@@ -10,10 +10,10 @@ import { useRef, useState } from "react";
 import {
   analizarImagen,
   type DeteccionResult,
-} from "../services/deteccionService";
-import { getColorForClass, translateClass } from "../utils/detectionColors";
+} from "../../services/deteccionService";
+import { getColorForClass, translateClass } from "../../utils/detectionColors";
 
-export const ImageDetectionUploader = () => {
+export const CargadorDeteccionImagen = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultado, setResultado] = useState<DeteccionResult | null>(null);
   const [loading, setLoading] = useState(false);

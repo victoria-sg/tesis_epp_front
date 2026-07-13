@@ -24,9 +24,6 @@ export const camaraSchema = Yup.object({
     .typeError("Ingresa un número válido"),
   usuario_rtsp: Yup.string().nullable().max(100, "Máximo 100 caracteres"),
   password_rtsp: Yup.string().nullable().max(255, "Máximo 255 caracteres"),
-  estado_conexion: Yup.string()
-    .nullable()
-    .oneOf(["activo", "inactivo", "mantenimiento"], "Estado no válido"),
 });
 
 export type CamaraFormValues = Yup.InferType<typeof camaraSchema>;

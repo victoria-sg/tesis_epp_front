@@ -1,5 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../ui/Button";
 
 interface Props {
   open: boolean;

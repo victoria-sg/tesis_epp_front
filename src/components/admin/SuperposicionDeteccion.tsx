@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { getUltimaDeteccion, type UltimaDeteccion } from "../services/deteccion.services";
-import { getColorForClass, translateClass } from "../utils/detectionColors";
+import { getUltimaDeteccion, type UltimaDeteccion } from "../../services/deteccion.services";
+import { getColorForClass, translateClass } from "../../utils/detectionColors";
 
 interface DeteccionOverlayProps {
   camaraId: number;
   activo?: boolean;
 }
 
-export const DeteccionOverlay = ({ camaraId, activo = true }: DeteccionOverlayProps) => {
+export const SuperposicionDeteccion = ({ camaraId, activo = true }: DeteccionOverlayProps) => {
   const [deteccion, setDeteccion] = useState<UltimaDeteccion | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

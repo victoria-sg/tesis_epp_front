@@ -1,24 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AlertTriangle, Camera, Check, Square } from "lucide-react";
-import { capturarIncidencia } from "../services/alerta.service";
+import { AlertTriangle, Camera, Check, RefreshCw, Square } from "lucide-react";
+import { capturarIncidencia } from "../../services/alerta.service";
+import { SIO_EVENT_SEND_FRAME } from "../../constants/socketEvents";
+import { useSocket } from "../../hooks/useSocket";
 
 interface PhoneCameraFeedProps {
-  deviceId: string;
   camaraId?: number;
   label?: string;
   className?: string;
   onStreamChange?: (active: boolean) => void;
 }
 
-export const PhoneCameraFeed = ({
-  deviceId,
+export const TransmisionCamaraTelefono = ({
   camaraId,
   label = "Teléfono",
   className = "",
   onStreamChange,
 }: PhoneCameraFeedProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const captureTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -30,39 +29,7 @@ export const PhoneCameraFeed = ({
   const [capturando, setCapturando] = useState(false);
   const [capturaExito, setCapturaExito] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const connectWsRef = useRef<typeof connectWs>(null!);
-
-  const connectWs = useCallback(() => {
-    const token = localStorage.getItem("epp_token") || "";
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = window.location.host;
-    let url = `${protocol}//${host}/stream/fallback/${deviceId}?token=${token}`;
-    if (camaraId !== undefined) url += `&camara_id=${camaraId}`;
-    const ws = new WebSocket(url);
-    ws.onopen = () => setWsStatus("connected");
-    ws.onclose = () => {
-      setWsStatus("disconnected");
-      wsRef.current = null;
-      if (isActiveRef.current) {
-        setTimeout(() => {
-          if (isActiveRef.current && wsRef.current === null) {
-            const newWs = connectWsRef.current();
-            wsRef.current = newWs;
-          }
-        }, 2000);
-      }
-    };
-    ws.onerror = () => {
-      setError("Error de conexión con el servidor");
-      ws.close();
-    };
-    wsRef.current = ws;
-    return ws;
-  }, [deviceId, camaraId]);
-
-  useEffect(() => {
-    connectWsRef.current = connectWs;
-  });
+  const { socket, online, socketError, reconectar } = useSocket();
 
   const capturarFrame = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current || !ctxRef.current) return;
@@ -117,12 +84,10 @@ export const PhoneCameraFeed = ({
       if (videoRef.current) videoRef.current.srcObject = stream;
       streamRef.current = stream;
 
-      const ws = connectWs();
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error("Timeout")), 5000);
-        ws.onopen = () => { clearTimeout(timeout); setWsStatus("connected"); resolve(); };
-        ws.onerror = () => { clearTimeout(timeout); reject(new Error("No se pudo conectar")); };
-      });
+      if (!socket?.connected) {
+        throw new Error("No se pudo conectar al servidor");
+      }
+      setWsStatus("connected");
 
       const video = videoRef.current!;
       const canvas = document.createElement("canvas");
@@ -133,8 +98,7 @@ export const PhoneCameraFeed = ({
       let enviando = false;
 
       const captureFrame = () => {
-        const currentWs = wsRef.current;
-        if (!currentWs || currentWs.readyState !== WebSocket.OPEN) return;
+        if (!socket.connected) return;
         if (enviando) return;
 
         const vw = video.videoWidth || 640;
@@ -146,12 +110,10 @@ export const PhoneCameraFeed = ({
         enviando = true;
         canvas.toBlob(
           (blob) => {
-            if (blob && wsRef.current?.readyState === WebSocket.OPEN) {
+            if (blob) {
               const reader = new FileReader();
               reader.onload = () => {
-                if (wsRef.current?.readyState === WebSocket.OPEN) {
-                  wsRef.current.send(reader.result as string);
-                }
+                socket.emit(SIO_EVENT_SEND_FRAME, { camara_id: camaraId, frame: reader.result });
                 enviando = false;
               };
               reader.readAsDataURL(blob);
@@ -174,13 +136,12 @@ export const PhoneCameraFeed = ({
       setError(msg);
       setWsStatus("disconnected");
     }
-  }, [connectWs, onStreamChange]);
+  }, [socket, onStreamChange, camaraId]);
 
   const stopStreaming = useCallback(() => {
     isActiveRef.current = false;
     if (captureTimerRef.current) { clearInterval(captureTimerRef.current); captureTimerRef.current = null; }
     if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null; }
-    if (wsRef.current) { wsRef.current.close(1000); wsRef.current = null; }
     if (videoRef.current) videoRef.current.srcObject = null;
     canvasRef.current = null;
     ctxRef.current = null;
@@ -196,6 +157,9 @@ export const PhoneCameraFeed = ({
     };
   }, [stopStreaming]);
 
+  const needsSocket = !isActive && !online;
+  const showReconnect = needsSocket && socketError;
+
   return (
     <div
       ref={containerRef}
@@ -210,7 +174,7 @@ export const PhoneCameraFeed = ({
         className="w-full h-full object-cover"
       />
 
-      {!isActive && !error && (
+      {!isActive && !error && !showReconnect && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/95 text-gray-400 gap-6 px-6 pb-24">
           <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center">
             <Camera size={32} className="text-gray-500" />
@@ -218,6 +182,34 @@ export const PhoneCameraFeed = ({
           <div className="text-center">
             <p className="text-white text-sm font-semibold mb-1">Cámara lista para transmitir</p>
             <p className="text-gray-500 text-xs">Presiona el botón de abajo para iniciar</p>
+          </div>
+        </div>
+      )}
+
+      {showReconnect && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/95 gap-4 px-8">
+          <AlertTriangle size={28} className="text-yellow-400" />
+          <p className="text-white text-sm font-semibold text-center">
+            Sin conexión al servidor
+          </p>
+          <p className="text-zinc-400 text-xs text-center leading-relaxed max-w-xs">
+            {socketError}
+          </p>
+          <button
+            onClick={reconectar}
+            className="flex items-center gap-2 mt-2 h-10 px-5 rounded-full bg-blue-600 text-white text-sm font-semibold active:scale-95 transition-transform"
+          >
+            <RefreshCw size={16} />
+            Reintentar conexión
+          </button>
+        </div>
+      )}
+
+      {needsSocket && !socketError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/95">
+          <div className="flex flex-col items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+            <span className="text-zinc-400 text-sm">Conectando al servidor...</span>
           </div>
         </div>
       )}
@@ -238,50 +230,62 @@ export const PhoneCameraFeed = ({
         <span className={`w-2 h-2 rounded-full ${
           wsStatus === "connected" && isActive ? "bg-green-500 animate-pulse"
           : wsStatus === "connecting" ? "bg-yellow-500"
+          : online ? "bg-green-500"
           : "bg-gray-500"
         }`} />
         <span className="text-white text-[11px] font-medium bg-black/50 px-2 py-0.5 rounded">
           {label}
         </span>
+        {!online && !isActive && (
+          <span className="text-yellow-400 text-[10px] font-medium bg-black/50 px-2 py-0.5 rounded ml-1">
+            sin servidor
+          </span>
+        )}
       </div>
 
-      <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-5">
+      <div
+        className="absolute left-0 right-0 flex items-center justify-center gap-5"
+        style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 64px)" }}
+      >
         {isActive ? (
           <>
             <button
               onClick={capturarFrame}
               disabled={capturando || camaraId === undefined}
-              className="w-12 h-12 rounded-full bg-yellow-500/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+              className="w-14 h-14 rounded-full bg-yellow-500/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
               title="Capturar incidencia"
             >
               {capturando
                 ? <span className="text-[10px] font-bold">...</span>
-                : <AlertTriangle size={20} />
+                : <AlertTriangle size={24} />
               }
             </button>
             <button
               onClick={stopStreaming}
-              className="w-10 h-10 rounded-full bg-red-600/70 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+              className="w-12 h-12 rounded-full bg-red-600/70 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
             >
-              <Square size={14} />
+              <Square size={16} />
             </button>
           </>
         ) : (
           <button
             onClick={startStreaming}
-            disabled={wsStatus === "connecting"}
-            className="w-14 h-14 rounded-full bg-blue-600/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            disabled={wsStatus === "connecting" || !online}
+            className="w-16 h-16 rounded-full bg-blue-600/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
           >
             {wsStatus === "connecting"
               ? <span className="text-[10px] font-bold">...</span>
-              : <Camera size={28} />
+              : <Camera size={32} />
             }
           </button>
         )}
       </div>
 
       {isActive && (
-        <div className="absolute bottom-1 left-0 right-0 flex justify-center gap-8">
+        <div
+          className="absolute left-0 right-0 flex justify-center gap-12"
+          style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 36px)" }}
+        >
           <span className="text-[9px] text-yellow-400/70">Incidencia</span>
           <span className="text-[9px] text-red-400/70">Detener</span>
         </div>
