@@ -132,6 +132,7 @@ export const useCrud = <T, TCreate, TUpdate>(
   );
 
   const confirmDelete = useCallback((id: number) => {
+    setError(null);
     setDeletingId(id);
     setDeleteConfirmOpen(true);
   }, []);
@@ -145,8 +146,14 @@ export const useCrud = <T, TCreate, TUpdate>(
       setDeleteConfirmOpen(false);
       setDeletingId(null);
       await fetchItems();
-    } catch {
-      setError("Error al eliminar. Intenta de nuevo.");
+    } catch (err: unknown) {
+      const detail =
+        (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg;
+      if (detail) {
+        setError(detail);
+      } else {
+        setError("Error al eliminar. Intenta de nuevo.");
+      }
     } finally {
       setDeleteLoading(false);
     }

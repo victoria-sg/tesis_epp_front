@@ -62,6 +62,7 @@ export const CamarasView = () => {
 
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<CamaraFormValues>({
+      isOpen: crud.modalOpen,
       isEditing: crud.isEditing,
       editingItem: crud.editingItem as unknown as Record<string, unknown> | null,
       validationSchema: camaraSchema,

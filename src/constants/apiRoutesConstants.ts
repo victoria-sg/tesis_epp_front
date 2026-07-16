@@ -5,6 +5,7 @@ export const API_ROUTES = {
   ZONAS: "/zonas",
   CAMARAS: "/camaras",
   TIPOS_EPP: "/tipos-epp",
+  CLASES_DETECCION: "/clases-deteccion",
 
   PERMISOS: "/permisos",
 
@@ -22,6 +23,10 @@ export const APP_ROUTES = {
   ZONAS: "/admin/zonas",
   CAMARAS: "/admin/camaras",
   TIPOS_EPP: "/admin/tipos-epp",
+  CLASES_DETECCION: "/admin/clases-deteccion",
+  MONITOREO_TIEMPO_REAL: "/admin/monitoreo-tiempo-real",
+  ALERTAS: "/admin/alertas",
+  REPORTES_TURNO: "/admin/reportes-turno",
   REPORTES: "/admin/reportes",
   DETECCION: "/admin/deteccion",
 } as const;
@@ -33,5 +38,6 @@ export const SIDEBAR_ITEMS = [
   { path: APP_ROUTES.ROLES, label: "Roles", icon: "Shield" },
   { path: APP_ROUTES.ZONAS, label: "Zonas", icon: "MapPin" },
   { path: APP_ROUTES.CAMARAS, label: "Cámaras", icon: "Camera" },
+  { path: APP_ROUTES.CLASES_DETECCION, label: "Clases", icon: "ScanSearch" },
   { path: APP_ROUTES.TIPOS_EPP, label: "Tipos de EPP", icon: "Shirt" },
 ] as const;

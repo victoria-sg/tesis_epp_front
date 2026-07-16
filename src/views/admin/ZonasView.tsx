@@ -68,6 +68,7 @@ export const ZonasView = () => {
 
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<ZonaFormValues>({
+      isOpen: crud.modalOpen,
       isEditing: crud.isEditing,
       editingItem: crud.editingItem as unknown as Record<
         string,
@@ -77,8 +78,10 @@ export const ZonasView = () => {
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
       onSubmit: async (values) => {
-        const nivel =
-          values.nivel_riesgo || inferirNivelRiesgo(values.nombre_zona);
+        const nivel = inferirNivelRiesgo(
+          values.epp_ids?.length ?? 0,
+          values.tiempo_toleracia_segundo,
+        );
         const data = {
           ...values,
           nivel_riesgo: nivel,
@@ -95,10 +98,17 @@ export const ZonasView = () => {
 
   const nivelInferido = useMemo(
     () =>
-      !formik.values.nivel_riesgo && formik.values.nombre_zona
-        ? inferirNivelRiesgo(formik.values.nombre_zona)
+      !formik.values.nivel_riesgo
+        ? inferirNivelRiesgo(
+            formik.values.epp_ids?.length ?? 0,
+            formik.values.tiempo_toleracia_segundo,
+          )
         : null,
-    [formik.values.nombre_zona, formik.values.nivel_riesgo],
+    [
+      formik.values.epp_ids,
+      formik.values.nivel_riesgo,
+      formik.values.tiempo_toleracia_segundo,
+    ],
   );
 
   const filteredItems = useMemo(() => {
@@ -134,6 +144,11 @@ export const ZonasView = () => {
     } else {
       formik.setFieldValue("epp_ids", [...selected, id]);
     }
+  };
+
+  const handleCalibrarEpp = async (idZona: number, idTipoEpp: number) => {
+    await zonaService.calibrarEpp(idZona, idTipoEpp);
+    await crud.fetchItems();
   };
 
   return (
@@ -203,6 +218,7 @@ export const ZonasView = () => {
         onEdit={crud.openEditModal}
         onDelete={(id) => crud.confirmDelete(id)}
         tiposEpp={tiposEpp}
+        onCalibrarEpp={handleCalibrarEpp}
       />
 
       <ZonasForm
@@ -226,6 +242,7 @@ export const ZonasView = () => {
         onConfirm={crud.handleDelete}
         onCancel={crud.cancelDelete}
         loading={crud.deleteLoading}
+        error={crud.error}
       />
     </div>
   );

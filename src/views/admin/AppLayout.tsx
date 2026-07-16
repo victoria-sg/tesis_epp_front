@@ -1,11 +1,14 @@
 import {
+  Bell,
   Camera,
   ChevronLeft,
   ChevronRight,
   FileText,
   LayoutDashboard,
   MapPin,
+  Radio,
   Scan,
+  ScanSearch,
   Search,
   Shield,
   Shirt,
@@ -28,8 +31,12 @@ import {
   PERM_DASHBOARD_VER, PERM_USUARIOS_VER, PERM_ROLES_VER,
   PERM_ZONAS_VER, PERM_CAMARAS_VER, PERM_TIPOS_EPP_VER,
   PERM_REPORTES_VER, PERM_DETECCION_VER,
+  PERM_ALERTAS_VER, PERM_MONITOREO_TIEMPO_REAL_VER,
+  PERM_REPORTES_TURNO_VER, PERM_CLASES_DETECCION_VER,
 } from "../../constants/permissionsConstants";
+import { APP_ROUTES } from "../../constants/apiRoutesConstants";
 import { SIO_EVENT_NUEVA_ALERTA } from "../../constants/socketEvents";
+import { fetchClassInfo } from "../../utils/detectionColors";
 import { useAuthGuard } from "../../controllers/useAuthGuard";
 import { useSocket } from "../../hooks/useSocket";
 import { logout } from "../../store/authSlice";
@@ -43,12 +50,16 @@ interface NavItem {
 
 const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
   { permiso: PERM_DASHBOARD_VER, item: { path: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={16} /> } },
+  { permiso: PERM_MONITOREO_TIEMPO_REAL_VER, item: { path: APP_ROUTES.MONITOREO_TIEMPO_REAL, label: "Monitoreo en tiempo real", icon: <Radio size={16} /> } },
+  { permiso: PERM_ALERTAS_VER, item: { path: APP_ROUTES.ALERTAS, label: "Alertas", icon: <Bell size={16} /> } },
+  { permiso: PERM_REPORTES_TURNO_VER, item: { path: APP_ROUTES.REPORTES_TURNO, label: "Reportes de turno", icon: <FileText size={16} /> } },
   { permiso: PERM_USUARIOS_VER, item: { path: "/admin/usuarios", label: "Usuarios", icon: <Users size={16} /> } },
   { permiso: PERM_ROLES_VER, item: { path: "/admin/roles", label: "Roles", icon: <Shield size={16} /> } },
   { permiso: PERM_ZONAS_VER, item: { path: "/admin/zonas", label: "Zonas", icon: <MapPin size={16} /> } },
   { permiso: PERM_CAMARAS_VER, item: { path: "/admin/camaras", label: "Cámaras", icon: <Camera size={16} /> } },
+  { permiso: PERM_CLASES_DETECCION_VER, item: { path: APP_ROUTES.CLASES_DETECCION, label: "Clases", icon: <ScanSearch size={16} /> } },
   { permiso: PERM_TIPOS_EPP_VER, item: { path: "/admin/tipos-epp", label: "Tipos de EPP", icon: <Shirt size={16} /> } },
-  { permiso: PERM_REPORTES_VER, item: { path: "/admin/reportes", label: "Reportes", icon: <FileText size={16} /> } },
+  { permiso: PERM_REPORTES_VER, item: { path: APP_ROUTES.REPORTES, label: "Reportes ejecutivos", icon: <FileText size={16} /> } },
   { permiso: PERM_DETECCION_VER, item: { path: "/admin/deteccion", label: "Detección", icon: <Scan size={16} /> } },
 ];
 
@@ -95,6 +106,10 @@ const AppLayoutContent = () => {
     socket.on(SIO_EVENT_NUEVA_ALERTA, handleNuevaAlerta);
     return () => { socket.off(SIO_EVENT_NUEVA_ALERTA, handleNuevaAlerta); };
   }, [user, socket]);
+
+  useEffect(() => {
+    fetchClassInfo();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -168,7 +183,7 @@ const AppLayoutContent = () => {
               notificacionesOpen={notificacionesOpen}
               onToggle={() => setNotificacionesOpen((prev) => !prev)}
               onClear={() => setNotificaciones([])}
-              onNavigateReportes={() => { navigate("/admin/reportes"); setNotificacionesOpen(false); }}
+              onNavigateReportes={() => { navigate(APP_ROUTES.ALERTAS); setNotificacionesOpen(false); }}
             />
           </div>
         </header>

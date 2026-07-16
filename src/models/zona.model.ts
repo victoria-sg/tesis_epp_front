@@ -4,6 +4,12 @@ export interface Zona {
   nivel_riesgo?: string | null;
   tiempo_toleracia_segundo?: number | null;
   epp_ids?: number[];
+  epps?: Array<{
+    id_tipo_epp: number;
+    nombre_epp: string;
+    clase_yolo?: string | null;
+    estado_calibracion?: "pendiente" | "validado";
+  }>;
 }
 
 export interface ZonaCreate {
@@ -22,19 +28,25 @@ export interface ZonaUpdate {
 
 export const ZONA_NIVELES_RIESGO = ["bajo", "medio", "alto"] as const;
 
-const PALABRAS_ALTO = [
-  "fundición", "fundicion", "horno", "explosivo", "química", "quimica",
-  "peligro", "alto voltaje", "volcado", "caldera", "reactor",
-];
-const PALABRAS_MEDIO = [
-  "trituración", "trituracion", "maquinaria", "prensa", "taller",
-  "soldadura", "corte", "producción", "produccion", "ensamble",
-];
+export const inferirNivelRiesgo = (
+  cantidadEpp: number,
+  toleranciaSegundos?: number | null,
+): "bajo" | "medio" | "alto" => {
+  const tolerancia = Number(toleranciaSegundos ?? 0);
+  const eppScore =
+    cantidadEpp >= 5 ? 3 : cantidadEpp >= 3 ? 2 : cantidadEpp >= 1 ? 1 : 0;
+  const toleranciaScore =
+    tolerancia > 0 && tolerancia <= 30
+      ? 3
+      : tolerancia <= 60
+        ? 2
+        : tolerancia <= 120
+          ? 1
+          : 0;
+  const score = eppScore + toleranciaScore;
 
-export const inferirNivelRiesgo = (nombre: string): "bajo" | "medio" | "alto" => {
-  const lower = nombre.toLowerCase();
-  if (PALABRAS_ALTO.some((p) => lower.includes(p))) return "alto";
-  if (PALABRAS_MEDIO.some((p) => lower.includes(p))) return "medio";
+  if (score >= 5) return "alto";
+  if (score >= 3) return "medio";
   return "bajo";
 };
 

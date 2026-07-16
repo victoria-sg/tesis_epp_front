@@ -26,6 +26,7 @@ export const StreamContext = createContext<StreamContextType>({
 export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
   const [frames, setFrames] = useState<StreamFrame>({});
   const subscribersRef = useRef<Map<number, number>>(new Map());
+  const sourcesRef = useRef<Map<number, "rtsp" | "view">>(new Map());
   const closeTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const lastFrameTime = useRef<Map<number, number>>(new Map());
 
@@ -35,7 +36,6 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
     if (!socket) return;
 
     const handleFrame = (payload: { camara_id: number; frame: string }) => {
-      console.log(`[STREAM FRAME] camara=${payload?.camara_id} len=${payload?.frame?.length ?? 0} preview=${payload?.frame?.substring(0, 60)}`);
       if (!payload || !payload.frame?.startsWith("data:image")) return;
       const { camara_id, frame } = payload;
       lastFrameTime.current.set(camara_id, Date.now());
@@ -50,13 +50,16 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
     if (!socket || !online) return;
     subscribersRef.current.forEach((count, camaraId) => {
       if (count > 0) {
-        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, {
+          camara_id: camaraId,
+          source: sourcesRef.current.get(camaraId) ?? "rtsp",
+        });
       }
     });
   }, [socket, online]);
 
   const subscribeCamera = useCallback(
-    (camaraId: number, _source: "rtsp" | "view") => {
+    (camaraId: number, source: "rtsp" | "view") => {
       const pending = closeTimers.current.get(camaraId);
       if (pending) {
         clearTimeout(pending);
@@ -65,9 +68,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
 
       const count = subscribersRef.current.get(camaraId) ?? 0;
       subscribersRef.current.set(camaraId, count + 1);
+      sourcesRef.current.set(camaraId, source);
 
       if (count === 0 && socket?.connected) {
-        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+        socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId, source });
       }
     },
     [socket],
@@ -85,6 +89,7 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
       const timer = setTimeout(() => {
         if ((subscribersRef.current.get(camaraId) ?? 0) <= 0) {
           subscribersRef.current.delete(camaraId);
+          sourcesRef.current.delete(camaraId);
           lastFrameTime.current.delete(camaraId);
           setFrames((prev) => {
             const updated = { ...prev };
@@ -110,7 +115,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
           lastFrameTime.current.delete(camaraId);
           if (socket.connected) {
             socket.emit(SIO_EVENT_UNSUBSCRIBE_CAMARA, { camara_id: camaraId });
-            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, {
+              camara_id: camaraId,
+              source: sourcesRef.current.get(camaraId) ?? "rtsp",
+            });
           }
         }
       });
@@ -125,7 +133,10 @@ export const StreamProvider = ({ children }: { children: React.ReactNode }) => {
       if (document.visibilityState === "visible") {
         subscribersRef.current.forEach((count, camaraId) => {
           if (count > 0 && socket.connected) {
-            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, { camara_id: camaraId });
+            socket.emit(SIO_EVENT_SUBSCRIBE_CAMARA, {
+              camara_id: camaraId,
+              source: sourcesRef.current.get(camaraId) ?? "rtsp",
+            });
           }
         });
       }

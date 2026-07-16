@@ -1,9 +1,10 @@
-import { Image, Scan, Video } from "lucide-react";
+import { FlaskConical, Image, Scan, Video } from "lucide-react";
 import { useState } from "react";
 import { CargadorDeteccionImagen } from "../../components/admin/CargadorDeteccionImagen";
 import { CargadorDeteccionVideo } from "../../components/admin/CargadorDeteccionVideo";
+import { ValidarModelosPanel } from "../../components/admin/ValidarModelosPanel";
 
-type Tab = "imagen" | "video";
+type Tab = "imagen" | "video" | "validar";
 
 export const DeteccionView = () => {
   const [activeTab, setActiveTab] = useState<Tab>("imagen");
@@ -15,7 +16,7 @@ export const DeteccionView = () => {
           <Scan className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-800">Detección EPP</h1>
+          <h1 className="text-xl font-bold text-gray-800">Detección</h1>
           <p className="text-sm text-gray-500">
             Prueba el modelo de detección con imágenes o videos de manera
             temporal
@@ -47,11 +48,23 @@ export const DeteccionView = () => {
             <Video size={16} />
             Video
           </button>
+          <button
+            onClick={() => setActiveTab("validar")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
+              activeTab === "validar"
+                ? "border-violet-500 text-violet-700 bg-violet-50/50"
+                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-[#f5f5f5]"
+            }`}
+          >
+            <FlaskConical size={16} />
+            Validar Modelos
+          </button>
         </div>
 
         <div className="p-6">
           {activeTab === "imagen" && <CargadorDeteccionImagen />}
           {activeTab === "video" && <CargadorDeteccionVideo />}
+          {activeTab === "validar" && <ValidarModelosPanel />}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { AlertTriangle, Camera, CheckCircle, Clock, Smartphone, XCircle } from "lucide-react";
+import { AlertTriangle, Camera, Clock, Smartphone, XCircle } from "lucide-react";
 import { TransmisionCamaraTelefono } from "../../components/auth/TransmisionCamaraTelefono";
 import { usePhoneCamera } from "../../controllers/usePhoneCamera";
 

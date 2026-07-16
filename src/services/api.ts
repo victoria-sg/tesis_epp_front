@@ -24,6 +24,9 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (config.data instanceof FormData || config.data == null) {
+    delete config.headers["Content-Type"];
+  }
   return config;
 });
 

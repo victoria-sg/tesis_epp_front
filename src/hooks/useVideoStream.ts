@@ -29,7 +29,6 @@ export const useVideoStream = ({
 
   useEffect(() => {
     if (currentFrame) {
-      console.log(`[VIDEOSTREAM] frame recibido camara=${camaraId} ts=${Date.now()}`);
       lastFrameRef.current = Date.now();
       setStreamActive(true);
     }
@@ -40,7 +39,6 @@ export const useVideoStream = ({
     const id = setInterval(() => {
       const diff = Date.now() - lastFrameRef.current;
       if (diff > 8000) {
-        console.log(`[VIDEOSTREAM] sin frame >8s camara=${camaraId} diff=${diff}ms`);
         setStreamActive(false);
       }
     }, 5000);
@@ -48,8 +46,6 @@ export const useVideoStream = ({
   }, [currentFrame, camaraId]);
 
   const status = !currentFrame ? "connecting" : streamActive ? "connected" : "disconnected";
-
-  console.log(`[VIDEOSTREAM] camara=${camaraId} status=${status} has_frame=${!!currentFrame} streamActive=${streamActive}`);
 
   return { currentFrame, status };
 };

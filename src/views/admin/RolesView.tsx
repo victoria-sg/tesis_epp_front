@@ -132,6 +132,7 @@ export const RolesView = () => {
 
   const { formik, handleSubmit: handleFormSubmit } = useCrudForm<RolFormValues>(
     {
+      isOpen: crud.modalOpen,
       isEditing: crud.isEditing,
       editingItem: crud.editingItem as unknown as Record<
         string,

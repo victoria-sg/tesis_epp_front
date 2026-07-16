@@ -30,6 +30,17 @@ const STYLES: Record<
     border: "none",
     shadow: "0 2px 6px rgba(239, 68, 68, 0.3)",
   },
+  resuelta: {
+    bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    color: "#fff",
+    border: "none",
+    shadow: "0 2px 6px rgba(16, 185, 129, 0.3)",
+  },
+  descartada: {
+    bg: "#f1f5f9",
+    color: "#475569",
+    border: "#cbd5e1",
+  },
   mantenimiento: {
     bg: "#fff",
     color: "#f59e0b",

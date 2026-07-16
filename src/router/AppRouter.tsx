@@ -19,6 +19,8 @@ import {
   PERM_DASHBOARD_VER, PERM_USUARIOS_VER, PERM_ROLES_VER,
   PERM_ZONAS_VER, PERM_CAMARAS_VER, PERM_TIPOS_EPP_VER,
   PERM_REPORTES_VER, PERM_DETECCION_VER,
+  PERM_ALERTAS_VER, PERM_MONITOREO_TIEMPO_REAL_VER,
+  PERM_REPORTES_TURNO_VER, PERM_CLASES_DETECCION_VER,
 } from "../constants/permissionsConstants";
 import type { Rol } from "../models/auth.model";
 import { ROL_LABELS } from "../models/auth.model";
@@ -31,12 +33,16 @@ import { SelectorRolView } from "../views/auth/SelectorRolView";
 import { CamarasView } from "../views/admin/CamarasView";
 import { DashboardView } from "../views/admin/DashboardView";
 import { ReportesView } from "../views/admin/ReporteView";
+import { ReportesEmitidosView } from "../views/admin/ReportesEmitidosView";
 import { RolesView } from "../views/admin/RolesView";
 import { TiposEPPView } from "../views/admin/TiposEPPView";
+import { ClasesDeteccionView } from "../views/admin/ClasesDeteccionView";
 import { UsuariosView } from "../views/admin/UsuariosView";
 import { ZonasView } from "../views/admin/ZonasView";
 import { DeteccionView } from "../views/admin/DeteccionView";
 import { AppLayout } from "../views/admin/AppLayout";
+import { MonitoreoTiempoRealView } from "../views/admin/MonitoreoTiempoRealView";
+import { ReportesTurnoView } from "../views/admin/ReportesTurnoView";
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
@@ -117,8 +123,24 @@ export const AppRouter = () => {
           element: <RutaProtegida permiso={PERM_TIPOS_EPP_VER}><TiposEPPView /></RutaProtegida>,
         },
         {
+          path: APP_ROUTES.CLASES_DETECCION.replace("/", ""),
+          element: <RutaProtegida permiso={PERM_CLASES_DETECCION_VER}><ClasesDeteccionView /></RutaProtegida>,
+        },
+        {
+          path: APP_ROUTES.MONITOREO_TIEMPO_REAL.replace("/", ""),
+          element: <RutaProtegida permiso={PERM_MONITOREO_TIEMPO_REAL_VER}><MonitoreoTiempoRealView /></RutaProtegida>,
+        },
+        {
+          path: APP_ROUTES.ALERTAS.replace("/", ""),
+          element: <RutaProtegida permiso={PERM_ALERTAS_VER}><ReportesView modo="alertas" /></RutaProtegida>,
+        },
+        {
+          path: APP_ROUTES.REPORTES_TURNO.replace("/", ""),
+          element: <RutaProtegida permiso={PERM_REPORTES_TURNO_VER}><ReportesTurnoView /></RutaProtegida>,
+        },
+        {
           path: APP_ROUTES.REPORTES.replace("/", ""),
-          element: <RutaProtegida permiso={PERM_REPORTES_VER}><ReportesView /></RutaProtegida>,
+          element: <RutaProtegida permiso={PERM_REPORTES_VER}><ReportesEmitidosView /></RutaProtegida>,
         },
         {
           path: APP_ROUTES.DETECCION.replace("/", ""),

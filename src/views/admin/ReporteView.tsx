@@ -7,9 +7,10 @@ import {
   Filter,
 } from "lucide-react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+
 import { ModalPrevisualizacion } from "../../components/admin/ModalPrevisualizacion";
 import { ModalResolverAlerta } from "../../components/admin/ModalResolverAlerta";
-import { useSelector } from "react-redux";
 import { Button } from "../../components/ui/Button";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
@@ -17,15 +18,20 @@ import { CustomSelect } from "../../components/form/CustomSelect";
 import { SearchBar } from "../../components/form/SearchBar";
 import { StatusBadge } from "../../components/crud/StatusBadge";
 import { useReportes } from "../../controllers/useReportes";
-import { PERM_ALERTAS_VER, PERM_ALERTAS_JUSTIFICAR, PERM_REPORTES_EXPORTAR } from "../../constants/permissionsConstants";
+import {
+  PERM_ALERTAS_JUSTIFICAR,
+  PERM_ALERTAS_VER,
+  PERM_REPORTES_EXPORTAR,
+} from "../../constants/permissionsConstants";
+
 import type { AlertaReporte } from "../../models/reporte.model";
 import type { RootState } from "../../store";
 
 const formatearFecha = (iso: string | null): string => {
-  if (!iso) return "—";
-  const fechaUtc = iso.endsWith("Z") || iso.includes("+") ? iso : iso + "Z";
+  if (!iso) return "-";
+  const fechaUtc = iso.endsWith("Z") || iso.includes("+") ? iso : `${iso}Z`;
   const fecha = new Date(fechaUtc);
-  if (Number.isNaN(fecha.getTime())) return "—";
+  if (Number.isNaN(fecha.getTime())) return "-";
   return fecha.toLocaleString("es-EC", {
     timeZone: "America/Guayaquil",
     day: "2-digit",
@@ -37,14 +43,18 @@ const formatearFecha = (iso: string | null): string => {
 };
 
 const formatearDuracion = (segundos: number | null): string => {
-  if (segundos === null) return "—";
+  if (segundos === null) return "-";
   if (segundos < 60) return `${segundos} s`;
   const minutos = Math.floor(segundos / 60);
   const resto = segundos % 60;
   return `${minutos} min ${resto} s`;
 };
 
-export const ReportesView = () => {
+interface ReportesViewProps {
+  modo?: "alertas" | "ejecutivo";
+}
+
+export const ReportesView = ({ modo = "alertas" }: ReportesViewProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const puedeVerAlertas = user?.permisos.includes(PERM_ALERTAS_VER) ?? false;
   const puedeJustificar = user?.permisos.includes(PERM_ALERTAS_JUSTIFICAR) ?? false;
@@ -75,6 +85,7 @@ export const ReportesView = () => {
     abrirModalResolucion,
     cerrarModalResolucion,
     resolverAlerta,
+    descartarAlerta,
   } = useReportes();
 
   const [imagenExpandida, setImagenExpandida] = useState<string | null>(null);
@@ -102,33 +113,33 @@ export const ReportesView = () => {
       render: (a) => formatearFecha(a.fecha_hora_deteccion),
     },
     { key: "nombre_zona", header: "Zona" },
-    { key: "codigo_camara", header: "Cámara" },
+    { key: "codigo_camara", header: "Camara" },
     {
       key: "segundos_transcurridos",
-      header: "Duración",
+      header: "Duracion",
       render: (a) => formatearDuracion(a.segundos_transcurridos),
     },
     {
       key: "detalle_infraccion",
-      header: "Infracción",
+      header: "Infraccion",
       render: (a) =>
         a.detalle_infraccion ? (
           <span className="text-xs text-red-600 font-medium">
             {a.detalle_infraccion}
           </span>
         ) : (
-          <span className="text-gray-400 text-xs">—</span>
+          <span className="text-gray-400 text-xs">-</span>
         ),
     },
     {
       key: "estado_alerta",
       header: "Estado",
       render: (a) =>
-        a.estado_alerta ? <StatusBadge estado={a.estado_alerta} /> : "—",
+        a.estado_alerta ? <StatusBadge estado={a.estado_alerta} /> : "-",
     },
     {
       key: "comentario_resolucion",
-      header: "Justificación",
+      header: "Justificacion",
       render: (a) =>
         a.comentario_resolucion ? (
           <span className="text-xs">{a.comentario_resolucion}</span>
@@ -139,53 +150,74 @@ export const ReportesView = () => {
     {
       key: "resuelto_por",
       header: "Resuelto por",
-      render: (a) => a.resuelto_por ?? "—",
+      render: (a) => a.resuelto_por ?? "-",
     },
     {
       key: "acciones",
       header: "Acciones",
       align: "center",
       width: "100px",
-      render: (a) =>
-        a.estado_alerta === "Pendiente" && puedeResolver ? (
-          <Button variant="secondary" size="sm" onClick={() => abrirModalResolucion(a)}>
-            Resolver
-          </Button>
-        ) : a.estado_alerta === "Resuelta" ? (
-          <span
-            className="flex items-center justify-center gap-1 text-green-600 text-[11px]"
-          >
-            <CheckCircle size={12} /> Resuelta
-          </span>
-        ) : (
-          <span className="text-gray-400 text-xs">—</span>
-        ),
+      render: (a) => {
+        if (a.estado_alerta === "Pendiente" && puedeResolver) {
+          return (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => abrirModalResolucion(a)}
+            >
+              Resolver
+            </Button>
+          );
+        }
+        if (a.estado_alerta === "Resuelta") {
+          return (
+            <span className="flex items-center justify-center gap-1 text-green-600 text-[11px]">
+              <CheckCircle size={12} /> Resuelta
+            </span>
+          );
+        }
+        if (a.estado_alerta === "Descartada") {
+          return (
+            <span className="flex items-center justify-center gap-1 text-slate-500 text-[11px]">
+              Descartada
+            </span>
+          );
+        }
+        return <span className="text-gray-400 text-xs">-</span>;
+      },
     },
   ];
 
   return (
     <div>
       <PageHeader
-        title="Reportes de Alertas"
-        subtitle="Historial de alertas detectadas, su estado y justificación"
+        title={modo === "ejecutivo" ? "Reportes ejecutivos" : "Alertas"}
+        subtitle={
+          modo === "ejecutivo"
+            ? "Seguimiento ejecutivo de alertas, cumplimiento y resolucion"
+            : "Alertas generadas automaticamente por el sistema y su justificacion"
+        }
         action={
           puedeExportar ? (
-            <Button variant="secondary" icon={<Download size={16} />} onClick={exportarCsv} disabled={data.length === 0}>
+            <Button
+              variant="secondary"
+              icon={<Download size={16} />}
+              onClick={exportarCsv}
+              disabled={data.length === 0}
+            >
               Exportar CSV
             </Button>
           ) : undefined
         }
       />
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
             <AlertTriangle size={18} className="text-blue-600" />
           </div>
           <div>
-            <div className="text-number-md">
-              {stats.total}
-            </div>
+            <div className="text-number-md">{stats.total}</div>
             <div className="text-xs text-gray-500">Total alertas</div>
           </div>
         </div>
@@ -194,9 +226,7 @@ export const ReportesView = () => {
             <Clock size={18} className="text-red-500" />
           </div>
           <div>
-            <div className="text-number-md">
-              {stats.pendientes}
-            </div>
+            <div className="text-number-md">{stats.pendientes}</div>
             <div className="text-xs text-gray-500">Pendientes</div>
           </div>
         </div>
@@ -205,10 +235,17 @@ export const ReportesView = () => {
             <CheckCircle size={18} className="text-green-600" />
           </div>
           <div>
-            <div className="text-number-md">
-              {stats.resueltas}
-            </div>
+            <div className="text-number-md">{stats.resueltas}</div>
             <div className="text-xs text-gray-500">Resueltas</div>
+          </div>
+        </div>
+        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center">
+            <FileWarning size={18} className="text-slate-600" />
+          </div>
+          <div>
+            <div className="text-number-md">{stats.descartadas}</div>
+            <div className="text-xs text-gray-500">Descartadas</div>
           </div>
         </div>
       </div>
@@ -216,10 +253,8 @@ export const ReportesView = () => {
       <div className="bg-white border border-[#e5e5e5] rounded-lg">
         <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 flex-wrap">
           <div className="text-table-title">
-            Alertas{" "}
-            <span className="text-table-count">
-              · {data.length}
-            </span>
+            {modo === "ejecutivo" ? "Reporte ejecutivo" : "Alertas"}{" "}
+            <span className="text-table-count">· {data.length}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={14} className="text-[#6b6b6b]" />
@@ -234,7 +269,7 @@ export const ReportesView = () => {
               value={filtroCamara}
               onChange={(v) => setFiltroCamara(String(v))}
               options={camaras.map((c) => ({ value: c, label: c }))}
-              placeholder="Todas las cámaras"
+              placeholder="Todas las camaras"
               size="sm"
             />
             <CustomSelect
@@ -243,23 +278,18 @@ export const ReportesView = () => {
               options={[
                 { value: "Pendiente", label: "Pendiente" },
                 { value: "Resuelta", label: "Resuelta" },
+                { value: "Descartada", label: "Descartada" },
               ]}
               placeholder="Todos los estados"
               size="sm"
             />
-            <SearchBar
-              value={query}
-              onChange={setQuery}
-              placeholder="Buscar…"
-            />
+            <SearchBar value={query} onChange={setQuery} placeholder="Buscar..." />
           </div>
         </div>
 
         {loading ? (
-          <div
-            className="px-4 py-16 text-center text-sm text-gray-500"
-          >
-            Cargando reporte…
+          <div className="px-4 py-16 text-center text-sm text-gray-500">
+            Cargando reporte...
           </div>
         ) : error ? (
           <div className="px-4 py-16 flex flex-col items-center gap-2 text-center">
@@ -273,8 +303,8 @@ export const ReportesView = () => {
             keyExtractor={(a) => a.id_alerta}
             emptyMessage={
               totalSinFiltrar === 0
-                ? "Aún no se han registrado alertas en el sistema."
-                : "Ninguna alerta coincide con tu búsqueda."
+                ? "Aun no se han registrado alertas en el sistema."
+                : "Ninguna alerta coincide con tu busqueda."
             }
           />
         )}
@@ -288,6 +318,7 @@ export const ReportesView = () => {
           loading={resolviendoLoading}
           error={resolviendoError}
           onResolve={resolverAlerta}
+          onDiscard={descartarAlerta}
           onClose={cerrarModalResolucion}
         />
       )}

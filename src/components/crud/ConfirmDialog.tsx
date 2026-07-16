@@ -10,6 +10,7 @@ interface Props {
   onConfirm: () => void;
   onCancel: () => void;
   loading?: boolean;
+  error?: string | null;
 }
 
 export const ConfirmDialog = ({
@@ -21,6 +22,7 @@ export const ConfirmDialog = ({
   onConfirm,
   onCancel,
   loading,
+  error,
 }: Props) => {
   if (!open) return null;
 
@@ -49,6 +51,11 @@ export const ConfirmDialog = ({
           <div className="mt-1" style={{ fontSize: 13, color: "#6b6b6b" }}>
             {message}
           </div>
+          {error && (
+            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] font-medium text-red-700">
+              {error}
+            </div>
+          )}
         </div>
         <div className="flex gap-3">
           <Button

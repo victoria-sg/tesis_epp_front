@@ -126,7 +126,7 @@ export const TransmisionCamaraTelefono = ({
         );
       };
 
-      captureTimerRef.current = setInterval(captureFrame, 150);
+      captureTimerRef.current = setInterval(captureFrame, 250);
       isActiveRef.current = true;
       setIsActive(true);
       onStreamChange?.(true);

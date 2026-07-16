@@ -1,4 +1,4 @@
-import { Shirt, ShieldAlert, AlertTriangle, Shield } from "lucide-react";
+import { Check, Shirt, ShieldAlert, AlertTriangle, Shield } from "lucide-react";
 
 import { ActionButtons } from "../../../components/crud/ActionButtons";
 import { CustomPagination } from "../../../components/crud/CustomPagination";
@@ -25,6 +25,7 @@ interface ZonasTableProps {
   onEdit: (zona: Zona) => void;
   onDelete: (id: number) => void;
   tiposEpp: TipoEPP[];
+  onCalibrarEpp: (idZona: number, idTipoEpp: number) => void;
 }
 
 const NivelRiesgoBadge = ({ nivel }: { nivel: string | null | undefined }) => {
@@ -58,6 +59,7 @@ export const ZonasTable = ({
   onEdit,
   onDelete,
   tiposEpp,
+  onCalibrarEpp,
 }: ZonasTableProps) => {
   const columns: Column<Zona>[] = [
     {
@@ -100,21 +102,35 @@ export const ZonasTable = ({
       key: "epp",
       header: "EPP Requeridos",
       render: (z) => {
-        const ids = z.epp_ids ?? [];
-        if (ids.length === 0)
-          return <span className="text-muted">—</span>;
-        const nombres = ids
-          .map((id) => tiposEpp.find((t) => t.id_tipo_epp === id)?.nombre_epp)
-          .filter(Boolean);
+        const epps = z.epps?.length
+          ? z.epps
+          : (z.epp_ids ?? [])
+              .map((id) => {
+                const tipo = tiposEpp.find((t) => t.id_tipo_epp === id);
+                return tipo
+                  ? {
+                      id_tipo_epp: tipo.id_tipo_epp,
+                      nombre_epp: tipo.nombre_epp,
+                      estado_calibracion: "validado" as const,
+                    }
+                  : null;
+              })
+              .filter((item): item is NonNullable<typeof item> => Boolean(item));
+        if (epps.length === 0) return <span className="text-muted">—</span>;
         return (
           <div className="flex flex-wrap gap-1">
-            {nombres.map((n, i) => (
+            {epps.map((epp) => (
               <span
-                key={i}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-blue-50 text-blue-700 border border-blue-200 font-medium"
+                key={epp.id_tipo_epp}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] border font-medium ${
+                  epp.estado_calibracion === "pendiente"
+                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                    : "bg-blue-50 text-blue-700 border-blue-200"
+                }`}
               >
                 <Shirt size={11} />
-                {n}
+                {epp.nombre_epp}
+                {epp.estado_calibracion === "pendiente" && " · pendiente"}
               </span>
             ))}
           </div>
@@ -125,12 +141,29 @@ export const ZonasTable = ({
       key: "acciones",
       header: "Acciones",
       align: "center",
-      width: "100px",
+      width: "130px",
       render: (z) => (
-        <ActionButtons
-          onEdit={puedeEditar ? () => onEdit(z) : undefined}
-          onDelete={puedeEliminar ? () => onDelete(z.id_zona) : undefined}
-        />
+        <div className="flex items-center justify-center gap-1">
+          {puedeEditar && z.epps?.some((e) => e.estado_calibracion === "pendiente") && (
+            <button
+              className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#059669] hover:bg-green-50 flex items-center justify-center"
+              title="Validar calibración pendiente"
+              onClick={(e) => {
+                e.stopPropagation();
+                const pending = z.epps?.find(
+                  (item) => item.estado_calibracion === "pendiente",
+                );
+                if (pending) onCalibrarEpp(z.id_zona, pending.id_tipo_epp);
+              }}
+            >
+              <Check size={13} className="text-[#059669]" />
+            </button>
+          )}
+          <ActionButtons
+            onEdit={puedeEditar ? () => onEdit(z) : undefined}
+            onDelete={puedeEliminar ? () => onDelete(z.id_zona) : undefined}
+          />
+        </div>
       ),
     },
   ];
@@ -139,8 +172,7 @@ export const ZonasTable = ({
     <div className="bg-white border border-[#e5e5e5] rounded-lg">
       <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
         <div className="text-table-title">
-          Zonas{" "}
-          <span className="text-table-count">· {total}</span>
+          Zonas <span className="text-table-count">· {total}</span>
         </div>
         <SearchBar
           value={query}

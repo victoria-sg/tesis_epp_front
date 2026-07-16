@@ -26,6 +26,7 @@ export default defineConfig({
       "/camaras": { target: "http://localhost:8000", changeOrigin: true },
       "/alertas": { target: "http://localhost:8000", changeOrigin: true },
       "/tipos-epp": { target: "http://localhost:8000", changeOrigin: true },
+      "/clases-deteccion": { target: "http://localhost:8000", changeOrigin: true },
       "/resoluciones": { target: "http://localhost:8000", changeOrigin: true },
       "/conteos": { target: "http://localhost:8000", changeOrigin: true },
       "/permisos": { target: "http://localhost:8000", changeOrigin: true },

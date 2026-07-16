@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
@@ -9,6 +9,7 @@ import { useCrudForm } from "../../hooks/useCrudForm";
 import { usePermission } from "../../hooks/usePermissions";
 import { PERM_USUARIOS_CREAR, PERM_USUARIOS_EDITAR, PERM_USUARIOS_ELIMINAR } from "../../constants/permissionsConstants";
 import { usuarioService } from "../../services/usuario.service";
+import { zonaService } from "../../services/zona.service";
 import { buildUsuarioSchema } from "../../validators/usuario.schema";
 import { UsuariosTable } from "./components/UsuariosTable";
 import { UsuariosForm } from "./components/UsuariosForm";
@@ -20,6 +21,7 @@ import type {
   UsuarioCreate,
   UsuarioUpdate,
 } from "../../models/usuario.model";
+import type { Zona } from "../../models/zona.model";
 
 const INITIAL_VALUES: UsuarioFormValues = {
   nombre: "",
@@ -27,6 +29,7 @@ const INITIAL_VALUES: UsuarioFormValues = {
   correo: "",
   id_rol: "",
   cedula: "",
+  zonas_asignadas: [],
 };
 
 const FIELD_MAPPING: Record<string, string> = {
@@ -35,6 +38,7 @@ const FIELD_MAPPING: Record<string, string> = {
   correo: "correo",
   id_rol: "id_rol",
   cedula: "cedula",
+  zonas_asignadas: "zonas_asignadas",
 };
 
 const PAGE_SIZE = 8;
@@ -43,6 +47,7 @@ export const UsuariosView = () => {
   const crud = useCrud<Usuario, UsuarioCreate, UsuarioUpdate>(usuarioService, {
     pageSize: PAGE_SIZE,
   });
+  const [zonas, setZonas] = useState<Zona[]>([]);
 
   const puedeCrear = usePermission(PERM_USUARIOS_CREAR);
   const puedeEditar = usePermission(PERM_USUARIOS_EDITAR);
@@ -53,13 +58,27 @@ export const UsuariosView = () => {
     [crud.isEditing],
   );
 
+  useEffect(() => {
+    zonaService
+      .getAll()
+      .then(setZonas)
+      .catch(() => setZonas([]));
+  }, []);
+
+  const editingItem = useMemo(() => {
+    if (!crud.editingItem) return null;
+    return {
+      ...crud.editingItem,
+      zonas_asignadas:
+        crud.editingItem.zonas_asignadas?.map((z) => z.id_zona) ?? [],
+    };
+  }, [crud.editingItem]);
+
   const { formik, handleSubmit: handleFormSubmit } =
     useCrudForm<UsuarioFormValues>({
+      isOpen: crud.modalOpen,
       isEditing: crud.isEditing,
-      editingItem: crud.editingItem as unknown as Record<
-        string,
-        unknown
-      > | null,
+      editingItem: editingItem as unknown as Record<string, unknown> | null,
       validationSchema: usuarioSchema,
       initialValues: INITIAL_VALUES,
       fieldMapping: FIELD_MAPPING,
@@ -69,7 +88,10 @@ export const UsuariosView = () => {
             nombre: values.nombre,
             apelido: values.apelido,
             correo: values.correo,
+            id_rol: Number(values.id_rol),
             cedula: values.cedula?.trim() || undefined,
+            zonas_asignadas:
+              Number(values.id_rol) === 2 ? values.zonas_asignadas : [],
           };
           await crud.handleSubmit(updateData);
         } else {
@@ -79,6 +101,8 @@ export const UsuariosView = () => {
             correo: values.correo,
             id_rol: Number(values.id_rol),
             cedula: values.cedula ?? "",
+            zonas_asignadas:
+              Number(values.id_rol) === 2 ? values.zonas_asignadas : [],
           };
           await crud.handleSubmit(createData);
         }
@@ -133,6 +157,7 @@ export const UsuariosView = () => {
         onSubmit={handleFormSubmit}
         submitLoading={crud.submitLoading}
         error={crud.error}
+        zonas={zonas}
       />
 
       <ConfirmDialog

@@ -65,6 +65,7 @@ export const useReportes = () => {
     total: data.length,
     pendientes: data.filter((a) => a.estado_alerta === "Pendiente").length,
     resueltas: data.filter((a) => a.estado_alerta === "Resuelta").length,
+    descartadas: data.filter((a) => a.estado_alerta === "Descartada").length,
   }), [data]);
 
   const abrirModalResolucion = useCallback((alerta: AlertaReporte) => {
@@ -97,6 +98,29 @@ export const useReportes = () => {
       await cargarReporte();
     } catch {
       setResolviendoError("No se pudo resolver la alerta. Intenta de nuevo.");
+    } finally {
+      setResolviendoLoading(false);
+    }
+  }, [alertaResolviendo, comentario, cerrarModalResolucion, cargarReporte]);
+
+  const descartarAlerta = useCallback(async () => {
+    if (!alertaResolviendo) return;
+    if (!comentario.trim()) {
+      setResolviendoError("El comentario es obligatorio.");
+      return;
+    }
+
+    setResolviendoLoading(true);
+    setResolviendoError(null);
+    try {
+      await api.post(
+        `/resoluciones/alertas/${alertaResolviendo.id_alerta}/descartar`,
+        { comentario: comentario.trim() },
+      );
+      cerrarModalResolucion();
+      await cargarReporte();
+    } catch {
+      setResolviendoError("No se pudo descartar la alerta. Intenta de nuevo.");
     } finally {
       setResolviendoLoading(false);
     }
@@ -162,6 +186,7 @@ export const useReportes = () => {
     abrirModalResolucion,
     cerrarModalResolucion,
     resolverAlerta,
+    descartarAlerta,
     recargar: cargarReporte,
   };
 };

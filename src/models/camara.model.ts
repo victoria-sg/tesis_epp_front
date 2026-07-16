@@ -1,4 +1,3 @@
-
 export interface Camara {
   id_camara: number;
   id_zona: number;
@@ -38,6 +37,6 @@ export const CAMARA_ESTADOS = ["activo", "inactivo", "mantenimiento"] as const;
 export const TIPOS_FUENTE = [
   { value: "hikvision", label: "Hikvision RTSP" },
   { value: "ezviz", label: "EZVIZ RTSP" },
-  { value: "rtsp_generic", label: "Cámara RTSP Genérica" },
-  { value: "fallback_phone", label: "Teléfono (Fallback)" },
+  { value: "rtsp_generic", label: "Camara RTSP Generica" },
+  { value: "fallback_phone", label: "Telefono" },
 ] as const;

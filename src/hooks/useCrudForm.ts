@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import type { AnyObjectSchema } from "yup";
 
 interface UseCrudFormProps<TFormValues> {
+  isOpen?: boolean;
   isEditing: boolean;
   editingItem: Record<string, unknown> | null;
   validationSchema: AnyObjectSchema;
@@ -12,6 +13,7 @@ interface UseCrudFormProps<TFormValues> {
 }
 
 export const useCrudForm = <TFormValues extends Record<string, unknown>>({
+  isOpen = true,
   isEditing,
   editingItem,
   validationSchema,
@@ -53,7 +55,7 @@ export const useCrudForm = <TFormValues extends Record<string, unknown>>({
       formik.resetForm({ values: initialValues });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditing, editingItem]);
+  }, [isOpen, isEditing, editingItem]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {

@@ -1,3 +1,5 @@
+import api from "../services/api";
+
 interface ClassInfo {
   tipo: string;
   color: number[];
@@ -11,11 +13,11 @@ let classData: Record<string, ClassInfo> | null = null;
 export async function fetchClassInfo(): Promise<void> {
   if (classData) return;
   try {
-    const baseUrl = import.meta.env.VITE_API_URL || "";
-    const res = await fetch(`${baseUrl}/deteccion/clases`);
-    const json = await res.json();
-    if (json.data?.classes) {
-      classData = json.data.classes;
+    const data = await api.get<{
+      classes?: Record<string, ClassInfo>;
+    }>("/deteccion/clases");
+    if (data.data?.classes) {
+      classData = data.data.classes;
     }
   } catch (e) {
     console.error("[Detection] Error fetching class info:", e);
