@@ -16,12 +16,11 @@ import type { LoginFormValues } from "../validators/login.schema";
 import { loginSchema } from "../validators/login.schema";
 
 interface Props {
-  selectedRol: Rol;
+  selectedRol: Rol | null;
   onGoToReset: () => void;
-  onChangeRole: () => void;
 }
 
-export const useLogin = ({ selectedRol, onGoToReset, onChangeRole }: Props) => {
+export const useLogin = ({ selectedRol, onGoToReset }: Props) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,6 +32,12 @@ export const useLogin = ({ selectedRol, onGoToReset, onChangeRole }: Props) => {
     validateOnChange: false,
     onSubmit: async (values) => {
       setServerError(null);
+
+      if (!selectedRol) {
+        setServerError("Selecciona un rol antes de iniciar sesión.");
+        return;
+      }
+
       try {
         const response = await loginService({
           correo: values.correo,
@@ -91,5 +96,5 @@ export const useLogin = ({ selectedRol, onGoToReset, onChangeRole }: Props) => {
     [formik],
   );
 
-  return { formik, serverError, handleSubmit, onGoToReset, onChangeRole };
+  return { formik, serverError, handleSubmit, onGoToReset };
 };

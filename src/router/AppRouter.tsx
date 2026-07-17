@@ -51,19 +51,27 @@ const ForgotPasswordPage = () => {
 
 const AuthRoutes = () => {
   const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
+  const [showSelector, setShowSelector] = useState(true);
   const navigate = useNavigate();
 
-  if (!selectedRol) {
-    return <SelectorRolView onSelect={setSelectedRol} />;
-  }
-
   return (
-    <InicioSesionView
-      selectedRol={selectedRol}
-      selectedRolLabel={ROL_LABELS[selectedRol]}
-      onGoToReset={() => navigate(APP_RESET_PASSWORD)}
-      onChangeRole={() => setSelectedRol(null)}
-    />
+    <>
+      <InicioSesionView
+        selectedRol={selectedRol}
+        selectedRolLabel={selectedRol ? ROL_LABELS[selectedRol] : null}
+        onGoToReset={() => navigate(APP_RESET_PASSWORD)}
+        onOpenRoleSelector={() => setShowSelector(true)}
+      />
+      {showSelector && (
+        <SelectorRolView
+          onSelect={(rol) => {
+            setSelectedRol(rol);
+            setShowSelector(false);
+          }}
+          onClose={selectedRol ? () => setShowSelector(false) : undefined}
+        />
+      )}
+    </>
   );
 };
 

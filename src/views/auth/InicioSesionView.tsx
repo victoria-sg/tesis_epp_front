@@ -7,28 +7,26 @@ import type { Rol } from "../../models/auth.model";
 import { ROLE_STYLES } from "../../models/auth.model";
 
 interface Props {
-  selectedRol: Rol;
-  selectedRolLabel: string;
+  selectedRol: Rol | null;
+  selectedRolLabel: string | null;
   onGoToReset: () => void;
-  onChangeRole: () => void;
+  onOpenRoleSelector: () => void;
 }
 
 export const InicioSesionView = ({
   selectedRol,
   selectedRolLabel,
   onGoToReset,
-  onChangeRole,
+  onOpenRoleSelector,
 }: Props) => {
   const [showPass, setShowPass] = useState(false);
 
   const { formik, serverError, handleSubmit } = useLogin({
     selectedRol,
     onGoToReset,
-    onChangeRole,
   });
 
-  const style = ROLE_STYLES[selectedRol];
-  const accentGradient = style.gradient;
+  const style = selectedRol ? ROLE_STYLES[selectedRol] : null;
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -70,18 +68,20 @@ export const InicioSesionView = ({
                 variant="text"
                 size="sm"
                 icon={<ChevronLeft size={16} />}
-                onClick={onChangeRole}
+                onClick={onOpenRoleSelector}
               >
-                Cambiar rol
+                {selectedRol ? "Cambiar rol" : "Seleccionar rol"}
               </Button>
-              <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-linear-to-r ${accentGradient} text-white shadow-lg`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-pulse" />
-                <span className="text-xs font-bold tracking-[0.04em]">
-                  {selectedRolLabel}
-                </span>
-              </div>
+              {selectedRol && selectedRolLabel && (
+                <div
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-linear-to-r ${style?.gradient} text-white shadow-lg`}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-pulse" />
+                  <span className="text-xs font-bold tracking-[0.04em]">
+                    {selectedRolLabel}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="text-center mb-6 mt-2 text-2xl font-bold text-slate-900 tracking-[-0.01em]">
@@ -142,13 +142,15 @@ export const InicioSesionView = ({
 
               <Button
                 type="submit"
-                disabled={!formik.isValid || formik.isSubmitting}
+                disabled={!selectedRol || !formik.isValid || formik.isSubmitting}
                 variant={
-                  selectedRol === "admin"
+                  !selectedRol
                     ? "primary"
-                    : selectedRol === "sso"
-                      ? "success"
-                      : "primary"
+                    : selectedRol === "admin"
+                      ? "primary"
+                      : selectedRol === "sso"
+                        ? "success"
+                        : "primary"
                 }
                 className="w-full h-12"
               >

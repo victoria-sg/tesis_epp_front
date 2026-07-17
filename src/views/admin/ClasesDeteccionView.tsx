@@ -6,10 +6,14 @@ import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
 import { CustomModal } from "../../components/crud/CustomModal";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { Button } from "../../components/ui/Button";
+import { TrainingConfigModal } from "../../components/admin/TrainingConfigModal";
+import { LabelPromptModal } from "../../components/admin/LabelPromptModal";
+import { ProgressBar } from "../../components/ui/ProgressBar";
 import { usePermission } from "../../hooks/usePermissions";
 import { useSocket } from "../../hooks/useSocket";
 import { SIO_EVENT_ENTRENAMIENTO_STATUS } from "../../constants/socketEvents";
 import type { ClaseDeteccion, ClaseDeteccionCreate } from "../../models/claseDeteccion.model";
+import type { ProgressInfo, TimeInfo, TrainingRequest, TrainingStatusEvent } from "../../models/training.model";
 import { claseDeteccionService } from "../../services/claseDeteccion.service";
 import { PERM_CLASES_DETECCION_EDITAR, PERM_CLASES_DETECCION_ELIMINAR } from "../../constants/permissionsConstants";
 
@@ -53,6 +57,12 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return fallback;
 };
 
+interface ProgressState {
+  progreso: ProgressInfo;
+  tiempos?: TimeInfo;
+  operacion: "autoetiquetado" | "entrenamiento";
+}
+
 export const ClasesDeteccionView = () => {
   const [items, setItems] = useState<ClaseDeteccion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +74,15 @@ export const ClasesDeteccionView = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<Record<number, string | null>>({});
+  const [progressMap, setProgressMap] = useState<Record<number, ProgressState | null>>({});
+
+  const [trainingModalOpen, setTrainingModalOpen] = useState(false);
+  const [trainingTargetId, setTrainingTargetId] = useState<number | null>(null);
+  const [trainingStarting, setTrainingStarting] = useState(false);
+
+  const [labelModalOpen, setLabelModalOpen] = useState(false);
+  const [labelTargetId, setLabelTargetId] = useState<number | null>(null);
+  const [labelStarting, setLabelStarting] = useState(false);
 
   const puedeEditar = usePermission(PERM_CLASES_DETECCION_EDITAR);
   const puedeEliminar = usePermission(PERM_CLASES_DETECCION_ELIMINAR);
@@ -116,7 +135,25 @@ export const ClasesDeteccionView = () => {
 
   useEffect(() => {
     if (!socket) return;
-    const handler = () => loadData();
+    const handler = (data: TrainingStatusEvent) => {
+      if (data.progreso && data.estado === "en_curso") {
+        setProgressMap((prev) => ({
+          ...prev,
+          [data.id_clase_deteccion]: {
+            progreso: data.progreso,
+            tiempos: data.tiempos,
+            operacion: data.operacion,
+          },
+        }));
+      }
+      if (data.estado === "completado" || data.estado === "error") {
+        setProgressMap((prev) => ({
+          ...prev,
+          [data.id_clase_deteccion]: null,
+        }));
+        loadData();
+      }
+    };
     socket.on(SIO_EVENT_ENTRENAMIENTO_STATUS, handler);
     return () => { socket.off(SIO_EVENT_ENTRENAMIENTO_STATUS, handler); };
   }, [socket]);
@@ -180,35 +217,56 @@ export const ClasesDeteccionView = () => {
     }
   };
 
-  const handleAutoLabel = async (id: number) => {
-    setActionLoading((prev) => ({ ...prev, [id]: "etiquetando" }));
+  const handleAutoLabelClick = (id: number) => {
+    setLabelTargetId(id);
+    setLabelModalOpen(true);
+  };
+
+  const handleStartLabeling = async (promptPositivo: string | null, promptNegativo: string | null) => {
+    if (labelTargetId === null) return;
+    setLabelStarting(true);
     setMessage(null);
+    setLabelModalOpen(false);
     try {
-      await claseDeteccionService.autoLabel(id);
-      setMessage(`Autoetiquetado iniciado para la clase.`);
+      const prompts: Record<string, string> = {};
+      if (promptPositivo !== null) prompts.prompt_positivo = promptPositivo;
+      if (promptNegativo !== null) prompts.prompt_negativo = promptNegativo;
+      await claseDeteccionService.autoLabelWithPrompt(labelTargetId, Object.keys(prompts).length ? prompts : undefined);
+      setMessage(`Autoetiquetado iniciado.`);
       loadData();
     } catch (error) {
       setMessage(getErrorMessage(error, "Error al iniciar autoetiquetado."));
     } finally {
-      setActionLoading((prev) => ({ ...prev, [id]: null }));
+      setLabelStarting(false);
+      setLabelTargetId(null);
     }
   };
 
-  const handleTrain = async (id: number) => {
-    setActionLoading((prev) => ({ ...prev, [id]: "entrenando" }));
+  const handleTrainClick = (id: number) => {
+    setTrainingTargetId(id);
+    setTrainingModalOpen(true);
+  };
+
+  const handleStartTraining = async (request: TrainingRequest) => {
+    if (trainingTargetId === null) return;
+    setTrainingStarting(true);
     setMessage(null);
+    setTrainingModalOpen(false);
     try {
-      await claseDeteccionService.train(id);
-      setMessage(`Entrenamiento iniciado.`);
+      await claseDeteccionService.train(trainingTargetId, request);
+      setMessage(`Entrenamiento iniciado con preset "${request.preset}".`);
       loadData();
     } catch (error) {
       setMessage(getErrorMessage(error, "Error al iniciar entrenamiento."));
     } finally {
-      setActionLoading((prev) => ({ ...prev, [id]: null }));
+      setTrainingStarting(false);
+      setTrainingTargetId(null);
     }
   };
 
   const isPendingAction = (id: number, action: string) => actionLoading[id] === action;
+
+  const getProgressState = (id: number) => progressMap[id] ?? null;
 
   return (
     <div>
@@ -271,131 +329,171 @@ export const ClasesDeteccionView = () => {
                 </tr>
               </thead>
               <tbody>
-                {(Array.isArray(filtered) ? filtered : []).map((item) => (
-                  <tr key={item.id_clase_deteccion} className="border-t border-gray-100">
-                    <td className="px-4 py-3 font-medium">
-                      <span className="inline-flex items-center gap-2">
-                        <ScanSearch size={14} />
-                        {item.nombre_visible}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">{item.codigo_positivo}</td>
-                    <td className="px-4 py-3 font-mono text-xs">{item.codigo_negativo ?? "-"}</td>
-                    <td className="px-4 py-3">
-                      {item.origen === "personalizada" ? "Modelo especializado" : "Modelo principal"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium ${
-                        (["autoetiquetado", "entrenando", "listo"].includes(item.estado_entrenamiento)) ? "bg-emerald-50 text-emerald-700" :
-                        item.estado_entrenamiento === "autoetiquetando" ? "bg-yellow-50 text-yellow-700" :
-                        "bg-gray-100 text-gray-500"
-                      }`}>
-                        {item.estado_entrenamiento === "autoetiquetando" ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Loader2 size={12} className="animate-spin" />
-                            En proceso
-                          </span>
-                        ) : ["autoetiquetado", "entrenando", "listo"].includes(item.estado_entrenamiento) ? "Si" : "No"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium ${
-                        item.estado_entrenamiento === "listo" ? "bg-emerald-50 text-emerald-700" :
-                        item.estado_entrenamiento === "entrenando" ? "bg-yellow-50 text-yellow-700" :
-                        "bg-gray-100 text-gray-500"
-                      }`}>
-                        {item.estado_entrenamiento === "entrenando" ? (
-                          <span className="inline-flex items-center gap-1.5">
-                            <Loader2 size={12} className="animate-spin" />
-                            En proceso
-                          </span>
-                        ) : item.estado_entrenamiento === "listo" ? "Si" : "No"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">{item.activa ? "Si" : "No"}</td>
-                    <td className="px-4 py-3">
-                      {!item.solo_lectura && (
-                        <div className="flex items-center justify-center gap-1.5">
-                          {item.estado_entrenamiento === "pendiente" && puedeEditar && (
-                            <button
-                              className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
-                              onClick={() => handleAutoLabel(item.id_clase_deteccion)}
-                              disabled={isPendingAction(item.id_clase_deteccion, "etiquetando")}
-                              title="Autoetiquetar imagenes con Florence-2"
-                            >
-                              {isPendingAction(item.id_clase_deteccion, "etiquetando") ? (
+                {(Array.isArray(filtered) ? filtered : []).map((item) => {
+                  const ps = getProgressState(item.id_clase_deteccion);
+                  return (
+                    <tr key={item.id_clase_deteccion} className="border-t border-gray-100">
+                      <td className="px-4 py-3 font-medium">
+                        <span className="inline-flex items-center gap-2">
+                          <ScanSearch size={14} />
+                          {item.nombre_visible}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs">{item.codigo_positivo}</td>
+                      <td className="px-4 py-3 font-mono text-xs">{item.codigo_negativo ?? "-"}</td>
+                      <td className="px-4 py-3">
+                        {item.origen === "personalizada" ? "Modelo especializado" : "Modelo principal"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {ps?.operacion === "autoetiquetado" ? (
+                          <ProgressBar progreso={ps.progreso} tiempos={ps.tiempos} variant="labeling" compact />
+                        ) : (
+                          <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium ${
+                            (["autoetiquetado", "entrenando", "listo"].includes(item.estado_entrenamiento)) ? "bg-emerald-50 text-emerald-700" :
+                            item.estado_entrenamiento === "autoetiquetando" ? "bg-yellow-50 text-yellow-700" :
+                            "bg-gray-100 text-gray-500"
+                          }`}>
+                            {item.estado_entrenamiento === "autoetiquetando" ? (
+                              <span className="inline-flex items-center gap-1.5">
                                 <Loader2 size={12} className="animate-spin" />
-                              ) : (
-                                <Sparkles size={12} />
-                              )}
-                              Etiquetar
-                            </button>
-                          )}
-                          {item.estado_entrenamiento === "autoetiquetado" && puedeEditar && (
-                            <button
-                              className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
-                              onClick={() => handleTrain(item.id_clase_deteccion)}
-                              disabled={isPendingAction(item.id_clase_deteccion, "entrenando")}
-                              title="Entrenar modelo YOLO"
-                            >
-                              {isPendingAction(item.id_clase_deteccion, "entrenando") ? (
+                                En proceso
+                              </span>
+                            ) : ["autoetiquetado", "entrenando", "listo"].includes(item.estado_entrenamiento) ? "Si" : "No"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {ps?.operacion === "entrenamiento" ? (
+                          <ProgressBar progreso={ps.progreso} tiempos={ps.tiempos} variant="training" compact />
+                        ) : (
+                          <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium ${
+                            item.estado_entrenamiento === "listo" ? "bg-emerald-50 text-emerald-700" :
+                            item.estado_entrenamiento === "entrenando" ? "bg-yellow-50 text-yellow-700" :
+                            "bg-gray-100 text-gray-500"
+                          }`}>
+                            {item.estado_entrenamiento === "entrenando" ? (
+                              <span className="inline-flex items-center gap-1.5">
                                 <Loader2 size={12} className="animate-spin" />
-                              ) : (
-                                <BookOpen size={12} />
-                              )}
-                              Entrenar
-                            </button>
-                          )}
-                          {(item.estado_entrenamiento === "error" || item.estado_entrenamiento === "listo") && puedeEditar && (
-                            <>
+                                En proceso
+                              </span>
+                            ) : item.estado_entrenamiento === "listo" ? "Si" : "No"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">{item.activa ? "Si" : "No"}</td>
+                      <td className="px-4 py-3">
+                        {!item.solo_lectura && (
+                          <div className="flex items-center justify-center gap-1.5">
+                            {item.estado_entrenamiento === "pendiente" && puedeEditar && (
                               <button
                                 className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
-                                onClick={() => handleAutoLabel(item.id_clase_deteccion)}
+                                onClick={() => handleAutoLabelClick(item.id_clase_deteccion)}
                                 disabled={isPendingAction(item.id_clase_deteccion, "etiquetando")}
-                                title="Re-etiquetar imagenes"
+                                title="Autoetiquetar imagenes con Florence-2"
                               >
                                 {isPendingAction(item.id_clase_deteccion, "etiquetando") ? (
                                   <Loader2 size={12} className="animate-spin" />
                                 ) : (
-                                  <RotateCcw size={12} />
+                                  <Sparkles size={12} />
                                 )}
                                 Etiquetar
                               </button>
+                            )}
+                            {item.estado_entrenamiento === "autoetiquetado" && puedeEditar && (
                               <button
                                 className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
-                                onClick={() => handleTrain(item.id_clase_deteccion)}
-                                disabled={isPendingAction(item.id_clase_deteccion, "entrenando")}
-                                title="(Re)entrenar modelo"
+                                onClick={() => handleTrainClick(item.id_clase_deteccion)}
+                                disabled={trainingStarting && trainingTargetId === item.id_clase_deteccion}
+                                title="Entrenar modelo YOLO"
                               >
-                                {isPendingAction(item.id_clase_deteccion, "entrenando") ? (
+                                {trainingStarting && trainingTargetId === item.id_clase_deteccion ? (
                                   <Loader2 size={12} className="animate-spin" />
                                 ) : (
                                   <BookOpen size={12} />
                                 )}
                                 Entrenar
                               </button>
-                            </>
-                          )}
-                          {item.estado_entrenamiento === "autoetiquetando" || item.estado_entrenamiento === "entrenando" ? (
-                            <span className="inline-flex h-7 items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 text-xs text-gray-400">
-                              <Loader2 size={12} className="animate-spin" />
-                              En curso
-                            </span>
-                          ) : null}
-                          <ActionButtons
-                            onEdit={puedeEditar ? () => {} : undefined}
-                            onDelete={puedeEliminar ? () => confirmDelete(item.id_clase_deteccion) : undefined}
-                          />
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                            )}
+                            {(item.estado_entrenamiento === "error" || item.estado_entrenamiento === "listo") && puedeEditar && (
+                              <>
+                                <button
+                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                  onClick={() => handleAutoLabelClick(item.id_clase_deteccion)}
+                                  disabled={isPendingAction(item.id_clase_deteccion, "etiquetando")}
+                                  title="Re-etiquetar imagenes"
+                                >
+                                  {isPendingAction(item.id_clase_deteccion, "etiquetando") ? (
+                                    <Loader2 size={12} className="animate-spin" />
+                                  ) : (
+                                    <RotateCcw size={12} />
+                                  )}
+                                  Etiquetar
+                                </button>
+                                <button
+                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                  onClick={() => handleTrainClick(item.id_clase_deteccion)}
+                                  disabled={trainingStarting && trainingTargetId === item.id_clase_deteccion}
+                                  title="(Re)entrenar modelo"
+                                >
+                                  {trainingStarting && trainingTargetId === item.id_clase_deteccion ? (
+                                    <Loader2 size={12} className="animate-spin" />
+                                  ) : (
+                                    <BookOpen size={12} />
+                                  )}
+                                  Entrenar
+                                </button>
+                              </>
+                            )}
+                            {(item.estado_entrenamiento === "autoetiquetando" || item.estado_entrenamiento === "entrenando") && !ps && (
+                              <span className="inline-flex h-7 items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 text-xs text-gray-400">
+                                <Loader2 size={12} className="animate-spin" />
+                                En curso
+                              </span>
+                            )}
+                            {ps && (
+                              <div className="w-28">
+                                <ProgressBar progreso={ps.progreso} tiempos={ps.tiempos} variant={ps.operacion === "autoetiquetado" ? "labeling" : "training"} compact />
+                              </div>
+                            )}
+                            <ActionButtons
+                              onEdit={puedeEditar ? () => {} : undefined}
+                              onDelete={puedeEliminar ? () => confirmDelete(item.id_clase_deteccion) : undefined}
+                            />
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
+      {labelTargetId !== null && (
+        <LabelPromptModal
+          open={labelModalOpen}
+          onClose={() => { setLabelModalOpen(false); setLabelTargetId(null); }}
+          idClase={labelTargetId}
+          nombreClase={items.find((i) => i.id_clase_deteccion === labelTargetId)?.nombre_visible ?? ""}
+          codigoPositivo={items.find((i) => i.id_clase_deteccion === labelTargetId)?.codigo_positivo ?? ""}
+          codigoNegativo={items.find((i) => i.id_clase_deteccion === labelTargetId)?.codigo_negativo ?? null}
+          tieneNegativo={items.find((i) => i.id_clase_deteccion === labelTargetId)?.tiene_negativo ?? false}
+          promptPositivoInicial={items.find((i) => i.id_clase_deteccion === labelTargetId)?.prompt_positivo ?? null}
+          promptNegativoInicial={items.find((i) => i.id_clase_deteccion === labelTargetId)?.prompt_negativo ?? null}
+          onStartLabeling={handleStartLabeling}
+          loading={labelStarting}
+        />
+      )}
+
+      <TrainingConfigModal
+        open={trainingModalOpen}
+        onClose={() => { setTrainingModalOpen(false); setTrainingTargetId(null); }}
+        idClase={trainingTargetId ?? 0}
+        onStartTraining={handleStartTraining}
+        loading={trainingStarting}
+      />
 
       <ConfirmDialog
         open={deleteConfirmOpen}

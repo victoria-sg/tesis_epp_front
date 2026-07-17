@@ -1,5 +1,6 @@
 import { API_ROUTES } from "../constants/apiRoutesConstants";
 import type { ClaseDeteccion, ClaseDeteccionCreate } from "../models/claseDeteccion.model";
+import type { TrainingRequest } from "../models/training.model";
 import api from "./api";
 
 export const claseDeteccionService = {
@@ -31,15 +32,23 @@ export const claseDeteccionService = {
     const response = await api.post(`${API_ROUTES.CLASES_DETECCION}/${id}/autoetiquetar`);
     return response.data;
   },
-  train: async (id: number, epochs?: number) => {
-    const params: Record<string, unknown> = {};
-    if (epochs !== undefined) params.epochs = epochs;
-    const response = await api.post(`${API_ROUTES.CLASES_DETECCION}/${id}/entrenar`, undefined, { params });
+  autoLabelWithPrompt: async (id: number, prompts?: { prompt_positivo?: string; prompt_negativo?: string }) => {
+    const response = await api.post(`${API_ROUTES.CLASES_DETECCION}/${id}/autoetiquetar`, prompts ?? {});
+    return response.data;
+  },
+  train: async (id: number, request?: TrainingRequest) => {
+    const response = await api.post(`${API_ROUTES.CLASES_DETECCION}/${id}/entrenar`, request);
     return response.data;
   },
   getTaskStatus: async (taskId: string) => {
     const response = await api.get(`${API_ROUTES.CLASES_DETECCION}/tareas/${taskId}`);
     return response.data;
+  },
+  getEstimatedTime: async (id: number, operacion: string, preset: string, numItems: number = 30) => {
+    const response = await api.get(`${API_ROUTES.CLASES_DETECCION}/${id}/estimar-tiempo`, {
+      params: { operacion, preset, num_items: numItems },
+    });
+    return response.data?.data ?? response.data;
   },
   remove: async (id: number): Promise<void> => {
     await api.delete(`${API_ROUTES.CLASES_DETECCION}/${id}`);

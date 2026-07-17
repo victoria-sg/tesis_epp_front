@@ -1,4 +1,4 @@
-import { ArrowRight, Cog, HardHat, Lock, ShieldCheck } from "lucide-react";
+import { ArrowRight, Cog, HardHat, Lock, ShieldCheck, X } from "lucide-react";
 import { useRoleSelector } from "../../controllers/useRoleSelector";
 import type { Rol } from "../../models/auth.model";
 import { ROLE_INFO, ROLE_STYLES } from "../../models/auth.model";
@@ -7,14 +7,24 @@ const ICONS = { HardHat, ShieldCheck, Cog };
 
 interface Props {
   onSelect: (rol: Rol) => void;
+  onClose?: () => void;
 }
 
-export const SelectorRolView = ({ onSelect }: Props) => {
+export const SelectorRolView = ({ onSelect, onClose }: Props) => {
   const { roles, onSelect: handleSelect } = useRoleSelector({ onSelect });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-slate-900/40">
       <div className="relative z-10 w-full max-w-2xl my-auto bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 p-12">
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+          >
+            <X size={20} />
+          </button>
+        )}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
             <div className="w-14 h-14 rounded-xl  bg-gradient-to-br from-blue-500 to-blue-700 shadow-md flex items-center justify-center">

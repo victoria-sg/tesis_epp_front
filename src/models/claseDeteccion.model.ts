@@ -9,6 +9,8 @@ export interface ClaseDeteccion {
   modelo_path?: string | null;
   activa: boolean;
   solo_lectura: boolean;
+  prompt_positivo?: string | null;
+  prompt_negativo?: string | null;
 }
 
 export interface ClaseDeteccionCreate {
@@ -17,4 +19,6 @@ export interface ClaseDeteccionCreate {
   codigo_negativo?: string | null;
   tiene_negativo: boolean;
   activa?: boolean;
+  prompt_positivo?: string | null;
+  prompt_negativo?: string | null;
 }
