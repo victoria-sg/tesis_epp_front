@@ -188,7 +188,7 @@ export const ZonasView = () => {
               </div>
               <div>
                 <div
-                  className="text-number-md" style={{ color: config.color }}
+                  className="text-xl font-bold text-slate-900 tabular-nums" style={{ color: config.color }}
                 >
                   {contadores[nivel]}
                 </div>

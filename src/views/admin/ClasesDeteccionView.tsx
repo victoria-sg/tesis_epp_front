@@ -1,5 +1,5 @@
 import { Plus, ScanSearch, Sparkles, BookOpen, RotateCcw, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ActionButtons } from "../../components/crud/ActionButtons";
 import { ConfirmDialog } from "../../components/crud/ConfirmDialog";
@@ -20,28 +20,12 @@ import { PERM_CLASES_DETECCION_EDITAR, PERM_CLASES_DETECCION_ELIMINAR } from "..
 const initialForm: ClaseDeteccionCreate = {
   nombre_visible: "",
   codigo_positivo: "",
-  codigo_negativo: "",
+  codigo_negativo: null,
   tiene_negativo: false,
   activa: true,
 };
 
-const statusLabel: Record<string, string> = {
-  pendiente: "Pendiente",
-  autoetiquetando: "Autoetiquetando...",
-  autoetiquetado: "Autoetiquetado",
-  entrenando: "Entrenando...",
-  listo: "Listo",
-  error: "Error",
-};
 
-const statusColor: Record<string, string> = {
-  pendiente: "bg-gray-100 text-gray-600",
-  autoetiquetando: "bg-yellow-50 text-yellow-700",
-  autoetiquetado: "bg-blue-50 text-blue-700",
-  entrenando: "bg-yellow-50 text-yellow-700",
-  listo: "bg-emerald-50 text-emerald-700",
-  error: "bg-red-50 text-red-700",
-};
 
 const getErrorMessage = (error: unknown, fallback: string) => {
   if (typeof error === "object" && error !== null && "response" in error) {
@@ -71,9 +55,11 @@ export const ClasesDeteccionView = () => {
   const [form, setForm] = useState<ClaseDeteccionCreate>(initialForm);
   const [positiveFiles, setPositiveFiles] = useState<File[]>([]);
   const [negativeFiles, setNegativeFiles] = useState<File[]>([]);
+  const positiveInputRef = useRef<HTMLInputElement>(null);
+  const negativeInputRef = useRef<HTMLInputElement>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<Record<number, string | null>>({});
+  const [actionLoading, _setActionLoading] = useState<Record<number, string | null>>({});
   const [progressMap, setProgressMap] = useState<Record<number, ProgressState | null>>({});
 
   const [trainingModalOpen, setTrainingModalOpen] = useState(false);
@@ -137,10 +123,11 @@ export const ClasesDeteccionView = () => {
     if (!socket) return;
     const handler = (data: TrainingStatusEvent) => {
       if (data.progreso && data.estado === "en_curso") {
+        const progreso = data.progreso;
         setProgressMap((prev) => ({
           ...prev,
           [data.id_clase_deteccion]: {
-            progreso: data.progreso,
+            progreso,
             tiempos: data.tiempos,
             operacion: data.operacion,
           },
@@ -193,13 +180,11 @@ export const ClasesDeteccionView = () => {
         ...form,
         codigo_negativo: form.tiene_negativo ? form.codigo_negativo : null,
       });
-      if (positiveFiles.length) {
-        await claseDeteccionService.uploadImages(
-          created.id_clase_deteccion,
-          "positivo",
-          positiveFiles,
-        );
-      }
+      await claseDeteccionService.uploadImages(
+        created.id_clase_deteccion,
+        "positivo",
+        positiveFiles,
+      );
       if (form.tiene_negativo && negativeFiles.length) {
         await claseDeteccionService.uploadImages(
           created.id_clase_deteccion,
@@ -291,11 +276,11 @@ export const ClasesDeteccionView = () => {
         </div>
       )}
 
-      <div className="rounded-lg border border-[#e5e5e5] bg-white">
-        <div className="flex items-center justify-between gap-4 border-b border-[#ececec] px-5 py-4">
+      <div className="rounded-lg border border-slate-200 bg-white">
+        <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
           <div>
-            <div className="text-table-title">
-              Clases detectables <span className="text-table-count">· {Array.isArray(filtered) ? filtered.length : 0}</span>
+            <div className="text-base font-semibold text-slate-900">
+              Clases detectables <span className="text-sm text-slate-500 font-normal">· {Array.isArray(filtered) ? filtered.length : 0}</span>
             </div>
             <div className="mt-1 text-[11px] text-gray-500">
               Las clases del modelo principal son solo lectura.
@@ -386,7 +371,7 @@ export const ClasesDeteccionView = () => {
                           <div className="flex items-center justify-center gap-1.5">
                             {item.estado_entrenamiento === "pendiente" && puedeEditar && (
                               <button
-                                className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                className="inline-flex h-7 items-center gap-1 rounded-md border border-slate-300 px-2 text-xs hover:border-brand-500 hover:bg-brand-50 hover:text-blue-700 disabled:opacity-50"
                                 onClick={() => handleAutoLabelClick(item.id_clase_deteccion)}
                                 disabled={isPendingAction(item.id_clase_deteccion, "etiquetando")}
                                 title="Autoetiquetar imagenes con Florence-2"
@@ -401,7 +386,7 @@ export const ClasesDeteccionView = () => {
                             )}
                             {item.estado_entrenamiento === "autoetiquetado" && puedeEditar && (
                               <button
-                                className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                className="inline-flex h-7 items-center gap-1 rounded-md border border-slate-300 px-2 text-xs hover:border-brand-500 hover:bg-brand-50 hover:text-blue-700 disabled:opacity-50"
                                 onClick={() => handleTrainClick(item.id_clase_deteccion)}
                                 disabled={trainingStarting && trainingTargetId === item.id_clase_deteccion}
                                 title="Entrenar modelo YOLO"
@@ -417,7 +402,7 @@ export const ClasesDeteccionView = () => {
                             {(item.estado_entrenamiento === "error" || item.estado_entrenamiento === "listo") && puedeEditar && (
                               <>
                                 <button
-                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-slate-300 px-2 text-xs hover:border-brand-500 hover:bg-brand-50 hover:text-blue-700 disabled:opacity-50"
                                   onClick={() => handleAutoLabelClick(item.id_clase_deteccion)}
                                   disabled={isPendingAction(item.id_clase_deteccion, "etiquetando")}
                                   title="Re-etiquetar imagenes"
@@ -430,7 +415,7 @@ export const ClasesDeteccionView = () => {
                                   Etiquetar
                                 </button>
                                 <button
-                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-[#d4d4d4] px-2 text-xs hover:border-[#2563eb] hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
+                                  className="inline-flex h-7 items-center gap-1 rounded-md border border-slate-300 px-2 text-xs hover:border-brand-500 hover:bg-brand-50 hover:text-blue-700 disabled:opacity-50"
                                   onClick={() => handleTrainClick(item.id_clase_deteccion)}
                                   disabled={trainingStarting && trainingTargetId === item.id_clase_deteccion}
                                   title="(Re)entrenar modelo"
@@ -529,17 +514,34 @@ export const ClasesDeteccionView = () => {
             />
           </label>
 
-          <label className="block text-xs font-semibold text-gray-800">
-            Imagenes positivas
+          <div>
+            <span className="block text-xs font-semibold text-gray-800 mb-1.5">
+              Imagenes positivas
+            </span>
             <input
-              className="mt-1 w-full text-xs"
+              ref={positiveInputRef}
               type="file"
               accept="image/*"
               multiple
+              className="hidden"
               onChange={(e) => setPositiveFiles(Array.from(e.target.files ?? []))}
-              required
             />
-          </label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => positiveInputRef.current?.click()}
+              >
+                {positiveFiles.length ? `+ Agregar (${positiveFiles.length})` : "+ Agregar imagenes"}
+              </Button>
+              {positiveFiles.length > 0 && (
+                <span className="inline-flex items-center text-xs text-gray-500">
+                  {positiveFiles.length} archivo(s) seleccionado(s)
+                </span>
+              )}
+            </div>
+          </div>
 
           <label className="flex items-center gap-2 text-xs font-semibold text-gray-800">
             <input
@@ -562,17 +564,34 @@ export const ClasesDeteccionView = () => {
                   required={form.tiene_negativo}
                 />
               </label>
-              <label className="block text-xs font-semibold text-gray-800">
-                Imagenes negativas
+              <div>
+                <span className="block text-xs font-semibold text-gray-800 mb-1.5">
+                  Imagenes negativas
+                </span>
                 <input
-                  className="mt-1 w-full text-xs"
+                  ref={negativeInputRef}
                   type="file"
                   accept="image/*"
                   multiple
+                  className="hidden"
                   onChange={(e) => setNegativeFiles(Array.from(e.target.files ?? []))}
-                  required={form.tiene_negativo}
                 />
-              </label>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => negativeInputRef.current?.click()}
+                  >
+                    {negativeFiles.length ? `+ Agregar (${negativeFiles.length})` : "+ Agregar imagenes"}
+                  </Button>
+                  {negativeFiles.length > 0 && (
+                    <span className="inline-flex items-center text-xs text-gray-500">
+                      {negativeFiles.length} archivo(s) seleccionado(s)
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 

@@ -21,10 +21,10 @@ export const ActionButtons = ({
           onEdit();
         }}
         disabled={editDisabled}
-        className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#3b82f6] hover:bg-blue-50 flex items-center justify-center disabled:opacity-30 transition-colors"
+        className="h-8 w-8 rounded-md border border-slate-300 hover:border-brand-500 hover:bg-brand-50 flex items-center justify-center disabled:opacity-30 transition-colors"
         title="Editar"
       >
-        <Pencil size={13} className="text-[#6b6b6b] hover:text-[#3b82f6]" />
+        <Pencil size={13} className="text-slate-500 hover:text-brand-500" />
       </button>
     )}
     {onDelete && (
@@ -34,10 +34,10 @@ export const ActionButtons = ({
           onDelete();
         }}
         disabled={deleteDisabled}
-        className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#ef4444] hover:bg-red-50 flex items-center justify-center disabled:opacity-30 transition-colors"
+        className="h-8 w-8 rounded-md border border-slate-300 hover:border-danger-500 hover:bg-danger-50 flex items-center justify-center disabled:opacity-30 transition-colors"
         title="Eliminar"
       >
-        <Trash2 size={13} className="text-[#6b6b6b] hover:text-[#ef4444]" />
+        <Trash2 size={13} className="text-slate-500 hover:text-danger-500" />
       </button>
     )}
   </div>

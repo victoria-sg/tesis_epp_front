@@ -10,7 +10,7 @@ interface Props {
 
 const variantColors: Record<string, { bar: string; bg: string; text: string }> = {
   labeling: { bar: "bg-blue-500", bg: "bg-blue-100", text: "text-blue-700" },
-  training: { bar: "bg-amber-500", bg: "bg-amber-100", text: "text-amber-700" },
+  training: { bar: "bg-warning-500", bg: "bg-warning-50", text: "text-warning-600" },
 };
 
 function formatTime(seconds: number): string {
@@ -54,7 +54,7 @@ export const ProgressBar = ({ progreso, tiempos, variant = "training", compact =
           {progreso.detalle} · {pct}%
         </span>
         {tiempos && (
-          <span className="inline-flex items-center gap-1 text-gray-500">
+          <span className="inline-flex items-center gap-1 text-slate-500">
             <Clock size={11} />
             {formatTime(tiempos.transcurrido_seg)} · ≈ {formatTime(tiempos.estimado_restante_seg)} restante
           </span>

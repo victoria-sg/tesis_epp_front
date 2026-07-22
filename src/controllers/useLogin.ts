@@ -17,10 +17,9 @@ import { loginSchema } from "../validators/login.schema";
 
 interface Props {
   selectedRol: Rol | null;
-  onGoToReset: () => void;
 }
 
-export const useLogin = ({ selectedRol, onGoToReset }: Props) => {
+export const useLogin = ({ selectedRol }: Props) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -96,5 +95,5 @@ export const useLogin = ({ selectedRol, onGoToReset }: Props) => {
     [formik],
   );
 
-  return { formik, serverError, handleSubmit, onGoToReset };
+  return { formik, serverError, handleSubmit };
 };

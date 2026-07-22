@@ -24,30 +24,21 @@ export const CustomModal = ({
       onClick={onClose}
     >
       <div
-        className={`bg-white rounded-xl shadow-2xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
+        className={`bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col`}
         onClick={(e) => e.stopPropagation()}
       >
-        
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#ececec] shrink-0">
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#000",
-              letterSpacing: "-0.01em",
-            }}
-          >
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 shrink-0">
+          <div className="text-lg font-bold text-slate-900 tracking-tight">
             {title}
           </div>
           <button
             onClick={onClose}
-            className="h-8 w-8 rounded-md flex items-center justify-center hover:bg-[#f5f5f5] transition-colors text-[#6b6b6b]"
+            className="h-8 w-8 rounded-md flex items-center justify-center hover:bg-slate-100 transition-colors text-slate-500"
           >
             <X size={16} />
           </button>
         </div>
 
-        
         <div className="flex-1 overflow-y-auto px-6 py-5">{children}</div>
       </div>
     </div>

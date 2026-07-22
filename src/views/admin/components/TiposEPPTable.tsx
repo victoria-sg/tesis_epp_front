@@ -104,25 +104,25 @@ export const TiposEPPTable = ({
       render: (t) =>
         puedeEditar ? (
           <button
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#d4d4d4] hover:border-[#2563eb] hover:bg-blue-50"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 hover:border-brand-500 hover:bg-brand-50"
             title="Editar EPP"
             onClick={(e) => {
               e.stopPropagation();
               onEdit(t);
             }}
           >
-            <Pencil size={13} className="text-[#2563eb]" />
+            <Pencil size={13} className="text-brand-500" />
           </button>
         ) : null,
     },
   ];
 
   return (
-    <div className="rounded-lg border border-[#e5e5e5] bg-white">
-      <div className="flex items-center justify-between gap-4 border-b border-[#ececec] px-5 py-4">
+    <div className="rounded-lg border border-slate-200 bg-white">
+      <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
         <div>
-          <div className="text-table-title">
-            Tipos de EPP <span className="text-table-count">· {total}</span>
+          <div className="text-base font-semibold text-slate-900">
+            Tipos de EPP <span className="text-sm text-slate-500 font-normal">· {total}</span>
           </div>
           <div className="mt-1 text-[11px] text-gray-500">
             Persona siempre viene del modelo grande; cada EPP decide sus clases y modelos.

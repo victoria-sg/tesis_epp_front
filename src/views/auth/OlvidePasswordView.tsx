@@ -1,26 +1,38 @@
-import { ArrowLeft, MailCheck, ShieldCheck } from "lucide-react";
-import { Button } from "../../components/ui/Button";
+import { ArrowLeft, MailCheck, X } from "lucide-react";
 import { CustomInput } from "../../components/form/CustomInput";
+import { Button } from "../../components/ui/Button";
 import { useForgotPassword } from "../../controllers/useForgotPassword";
 
 interface Props {
-  onBackToLogin: () => void;
+  onClose: () => void;
 }
 
-export const OlvidePasswordView = ({ onBackToLogin }: Props) => {
+export const OlvidePasswordView = ({ onClose }: Props) => {
   const { formik, enviado, serverError, handleSubmit } = useForgotPassword();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-slate-900/40">
+      <div className="relative z-10 w-full max-w-md my-auto bg-white rounded-2xl shadow-2xl ring-1 ring-black/10 p-10 md:p-12">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <X size={20} />
+        </button>
+
         <div className="flex flex-col items-center gap-3 mb-6">
-          <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
+          <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg shadow-purple-500/30 bg-white">
+            <img
+              src="/logo.png"
+              alt="EPP Monitor"
+              className="w-full h-full object-contain mix-blend-multiply"
+            />
           </div>
           <div className="text-2xl font-bold text-slate-900 text-center tracking-[-0.01em]">
             Recuperar contraseña
           </div>
-          <div className="text-sm text-gray-500 text-center">
+          <div className="text-sm text-slate-500 text-center">
             Ingresa tu correo y te enviaremos un enlace para definir una
             contraseña nueva.
           </div>
@@ -33,10 +45,7 @@ export const OlvidePasswordView = ({ onBackToLogin }: Props) => {
               Te enviamos un enlace de recuperación a tu correo. Revisa tu
               bandeja de entrada (y la carpeta de spam) en los próximos minutos.
             </div>
-            <Button
-              variant="text"
-              onClick={onBackToLogin}
-            >
+            <Button variant="text" onClick={onClose}>
               Volver a iniciar sesión
             </Button>
           </div>
@@ -73,7 +82,7 @@ export const OlvidePasswordView = ({ onBackToLogin }: Props) => {
             <Button
               variant="text"
               icon={<ArrowLeft size={14} />}
-              onClick={onBackToLogin}
+              onClick={onClose}
               className="w-full justify-center"
             >
               Volver a iniciar sesión

@@ -87,13 +87,13 @@ export const CargadorDeteccionImagen = () => {
         <div className="space-y-4">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-[#d4d4d4] hover:border-violet-400 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#fafafa] hover:bg-violet-50/30"
+            className="border-2 border-dashed border-slate-300 hover:border-violet-400 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50 hover:bg-violet-50/30"
           >
-            <Upload size={32} className="text-[#9b9b9b] mb-3" />
-            <p className="text-sm font-medium text-[#1a1a1a]">
+            <Upload size={32} className="text-slate-400 mb-3" />
+            <p className="text-sm font-medium text-slate-800">
               Haz clic para subir una imagen
             </p>
-            <p className="text-xs text-[#9b9b9b] mt-1">JPG, PNG • Máx. 10 MB</p>
+            <p className="text-xs text-slate-400 mt-1">JPG, PNG • Máx. 10 MB</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -103,9 +103,9 @@ export const CargadorDeteccionImagen = () => {
             />
           </div>
 
-          <div className="space-y-3 bg-[#f5f5f5] rounded-lg p-4">
+          <div className="space-y-3 bg-slate-100 rounded-lg p-4">
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>Confianza mínima</span>
                 <span>{confianza.toFixed(2)}</span>
               </div>
@@ -120,7 +120,7 @@ export const CargadorDeteccionImagen = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>IoU máximo</span>
                 <span>{iou.toFixed(2)}</span>
               </div>
@@ -137,7 +137,7 @@ export const CargadorDeteccionImagen = () => {
             <button
               onClick={handleAnalyze}
               disabled={!previewUrl || loading}
-              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-purple-500 to-purple-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Scan size={16} />
               {loading ? "Analizando..." : "Analizar imagen"}
@@ -147,7 +147,7 @@ export const CargadorDeteccionImagen = () => {
 
         <div className="space-y-4">
           {previewUrl ? (
-            <div className="relative rounded-lg overflow-hidden border border-[#e5e5e5] bg-black">
+            <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-black">
               <img
                 src={previewUrl}
                 alt="Preview"
@@ -162,7 +162,7 @@ export const CargadorDeteccionImagen = () => {
               )}
             </div>
           ) : (
-            <div className="h-64 rounded-lg border border-[#e5e5e5] bg-[#fafafa] flex items-center justify-center text-[#9b9b9b] text-sm">
+            <div className="h-64 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 text-sm">
               La imagen seleccionada aparecerá aquí
             </div>
           )}
@@ -171,19 +171,19 @@ export const CargadorDeteccionImagen = () => {
 
       {resultado && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-            <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
               <AlertTriangle size={16} className="text-amber-500" />
               Resumen de detecciones
             </h3>
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-violet-700">
                   {resultado.personas_detectadas}
                 </div>
-                <div className="text-xs text-[#6b6b6b]">Personas</div>
+                <div className="text-xs text-slate-500">Personas</div>
               </div>
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-green-600">
                   {
                     resultado.detecciones.filter(
@@ -191,9 +191,9 @@ export const CargadorDeteccionImagen = () => {
                     ).length
                   }
                 </div>
-                <div className="text-xs text-[#6b6b6b]">EPP correcto</div>
+                <div className="text-xs text-slate-500">EPP correcto</div>
               </div>
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-red-500">
                   {
                     resultado.detecciones.filter((d) =>
@@ -201,25 +201,25 @@ export const CargadorDeteccionImagen = () => {
                     ).length
                   }
                 </div>
-                <div className="text-xs text-[#6b6b6b]">Alertas</div>
+                <div className="text-xs text-slate-500">Alertas</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-            <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
               <User size={16} className="text-blue-500" />
               Cumplimiento por trabajador
             </h3>
             {resultado.trabajadores.length === 0 ? (
-              <p className="text-xs text-[#9b9b9b]">
+              <p className="text-xs text-slate-400">
                 No se detectaron trabajadores
               </p>
             ) : (
               <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
+                        <tr className="text-left text-slate-500 border-b border-slate-200">
                           <th className="pb-2 font-medium">#</th>
                           <th className="pb-2 font-medium">Casco</th>
                           <th className="pb-2 font-medium">Vestimenta</th>
@@ -232,7 +232,7 @@ export const CargadorDeteccionImagen = () => {
                       </thead>
                       <tbody>
                         {resultado.trabajadores.map((t) => (
-                          <tr key={t.id} className="border-b border-[#f0f0f0]">
+                          <tr key={t.id} className="border-b border-slate-100">
                             <td className="py-2 font-semibold">{t.id}</td>
                             <td className="py-2">
                               <StatusBadge status={t.casco} />
@@ -282,7 +282,7 @@ function StatusBadge({ status }: { status: string }) {
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1 text-[#9b9b9b] font-medium">
+    <span className="inline-flex items-center gap-1 text-slate-400 font-medium">
       <AlertTriangle size={12} /> No detectado
     </span>
   );

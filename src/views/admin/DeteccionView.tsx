@@ -12,7 +12,7 @@ export const DeteccionView = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-linear-to-br from-violet-500 to-violet-700 flex items-center justify-center shadow-md">
+        <div className="h-10 w-10 rounded-lg bg-linear-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-md">
           <Scan className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -24,14 +24,14 @@ export const DeteccionView = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-[#e5e5e5] shadow-sm overflow-hidden">
-        <div className="flex border-b border-[#e5e5e5]">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+        <div className="flex border-b border-slate-200">
           <button
             onClick={() => setActiveTab("imagen")}
             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
               activeTab === "imagen"
                 ? "border-violet-500 text-violet-700 bg-violet-50/50"
-                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-[#f5f5f5]"
+                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-slate-100"
             }`}
           >
             <Image size={16} />
@@ -42,7 +42,7 @@ export const DeteccionView = () => {
             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
               activeTab === "video"
                 ? "border-violet-500 text-violet-700 bg-violet-50/50"
-                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-[#f5f5f5]"
+                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-slate-100"
             }`}
           >
             <Video size={16} />
@@ -53,7 +53,7 @@ export const DeteccionView = () => {
             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${
               activeTab === "validar"
                 ? "border-violet-500 text-violet-700 bg-violet-50/50"
-                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-[#f5f5f5]"
+                : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-slate-100"
             }`}
           >
             <FlaskConical size={16} />

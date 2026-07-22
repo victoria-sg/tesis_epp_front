@@ -1,6 +1,7 @@
 import { Eye, FileText, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { StatCard } from "../../components/ui/Card";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { StatusBadge } from "../../components/crud/StatusBadge";
@@ -143,12 +144,12 @@ export const ReportesEmitidosView = () => {
         }
       />
 
-      <div className="bg-white border border-[#e5e5e5] rounded-lg mb-6">
-        <div className="px-5 py-4 border-b border-[#ececec] flex items-center gap-2">
+      <div className="bg-white border border-slate-200 rounded-md mb-6">
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center gap-2">
           <FileText size={16} className="text-blue-600" />
-          <div className="text-table-title">
+          <div className="text-base font-semibold text-slate-900">
             Reportes recibidos{" "}
-            <span className="text-table-count">- {reportes.length}</span>
+            <span className="text-sm text-slate-500 font-normal">- {reportes.length}</span>
           </div>
         </div>
         {error ? (
@@ -171,29 +172,17 @@ export const ReportesEmitidosView = () => {
       {seleccionado && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4">
-              <div className="text-number-md">{seleccionado.resumen.total_alertas}</div>
-              <div className="text-xs text-gray-500">Alertas reportadas</div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4">
-              <div className="text-number-md">{seleccionado.resumen.pendientes}</div>
-              <div className="text-xs text-gray-500">Pendientes</div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4">
-              <div className="text-number-md">{seleccionado.resumen.cumplimiento}%</div>
-              <div className="text-xs text-gray-500">Cumplimiento</div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4">
-              <div className="text-number-md">{seleccionado.zonas.length}</div>
-              <div className="text-xs text-gray-500">Zonas con eventos</div>
-            </div>
+            <StatCard label="Alertas reportadas" value={seleccionado.resumen.total_alertas} />
+            <StatCard label="Pendientes" value={seleccionado.resumen.pendientes} />
+            <StatCard label="Cumplimiento" value={`${seleccionado.resumen.cumplimiento}%`} />
+            <StatCard label="Zonas con eventos" value={seleccionado.zonas.length} />
           </div>
 
-          <div className="bg-white border border-[#e5e5e5] rounded-lg">
-            <div className="px-5 py-4 border-b border-[#ececec]">
-              <div className="text-table-title">
+          <div className="bg-white border border-slate-200 rounded-md">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <div className="text-base font-semibold text-slate-900">
                 Eventos del reporte #{seleccionado.id_reporte}{" "}
-                <span className="text-table-count">
+                <span className="text-sm text-slate-500 font-normal">
                   - {seleccionado.alertas.length}
                 </span>
               </div>

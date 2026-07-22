@@ -175,29 +175,29 @@ export const TransmisionCamaraTelefono = ({
       />
 
       {!isActive && !error && !showReconnect && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/95 text-gray-400 gap-6 px-6 pb-24">
-          <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 flex items-center justify-center">
-            <Camera size={32} className="text-gray-500" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/95 text-slate-400 gap-6 px-6 pb-24">
+          <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-600 flex items-center justify-center">
+            <Camera size={32} className="text-slate-500" />
           </div>
           <div className="text-center">
             <p className="text-white text-sm font-semibold mb-1">Cámara lista para transmitir</p>
-            <p className="text-gray-500 text-xs">Presiona el botón de abajo para iniciar</p>
+            <p className="text-slate-500 text-xs">Presiona el botón de abajo para iniciar</p>
           </div>
         </div>
       )}
 
       {showReconnect && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/95 gap-4 px-8">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/95 gap-4 px-8">
           <AlertTriangle size={28} className="text-yellow-400" />
           <p className="text-white text-sm font-semibold text-center">
             Sin conexión al servidor
           </p>
-          <p className="text-zinc-400 text-xs text-center leading-relaxed max-w-xs">
+          <p className="text-slate-400 text-xs text-center leading-relaxed max-w-xs">
             {socketError}
           </p>
           <button
             onClick={reconectar}
-            className="flex items-center gap-2 mt-2 h-10 px-5 rounded-full bg-blue-600 text-white text-sm font-semibold active:scale-95 transition-transform"
+            className="flex items-center gap-2 mt-2 h-10 px-5 rounded-full bg-brand-600 text-white text-sm font-semibold active:scale-95 transition-transform"
           >
             <RefreshCw size={16} />
             Reintentar conexión
@@ -206,10 +206,10 @@ export const TransmisionCamaraTelefono = ({
       )}
 
       {needsSocket && !socketError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/95">
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/95">
           <div className="flex flex-col items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-            <span className="text-zinc-400 text-sm">Conectando al servidor...</span>
+            <span className="text-slate-400 text-sm">Conectando al servidor...</span>
           </div>
         </div>
       )}
@@ -231,7 +231,7 @@ export const TransmisionCamaraTelefono = ({
           wsStatus === "connected" && isActive ? "bg-green-500 animate-pulse"
           : wsStatus === "connecting" ? "bg-yellow-500"
           : online ? "bg-green-500"
-          : "bg-gray-500"
+          : "bg-slate-500"
         }`} />
         <span className="text-white text-[11px] font-medium bg-black/50 px-2 py-0.5 rounded">
           {label}
@@ -252,7 +252,7 @@ export const TransmisionCamaraTelefono = ({
             <button
               onClick={capturarFrame}
               disabled={capturando || camaraId === undefined}
-              className="w-14 h-14 rounded-full bg-yellow-500/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+              className="w-14 h-14 rounded-full bg-yellow-500/90 disabled:bg-slate-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
               title="Capturar incidencia"
             >
               {capturando
@@ -271,7 +271,7 @@ export const TransmisionCamaraTelefono = ({
           <button
             onClick={startStreaming}
             disabled={wsStatus === "connecting" || !online}
-            className="w-16 h-16 rounded-full bg-blue-600/90 disabled:bg-gray-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            className="w-16 h-16 rounded-full bg-brand-600/90 disabled:bg-slate-600 text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
           >
             {wsStatus === "connecting"
               ? <span className="text-[10px] font-bold">...</span>

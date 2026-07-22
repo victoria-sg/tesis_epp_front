@@ -119,7 +119,7 @@ export const CamarasTable = ({
           {c.tipo_fuente === "fallback_phone" && (
             <button
               onClick={() => onQrClick(c)}
-              className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-blue-400 hover:bg-blue-50 flex items-center justify-center transition-colors"
+              className="h-8 w-8 rounded-md border border-slate-300 hover:border-brand-400 hover:bg-brand-50 flex items-center justify-center transition-colors"
               title="Vincular teléfono"
             >
               <Smartphone size={14} className="text-blue-500" />
@@ -135,11 +135,11 @@ export const CamarasTable = ({
   ];
 
   return (
-    <div className="bg-white border border-[#e5e5e5] rounded-lg">
-      <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
-        <div className="text-table-title">
+    <div className="bg-white border border-slate-200 rounded-md">
+      <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-4">
+        <div className="text-base font-semibold text-slate-900">
           Cámaras{" "}
-          <span className="text-table-count">
+          <span className="text-sm text-slate-500 font-normal">
             · {total}
           </span>
         </div>

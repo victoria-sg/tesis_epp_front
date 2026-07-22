@@ -108,12 +108,12 @@ export const ValidarModelosPanel = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="space-y-4 md:col-span-1">
-          <div className="bg-[#f5f5f5] rounded-lg p-4">
-            <h3 className="text-xs font-bold text-[#1a1a1a] mb-3 uppercase tracking-wider">
+          <div className="bg-slate-100 rounded-lg p-4">
+            <h3 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider">
               Modelos entrenados
             </h3>
             {listas.length === 0 ? (
-              <p className="text-xs text-[#9b9b9b]">No hay modelos entrenados</p>
+              <p className="text-xs text-slate-400">No hay modelos entrenados</p>
             ) : (
               <div className="space-y-1 max-h-48 overflow-y-auto">
                 {listas.map((c) => (
@@ -136,12 +136,12 @@ export const ValidarModelosPanel = () => {
 
             {noListas.length > 0 && (
               <>
-                <h3 className="text-xs font-bold text-[#9b9b9b] mt-4 mb-2 uppercase tracking-wider">
+                <h3 className="text-xs font-bold text-slate-400 mt-4 mb-2 uppercase tracking-wider">
                   No disponibles
                 </h3>
                 <div className="space-y-1">
                   {noListas.map((c) => (
-                    <div key={c.id_clase_deteccion} className="flex items-center gap-2 py-1 px-2 text-sm text-[#9b9b9b]">
+                    <div key={c.id_clase_deteccion} className="flex items-center gap-2 py-1 px-2 text-sm text-slate-400">
                       <input type="checkbox" disabled className="accent-gray-300" />
                       <span className="truncate">{c.nombre_visible}</span>
                       <span className="text-[10px] ml-auto">{c.estado_entrenamiento}</span>
@@ -154,10 +154,10 @@ export const ValidarModelosPanel = () => {
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-[#d4d4d4] hover:border-violet-400 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#fafafa] hover:bg-violet-50/30"
+            className="border-2 border-dashed border-slate-300 hover:border-violet-400 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50 hover:bg-violet-50/30"
           >
-            <Upload size={28} className="text-[#9b9b9b] mb-2" />
-            <p className="text-sm font-medium text-[#1a1a1a]">
+            <Upload size={28} className="text-slate-400 mb-2" />
+            <p className="text-sm font-medium text-slate-800">
               Subir imagen
             </p>
             <input
@@ -169,9 +169,9 @@ export const ValidarModelosPanel = () => {
             />
           </div>
 
-          <div className="space-y-3 bg-[#f5f5f5] rounded-lg p-4">
+          <div className="space-y-3 bg-slate-100 rounded-lg p-4">
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>Confianza mínima</span>
                 <span>{confianza.toFixed(2)}</span>
               </div>
@@ -186,7 +186,7 @@ export const ValidarModelosPanel = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>IoU máximo</span>
                 <span>{iou.toFixed(2)}</span>
               </div>
@@ -203,7 +203,7 @@ export const ValidarModelosPanel = () => {
             <button
               onClick={handleValidate}
               disabled={!previewUrl || selectedIds.size === 0 || loading}
-              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-violet-500 to-violet-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-purple-500 to-purple-700 text-white rounded-md py-2.5 text-sm font-semibold shadow-sm hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ScanSearch size={16} />
               {loading ? "Validando..." : "Validar modelos"}
@@ -213,7 +213,7 @@ export const ValidarModelosPanel = () => {
 
         <div className="md:col-span-2 space-y-4">
           {previewUrl ? (
-            <div className="relative rounded-lg overflow-hidden border border-[#e5e5e5] bg-black">
+            <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-black">
               <img
                 src={previewUrl}
                 alt="Preview"
@@ -228,15 +228,15 @@ export const ValidarModelosPanel = () => {
               )}
             </div>
           ) : (
-            <div className="h-64 rounded-lg border border-[#e5e5e5] bg-[#fafafa] flex items-center justify-center text-[#9b9b9b] text-sm">
+            <div className="h-64 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 text-sm">
               Selecciona una imagen para validar los modelos
             </div>
           )}
 
           {resultado && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-                <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">
+              <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <h3 className="text-sm font-bold text-slate-800 mb-3">
                   Resultados por modelo
                 </h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -246,7 +246,7 @@ export const ValidarModelosPanel = () => {
                       <div key={m.id_clase_deteccion} className="flex items-center gap-2 text-sm">
                         <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: colorForClase(m.id_clase_deteccion) }} />
                         <span className="font-medium">{m.nombre_visible}</span>
-                        <span className="text-[#6b6b6b] ml-auto">{dets.length} deteccion(es)</span>
+                        <span className="text-slate-500 ml-auto">{dets.length} deteccion(es)</span>
                       </div>
                     );
                   })}
@@ -258,22 +258,22 @@ export const ValidarModelosPanel = () => {
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-3 border-t border-[#e5e5e5] text-xs text-[#6b6b6b]">
+                <div className="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
                   Total: {resultado.total_detecciones} deteccion(es)
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-                <h3 className="text-sm font-bold text-[#1a1a1a] mb-3">
+              <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <h3 className="text-sm font-bold text-slate-800 mb-3">
                   Detalle de detecciones
                 </h3>
                 {resultado.detecciones.length === 0 ? (
-                  <p className="text-xs text-[#9b9b9b]">Sin detecciones</p>
+                  <p className="text-xs text-slate-400">Sin detecciones</p>
                 ) : (
                   <div className="overflow-x-auto max-h-48 overflow-y-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
+                        <tr className="text-left text-slate-500 border-b border-slate-200">
                           <th className="pb-2 font-medium">Modelo</th>
                           <th className="pb-2 font-medium">Clase</th>
                           <th className="pb-2 font-medium">Confianza</th>
@@ -281,7 +281,7 @@ export const ValidarModelosPanel = () => {
                       </thead>
                       <tbody>
                         {resultado.detecciones.map((d, i) => (
-                          <tr key={i} className="border-b border-[#f0f0f0]">
+                          <tr key={i} className="border-b border-slate-100">
                             <td className="py-1.5 flex items-center gap-1.5">
                               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: colorForClase(d.id_clase_deteccion) }} />
                               {d.nombre_visible}

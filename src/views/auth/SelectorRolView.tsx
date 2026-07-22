@@ -1,9 +1,7 @@
-import { ArrowRight, Cog, HardHat, Lock, ShieldCheck, X } from "lucide-react";
+import { ArrowRight, Lock, X } from "lucide-react";
 import { useRoleSelector } from "../../controllers/useRoleSelector";
 import type { Rol } from "../../models/auth.model";
 import { ROLE_INFO, ROLE_STYLES } from "../../models/auth.model";
-
-const ICONS = { HardHat, ShieldCheck, Cog };
 
 interface Props {
   onSelect: (rol: Rol) => void;
@@ -27,14 +25,18 @@ export const SelectorRolView = ({ onSelect, onClose }: Props) => {
         )}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <div className="w-14 h-14 rounded-xl  bg-gradient-to-br from-blue-500 to-blue-700 shadow-md flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 text-white" strokeWidth={2} />
+            <div className="w-14 h-14 rounded-xl overflow-hidden shadow-md bg-white">
+              <img
+                src="/logo.png"
+                alt="EPP Monitor"
+                className="w-full h-full object-contain mix-blend-multiply"
+              />
             </div>
             <div className="text-left">
               <div className="text-2xl font-extrabold text-slate-900 tracking-[0.02em] leading-none">
                 EPP Monitor
               </div>
-              <div className="text-xs font-bold text-blue-600 tracking-[0.18em] uppercase mt-1.5">
+              <div className="text-xs font-bold text-brand-600 tracking-[0.18em] uppercase mt-1.5">
                 Sistema de Gestión
               </div>
             </div>
@@ -48,33 +50,32 @@ export const SelectorRolView = ({ onSelect, onClose }: Props) => {
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {roles.map(({ rol }) => {
             const style = ROLE_STYLES[rol];
             const info = ROLE_INFO[rol];
-            const IconComponent = ICONS[style.iconName];
 
             return (
               <button
                 key={rol}
                 onClick={() => handleSelect(rol)}
-                className={`group flex items-center gap-5 text-left rounded-xl bg-white border border-slate-200 px-5 py-4 transition-all hover:shadow-md ${style.ring}`}
+                className={`group flex flex-col items-center text-center rounded-xl bg-white border border-slate-200 px-5 py-6 transition-all hover:shadow-md ${style.ring}`}
               >
-                <div
-                  className={`shrink-0 w-14 h-14 rounded-xl  bg-gradient-to-br ${style.gradient} flex items-center justify-center shadow-md`}
-                >
-                  <IconComponent className="w-7 h-7 text-white" />
+                <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md mb-4">
+                  <img
+                    src={style.icon}
+                    alt={rol}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-base font-bold text-slate-900 leading-tight">
-                    {info.title}
-                  </div>
-                  <div className="text-sm text-slate-500 mt-1 leading-relaxed">
-                    {info.subtitle}
-                  </div>
+                <div className="text-base font-bold text-slate-900 leading-tight">
+                  {info.title}
+                </div>
+                <div className="text-sm text-slate-500 mt-1 leading-relaxed">
+                  {info.subtitle}
                 </div>
                 <ArrowRight
-                  className="shrink-0 w-5 h-5 transition-transform group-hover:translate-x-1"
+                  className="mt-3 w-5 h-5 transition-transform group-hover:translate-x-1"
                   style={{ color: style.hex }}
                 />
               </button>

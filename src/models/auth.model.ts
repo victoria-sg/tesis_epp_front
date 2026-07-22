@@ -82,33 +82,33 @@ export interface RoleStyle {
   ring: string;
   badgeBg: string;
   badgeText: string;
-  iconName: "HardHat" | "ShieldCheck" | "Cog";
+  icon: string;
   hex: string;
 }
 
 export const ROLE_STYLES: Record<Rol, RoleStyle> = {
   supervisor: {
-    gradient: "from-[#2563eb] to-[#1d4ed8]",
-    ring: "hover:ring-[#2563eb]/30 hover:border-[#2563eb]",
-    badgeBg: "bg-blue-50",
-    badgeText: "text-blue-700",
-    iconName: "HardHat",
+    gradient: "from-brand-500 to-brand-600",
+    ring: "hover:ring-brand-500/30 hover:border-brand-500",
+    badgeBg: "bg-brand-50",
+    badgeText: "text-brand-600",
+    icon: "/supervisor.jpeg",
     hex: "#2563eb",
   },
   sso: {
-    gradient: "from-[#f97316] to-[#ea580c]",
-    ring: "hover:ring-[#f97316]/30 hover:border-[#f97316]",
-    badgeBg: "bg-orange-50",
-    badgeText: "text-orange-700",
-    iconName: "ShieldCheck",
+    gradient: "from-warning-500 to-warning-600",
+    ring: "hover:ring-warning-500/30 hover:border-warning-500",
+    badgeBg: "bg-warning-50",
+    badgeText: "text-warning-600",
+    icon: "/jefe.jpeg",
     hex: "#f97316",
   },
   admin: {
-    gradient: "from-[#7c3aed] to-[#6d28d9]",
-    ring: "hover:ring-[#7c3aed]/30 hover:border-[#7c3aed]",
+    gradient: "from-purple-500 to-purple-700",
+    ring: "hover:ring-purple-500/30 hover:border-purple-500",
     badgeBg: "bg-purple-50",
     badgeText: "text-purple-700",
-    iconName: "Cog",
+    icon: "/administrador.jpeg",
     hex: "#7c3aed",
   },
 };

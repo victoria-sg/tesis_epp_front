@@ -10,25 +10,27 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<string, string> = {
   primary:
-    "bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white hover:from-[#2563eb] hover:to-[#1d4ed8] shadow-lg shadow-blue-500/30",
+    "bg-linear-to-r from-brand-500 to-brand-600 text-white hover:from-brand-600 hover:to-brand-700 shadow-lg shadow-brand-500/30",
   secondary:
-    "bg-linear-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] shadow-lg shadow-purple-500/30",
+    "bg-linear-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 shadow-lg shadow-purple-500/30",
   success:
-    "bg-linear-to-r from-[#10b981] to-[#059669] text-white hover:from-[#059669] hover:to-[#047857] shadow-lg shadow-green-500/30",
+    "bg-linear-to-r from-success-500 to-success-600 text-white hover:from-success-600 hover:to-green-600 shadow-lg shadow-success-500/30",
+  warning:
+    "bg-linear-to-r from-warning-500 to-warning-600 text-white hover:from-warning-600 hover:to-amber-600 shadow-lg shadow-warning-500/30",
   danger:
-    "bg-linear-to-r from-[#ef4444] to-[#dc2626] text-white hover:from-[#dc2626] hover:to-[#b91c1c] shadow-lg shadow-red-500/30",
+    "bg-linear-to-r from-danger-500 to-danger-600 text-white hover:from-danger-600 hover:to-danger-600 shadow-lg shadow-danger-500/30",
   outline:
-    "border border-[#d4d4d4] text-[#1a1a1a] hover:bg-[#f5f5f5]",
+    "border border-slate-300 text-slate-700 hover:bg-slate-100",
   ghost:
-    "text-[#6b6b6b] hover:bg-[#f5f5f5]",
+    "text-slate-500 hover:bg-slate-100",
   text:
-    "text-blue-600 hover:underline bg-transparent p-0 h-auto shadow-none",
+    "text-brand-600 hover:underline bg-transparent p-0 h-auto shadow-none",
 };
 
 const sizeClasses: Record<string, string> = {
-  sm: "h-8 px-3 rounded-md text-xs font-semibold",
-  md: "h-10 px-4 rounded-lg text-sm font-semibold",
-  lg: "h-12 px-6 rounded-xl text-base font-semibold",
+  sm: "h-8 px-3 rounded-sm text-xs font-semibold",
+  md: "h-10 px-4 rounded-md text-sm font-semibold",
+  lg: "h-12 px-6 rounded-lg text-base font-semibold",
   text: "",
 };
 

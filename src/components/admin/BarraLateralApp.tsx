@@ -1,4 +1,4 @@
-import { LogOut, ShieldCheck } from "lucide-react";
+import { LogOut } from "lucide-react";
 import type { LoggedUser } from "../../models/auth.model";
 
 interface AppSidebarProps {
@@ -24,13 +24,17 @@ export const BarraLateralApp = ({
 }: AppSidebarProps) => {
   return (
     <aside
-      className={`${sidebarOpen ? "w-64" : "w-16"} shrink-0 h-screen bg-linear-to-b from-[#0a1628] via-[#0f2744] to-[#1a3a5c] text-white flex flex-col transition-all duration-300`}
+      className={`${sidebarOpen ? "w-64" : "w-16"} shrink-0 h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-800 text-white flex flex-col transition-all duration-300`}
     >
       <div
         className={`px-4 py-5 border-b border-white/10 flex items-center ${sidebarOpen ? "gap-3" : "justify-center"}`}
       >
-        <div className="h-9 w-9 shrink-0 rounded-lg bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center ring-1 ring-white/20 shadow-md">
-          <ShieldCheck className="h-5 w-5 text-white" strokeWidth={2.25} />
+        <div className="h-9 w-9 shrink-0 rounded-lg overflow-hidden ring-1 ring-white/20 shadow-md bg-white/10 flex items-center justify-center">
+          <img
+            src="/logo.png"
+            alt="EPP Monitor"
+            className="w-full h-full object-contain mix-blend-multiply"
+          />
         </div>
         {sidebarOpen && (
           <div>

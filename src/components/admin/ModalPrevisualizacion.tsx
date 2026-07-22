@@ -31,12 +31,12 @@ export const ModalPrevisualizacion = ({ src, onClose }: ImagePreviewModalProps) 
         <img
           src={src}
           alt="Captura de incidencia"
-          className="w-full rounded-lg shadow-2xl"
+          className="w-full rounded-lg shadow-modal"
         />
         <div className="mt-3 text-center">
           <button
             onClick={handleDownload}
-            className="text-blue-400 hover:text-blue-300 text-sm underline"
+            className="text-brand-400 hover:text-brand-300 text-sm underline"
           >
             Descargar imagen
           </button>

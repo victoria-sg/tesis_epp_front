@@ -202,11 +202,11 @@ export const CargadorDeteccionVideo = () => {
           {!videoUrl ? (
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-[#d4d4d4] hover:border-violet-400 rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition-colors bg-[#fafafa] hover:bg-violet-50/30"
+              className="border-2 border-dashed border-slate-300 hover:border-violet-400 rounded-xl p-10 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50 hover:bg-violet-50/30"
             >
-              <Upload size={32} className="text-[#9b9b9b] mb-3" />
-              <p className="text-sm font-medium text-[#1a1a1a]">Haz clic para subir un video</p>
-              <p className="text-xs text-[#9b9b9b] mt-1">MP4, WEBM • Máx. 100 MB</p>
+              <Upload size={32} className="text-slate-400 mb-3" />
+              <p className="text-sm font-medium text-slate-800">Haz clic para subir un video</p>
+              <p className="text-xs text-slate-400 mt-1">MP4, WEBM • Máx. 100 MB</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -217,7 +217,7 @@ export const CargadorDeteccionVideo = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="relative rounded-lg overflow-hidden border border-[#e5e5e5] bg-black aspect-video">
+              <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-black aspect-video">
                 <video
                   ref={videoRef}
                   src={videoUrl}
@@ -237,7 +237,7 @@ export const CargadorDeteccionVideo = () => {
                   </div>
                 )}
               </div>
-              <div className="w-full bg-[#e5e5e5] rounded-full h-1.5">
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
                 <div
                   className="bg-violet-500 h-1.5 rounded-full transition-all"
                   style={{ width: `${progress}%` }}
@@ -252,12 +252,12 @@ export const CargadorDeteccionVideo = () => {
                 </button>
                 <button
                   onClick={handleReset}
-                  className="h-9 w-9 rounded-md border border-[#d4d4d4] text-[#6b6b6b] flex items-center justify-center hover:bg-[#f5f5f5] transition-colors"
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-500 flex items-center justify-center hover:bg-slate-100 transition-colors"
                   title="Reiniciar"
                 >
                   <RotateCcw size={14} />
                 </button>
-                <span className="text-xs text-[#6b6b6b] ml-1">
+                <span className="text-xs text-slate-500 ml-1">
                   {playing ? "En reproducción" : "Pausado"}
                 </span>
               </div>
@@ -268,10 +268,10 @@ export const CargadorDeteccionVideo = () => {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-[#f5f5f5] rounded-lg p-4 space-y-4">
-            <h4 className="text-xs font-bold text-[#1a1a1a] uppercase tracking-wider">Parámetros</h4>
+          <div className="bg-slate-100 rounded-lg p-4 space-y-4">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Parámetros</h4>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>Confianza mínima</span>
                 <span>{confianza.toFixed(2)}</span>
               </div>
@@ -286,7 +286,7 @@ export const CargadorDeteccionVideo = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>IoU máximo</span>
                 <span>{iou.toFixed(2)}</span>
               </div>
@@ -301,7 +301,7 @@ export const CargadorDeteccionVideo = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>FPS de envío</span>
                 <span>{fps}</span>
               </div>
@@ -316,7 +316,7 @@ export const CargadorDeteccionVideo = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between text-xs font-medium text-[#6b6b6b] mb-1">
+              <div className="flex justify-between text-xs font-medium text-slate-500 mb-1">
                 <span>Frame skip</span>
                 <span>{frameSkip}</span>
               </div>
@@ -332,19 +332,19 @@ export const CargadorDeteccionVideo = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-            <h4 className="text-xs font-bold text-[#1a1a1a] uppercase tracking-wider mb-3">Estadísticas acumuladas</h4>
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Estadísticas acumuladas</h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[#6b6b6b]">Máx. personas</span>
+                <span className="text-slate-500">Máx. personas</span>
                 <span className="font-semibold text-violet-700">{totalStats.personas}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#6b6b6b]">EPP correcto</span>
+                <span className="text-slate-500">EPP correcto</span>
                 <span className="font-semibold text-green-600">{totalStats.eppOk}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#6b6b6b]">Alertas</span>
+                <span className="text-slate-500">Alertas</span>
                 <span className="font-semibold text-red-500">{totalStats.alertas}</span>
               </div>
             </div>
@@ -354,43 +354,43 @@ export const CargadorDeteccionVideo = () => {
 
       {lastResult && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-            <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
               <Scan size={16} className="text-violet-500" />
               Último frame analizado
             </h3>
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-violet-700">{lastResult.personas_detectadas}</div>
-                <div className="text-xs text-[#6b6b6b]">Personas</div>
+                <div className="text-xs text-slate-500">Personas</div>
               </div>
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-green-600">
                   {lastResult.detecciones.filter((d) => !d.clase.startsWith("NO-") && d.clase !== "Persona").length}
                 </div>
-                <div className="text-xs text-[#6b6b6b]">EPP correcto</div>
+                <div className="text-xs text-slate-500">EPP correcto</div>
               </div>
-              <div className="bg-[#f5f5f5] rounded-md p-3 text-center">
+              <div className="bg-slate-100 rounded-md p-3 text-center">
                 <div className="text-xl font-bold text-red-500">
                   {lastResult.detecciones.filter((d) => d.clase.startsWith("NO-")).length}
                 </div>
-                <div className="text-xs text-[#6b6b6b]">Alertas</div>
+                <div className="text-xs text-slate-500">Alertas</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-[#e5e5e5] p-4">
-            <h3 className="text-sm font-bold text-[#1a1a1a] mb-3 flex items-center gap-2">
+          <div className="bg-white rounded-lg border border-slate-200 p-4">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
               <User size={16} className="text-blue-500" />
               Cumplimiento por trabajador
             </h3>
             {lastResult.trabajadores.length === 0 ? (
-              <p className="text-xs text-[#9b9b9b]">No se detectaron trabajadores en el último frame</p>
+              <p className="text-xs text-slate-400">No se detectaron trabajadores en el último frame</p>
             ) : (
               <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="text-left text-[#6b6b6b] border-b border-[#e5e5e5]">
+                        <tr className="text-left text-slate-500 border-b border-slate-200">
                           <th className="pb-2 font-medium">#</th>
                           <th className="pb-2 font-medium">Casco</th>
                           <th className="pb-2 font-medium">Vestimenta</th>
@@ -403,7 +403,7 @@ export const CargadorDeteccionVideo = () => {
                       </thead>
                       <tbody>
                         {lastResult.trabajadores.map((t) => (
-                          <tr key={t.id} className="border-b border-[#f0f0f0]">
+                          <tr key={t.id} className="border-b border-slate-100">
                             <td className="py-2 font-semibold">{t.id}</td>
                             <td className="py-2">
                               <StatusBadge status={t.casco} />
@@ -453,7 +453,7 @@ function StatusBadge({ status }: { status: string }) {
       </span>
     );
   return (
-    <span className="inline-flex items-center gap-1 text-[#9b9b9b] font-medium">
+    <span className="inline-flex items-center gap-1 text-slate-400 font-medium">
       <AlertTriangle size={12} /> No detectado
     </span>
   );

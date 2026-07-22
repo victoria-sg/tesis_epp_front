@@ -47,8 +47,8 @@ const ChartCard = ({
   children: ReactNode;
   className?: string;
 }) => (
-  <div className={`bg-white border border-[#e5e5e5] rounded-lg p-5 ${className}`}>
-    <div style={{ fontSize: 13, fontWeight: 600, color: "#000", marginBottom: 16 }}>
+  <div className={`bg-white border border-slate-200 rounded-lg p-5 ${className}`}>
+    <div className="text-sm font-semibold text-slate-900 mb-4">
       {title}
     </div>
     {children}
@@ -69,8 +69,8 @@ const RangoControl = ({
         onClick={() => setRango(r.value)}
         className={`px-3 py-1 rounded-md text-xs font-semibold transition-colors ${
           rango === r.value
-            ? "bg-blue-600 text-white"
-            : "bg-[#f5f5f5] text-[#6b6b6b] hover:bg-[#ececec]"
+            ? "bg-brand-600 text-white"
+            : "bg-slate-100 text-slate-500 hover:bg-slate-200"
         }`}
       >
         {r.label}
@@ -124,44 +124,44 @@ const SupervisorCharts = ({ stats }: { stats: DashboardStats }) => (
     <ChartCard title="Estado de camaras en alcance">
       <div className="flex items-center justify-center gap-8 h-[200px]">
         <div className="text-center">
-          <div style={{ fontSize: 44, fontWeight: 800, color: "#22c55e" }}>
+          <div className="text-[44px] font-extrabold text-success-500 leading-none">
             {stats.camaras.activas}
           </div>
-          <div style={{ fontSize: 12, color: "#6b6b6b", marginTop: 4 }}>Online</div>
+          <div className="text-xs text-slate-500 mt-1">Online</div>
         </div>
-        <div className="w-px h-16 bg-[#e5e5e5]" />
+        <div className="w-px h-16 bg-slate-200" />
         <div className="text-center">
-          <div style={{ fontSize: 44, fontWeight: 800, color: "#ef4444" }}>
+          <div className="text-[44px] font-extrabold text-danger-500 leading-none">
             {stats.camaras.desconectadas}
           </div>
-          <div style={{ fontSize: 12, color: "#6b6b6b", marginTop: 4 }}>Offline</div>
+          <div className="text-xs text-slate-500 mt-1">Offline</div>
         </div>
       </div>
     </ChartCard>
 
     <ChartCard title="Ultimas alertas del turno" className="lg:col-span-2">
       <div className="space-y-2">
-        {stats.ultimas_alertas.length === 0 ? (
-          <div style={{ fontSize: 13, color: "#6b6b6b", textAlign: "center", padding: "20px 0" }}>
+        {        stats.ultimas_alertas.length === 0 ? (
+          <div className="text-sm text-slate-500 text-center py-5">
             Sin alertas recientes
           </div>
         ) : (
           stats.ultimas_alertas.map((a) => (
             <div
               key={a.id}
-              className="flex items-center gap-3 px-3 py-2 rounded-md bg-[#f9f9f9] border border-[#ececec]"
+              className="flex items-center gap-3 px-3 py-2 rounded-md bg-slate-50 border border-slate-200"
             >
               {a.estado === "Pendiente" ? (
-                <AlertTriangle size={14} className="text-red-500 shrink-0" />
+                <AlertTriangle size={14} className="text-danger-500 shrink-0" />
               ) : (
-                <CheckCircle size={14} className="text-green-500 shrink-0" />
+                <CheckCircle size={14} className="text-success-500 shrink-0" />
               )}
-              <span style={{ fontSize: 12, fontWeight: 500 }}>Alerta #{a.id}</span>
-              <span style={{ fontSize: 11, color: "#6b6b6b" }}>Camara {a.camara}</span>
-              <span className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#ececec] text-[#4a4a4a]">
+              <span className="text-xs font-medium text-slate-800">Alerta #{a.id}</span>
+              <span className="text-[11px] text-slate-500">Camara {a.camara}</span>
+              <span className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
                 {a.estado}
               </span>
-              <span style={{ fontSize: 11, color: "#9ca3af" }}>
+              <span className="text-[11px] text-slate-400">
                 {a.fecha
                   ? new Date(a.fecha + "Z").toLocaleTimeString("es-EC", {
                       timeZone: "America/Guayaquil",
@@ -257,8 +257,8 @@ const JefePlantaCharts = ({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: COLORES_ESTADO[estado.estado] ?? "#94a3b8" }}
               />
-              <span style={{ fontSize: 12, color: "#6b6b6b" }}>{estado.estado}</span>
-              <span style={{ fontSize: 16, fontWeight: 700, marginLeft: "auto" }}>
+              <span className="text-xs text-slate-500">{estado.estado}</span>
+              <span className="text-base font-bold text-slate-900 ml-auto">
                 {estado.alertas}
               </span>
             </div>
@@ -317,7 +317,7 @@ export const GraficosDashboard = ({
 
   if (loading) {
     return (
-      <div className="mt-4 h-32 flex items-center justify-center text-[#6b6b6b]">
+      <div className="mt-4 h-32 flex items-center justify-center text-slate-500">
         <span className="animate-pulse text-sm">Cargando estadisticas...</span>
       </div>
     );
@@ -326,7 +326,7 @@ export const GraficosDashboard = ({
   if (!stats) return null;
   if (stats.mensaje) {
     return (
-      <div className="mt-4 bg-white border border-[#e5e5e5] rounded-lg p-5 text-sm text-gray-500">
+      <div className="mt-4 bg-white border border-slate-200 rounded-lg p-5 text-sm text-slate-500">
         {stats.mensaje}
       </div>
     );

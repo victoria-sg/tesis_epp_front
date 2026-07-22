@@ -90,11 +90,11 @@ export const UsuariosTable = ({
   ];
 
   return (
-    <div className="bg-white border border-[#e5e5e5] rounded-lg">
-      <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
-        <div className="text-table-title">
+    <div className="bg-white border border-slate-200 rounded-md">
+      <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-4">
+        <div className="text-base font-semibold text-slate-900">
           Usuarios{" "}
-          <span className="text-table-count">
+          <span className="text-sm text-slate-500 font-normal">
             · {items.length}
           </span>
         </div>

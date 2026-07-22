@@ -1,65 +1,59 @@
+import { colors } from "../../styles/designTokens";
+
 const STYLES: Record<
   string,
-  { bg: string; color: string; border: string; shadow?: string }
+  { bg: string; color: string; borderColor?: string }
 > = {
   activo: {
-    bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    bg: `linear-gradient(135deg, ${colors.success[500]} 0%, ${colors.success[600]} 100%)`,
     color: "#fff",
-    border: "none",
-    shadow: "0 2px 6px rgba(16, 185, 129, 0.3)",
   },
   inactivo: {
     bg: "#fff",
-    color: "#6b6b6b",
-    border: "#d4d4d4",
+    color: colors.slate[500],
+    borderColor: colors.slate[300],
   },
   online: {
-    bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    bg: `linear-gradient(135deg, ${colors.success[500]} 0%, ${colors.success[600]} 100%)`,
     color: "#fff",
-    border: "none",
-    shadow: "0 2px 6px rgba(16, 185, 129, 0.3)",
   },
   offline: {
     bg: "#fff",
-    color: "#6b6b6b",
-    border: "#d4d4d4",
+    color: colors.slate[500],
+    borderColor: colors.slate[300],
   },
   pendiente: {
-    bg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+    bg: `linear-gradient(135deg, ${colors.danger[500]} 0%, ${colors.danger[600]} 100%)`,
     color: "#fff",
-    border: "none",
-    shadow: "0 2px 6px rgba(239, 68, 68, 0.3)",
   },
   resuelta: {
-    bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    bg: `linear-gradient(135deg, ${colors.success[500]} 0%, ${colors.success[600]} 100%)`,
     color: "#fff",
-    border: "none",
-    shadow: "0 2px 6px rgba(16, 185, 129, 0.3)",
   },
   descartada: {
-    bg: "#f1f5f9",
-    color: "#475569",
-    border: "#cbd5e1",
+    bg: colors.slate[100],
+    color: colors.slate[600],
+    borderColor: colors.slate[300],
   },
   mantenimiento: {
     bg: "#fff",
-    color: "#f59e0b",
-    border: "#f59e0b",
+    color: colors.warning[500],
+    borderColor: colors.warning[500],
   },
   reproducida: {
     bg: "#fff",
-    color: "#10b981",
-    border: "#10b981",
+    color: colors.success[500],
+    borderColor: colors.success[500],
   },
   silenciada: {
-    bg: "#f5f5f5",
-    color: "#6b6b6b",
-    border: "#d4d4d4",
+    bg: colors.slate[100],
+    color: colors.slate[500],
+    borderColor: colors.slate[300],
   },
   expirada: {
     bg: "#fff",
-    color: "#b0b0b0",
-    border: "#d4d4d4",
+    color: colors.slate[300],
+    borderColor: colors.slate[300],
   },
 };
 
@@ -76,13 +70,12 @@ export const StatusBadge = ({ estado }: Props) => {
       style={{
         background: s.bg,
         color: s.color,
-        border: s.border !== "none" ? `1px solid ${s.border}` : "none",
+        border: s.borderColor ? `1px solid ${s.borderColor}` : "none",
         padding: "2px 10px",
         fontSize: 11,
         textTransform: "uppercase",
         letterSpacing: "0.08em",
         fontWeight: 500,
-        boxShadow: s.shadow || "none",
       }}
     >
       {estado}

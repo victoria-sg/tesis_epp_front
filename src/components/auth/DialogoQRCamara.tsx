@@ -71,10 +71,10 @@ export const DialogoQRCamara = ({
   return (
     <CustomModal open={open} onClose={onClose} title="Vincular teléfono">
       <div className="flex flex-col items-center gap-5 py-2">
-        <p className="text-[13px] text-zinc-500 text-center max-w-xs">
+        <p className="text-[13px] text-slate-500 text-center max-w-xs">
           Escanea este código QR con el teléfono que quieras usar como cámara.
           La cámara se vinculará automáticamente como{" "}
-          <strong className="text-zinc-800">{codigoCamara}</strong>.
+          <strong className="text-slate-800">{codigoCamara}</strong>.
         </p>
 
         {error && (
@@ -85,12 +85,12 @@ export const DialogoQRCamara = ({
 
         {codigoVinculacion && (
           <>
-            <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
               <QRCodeSVG value={qrUrl} size={200} level="M" includeMargin />
             </div>
 
             <div className="w-full max-w-xs">
-              <label className="block text-[11px] text-zinc-400 mb-1 font-medium uppercase tracking-wider">
+              <label className="block text-[11px] text-slate-400 mb-1 font-medium uppercase tracking-wider">
                 O comparte este enlace
               </label>
               <div className="flex gap-2">
@@ -98,11 +98,11 @@ export const DialogoQRCamara = ({
                   type="text"
                   readOnly
                   value={qrUrl}
-                  className="flex-1 h-9 px-3 rounded-md bg-zinc-50 border border-zinc-200 text-[12px] text-zinc-600 font-mono truncate outline-none"
+                  className="flex-1 h-9 px-3 rounded-md bg-slate-50 border border-slate-200 text-[12px] text-slate-600 font-mono truncate outline-none"
                 />
                 <button
                   onClick={handleCopy}
-                  className="h-9 px-3 rounded-md bg-zinc-100 hover:bg-zinc-200 text-zinc-600 text-xs font-semibold transition-colors"
+                  className="h-9 px-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition-colors"
                 >
                   {copied ? "Copiado" : "Copiar"}
                 </button>
@@ -112,12 +112,12 @@ export const DialogoQRCamara = ({
         )}
 
         {!codigoVinculacion && !error && (
-          <div className="text-zinc-400 text-sm animate-pulse py-8">
+          <div className="text-slate-400 text-sm animate-pulse py-8">
             Generando código de vinculación...
           </div>
         )}
 
-        <div className="w-full bg-blue-50 border border-blue-200 rounded-lg p-3 text-[12px] text-blue-800 leading-relaxed">
+        <div className="w-full bg-brand-50 border border-brand-200 rounded-lg p-3 text-[12px] text-brand-800 leading-relaxed">
           <strong className="flex items-center gap-1">
             <Lightbulb size={14} /> Instrucciones:
           </strong>
@@ -130,7 +130,7 @@ export const DialogoQRCamara = ({
             <li>
               Presiona <strong>"Iniciar"</strong> para comenzar la transmisión
             </li>
-            <li className="text-blue-600">
+            <li className="text-brand-600">
               El teléfono quedará vinculado permanentemente a esta cámara
             </li>
           </ol>

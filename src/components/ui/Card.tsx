@@ -9,11 +9,11 @@ interface CardProps {
 }
 
 const variantClasses: Record<string, string> = {
-  default: "bg-white border border-[#e5e5e5] rounded-lg",
-  stat: "bg-white border border-[#e5e5e5] rounded-lg p-5",
+  default: "bg-white border border-slate-200 rounded-md",
+  stat: "bg-white border border-slate-200 rounded-md p-5",
   clickable:
-    "bg-white border border-[#e5e5e5] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer",
-  modal: "bg-white rounded-2xl shadow-2xl w-full max-w-md p-6",
+    "bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer",
+  modal: "bg-white rounded-xl shadow-xl w-full max-w-md p-6",
 };
 
 const paddingClasses: Record<string, string> = {
@@ -58,11 +58,11 @@ interface CardHeaderProps {
 }
 
 export const CardHeader = ({ title, count, action, className = "" }: CardHeaderProps) => (
-  <div className={`px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 ${className}`}>
-    <div className="text-[15px] font-semibold text-[#000]">
+  <div className={`px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-4 ${className}`}>
+    <div className="text-base font-semibold text-slate-900">
       {title}{" "}
       {count !== undefined && (
-        <span className="text-[#6b6b6b] font-normal">· {count}</span>
+        <span className="text-slate-500 font-normal">· {count}</span>
       )}
     </div>
     {action}
@@ -70,32 +70,76 @@ export const CardHeader = ({ title, count, action, className = "" }: CardHeaderP
 );
 
 interface StatCardProps {
-  icon: ReactNode;
-  iconBgClass: string;
-  iconColorClass: string;
+  icon?: ReactNode;
+  iconBgClass?: string;
+  iconColorClass?: string;
   label: string;
   value: string | number;
   subtitle?: ReactNode;
+  trend?: { value: number; positive: boolean };
+  horizontal?: boolean;
   className?: string;
 }
 
 export const StatCard = ({
   icon,
-  iconBgClass,
-  iconColorClass,
+  iconBgClass = "bg-slate-100",
+  iconColorClass = "text-slate-600",
   label,
   value,
   subtitle,
+  trend,
+  horizontal,
   className = "",
-}: StatCardProps) => (
-  <div className={`stat-card ${className}`}>
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-label">{label}</span>
-      <div className={`h-8 w-8 rounded-md ${iconBgClass} flex items-center justify-center`}>
-        <span className={iconColorClass}>{icon}</span>
+}: StatCardProps) => {
+  if (horizontal) {
+    return (
+      <div
+        className={`bg-white border border-slate-200 rounded-md p-4 flex items-center gap-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${className}`}
+      >
+        {icon && (
+          <div className={`h-10 w-10 rounded-lg ${iconBgClass} flex items-center justify-center shrink-0`}>
+            <span className={iconColorClass}>{icon}</span>
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="text-xl font-bold text-slate-900 tabular-nums leading-tight">
+            {value}
+          </div>
+          <div className="text-xs text-slate-500 mt-0.5">{label}</div>
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div
+      className={`bg-white border border-slate-200 rounded-md p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${className}`}
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="min-w-0 flex-1">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest leading-none">
+            {label}
+          </span>
+        </div>
+        {icon && (
+          <div className={`h-10 w-10 rounded-lg ${iconBgClass} flex items-center justify-center shrink-0 ml-3`}>
+            <span className={iconColorClass}>{icon}</span>
+          </div>
+        )}
+      </div>
+      <div className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">
+        {value}
+      </div>
+      {trend && (
+        <div className={`mt-1.5 flex items-center gap-1 text-xs font-semibold ${trend.positive ? "text-success-500" : "text-danger-500"}`}>
+          <span>{trend.positive ? "▲" : "▼"}</span>
+          <span>{Math.abs(trend.value)}%</span>
+        </div>
+      )}
+      {subtitle && (
+        <div className="mt-1.5 text-xs text-slate-500 leading-relaxed">{subtitle}</div>
+      )}
     </div>
-    <div className="text-number">{value}</div>
-    {subtitle && <div className="mt-1 text-small">{subtitle}</div>}
-  </div>
-);
+  );
+};

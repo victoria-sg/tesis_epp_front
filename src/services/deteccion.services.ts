@@ -12,11 +12,17 @@ export interface UltimaDeteccion {
   camara_id?: number;
   timestamp?: string;
   detecciones?: DeteccionItem[];
+  detecciones_visual?: DeteccionItem[];
   total_detecciones?: number;
   clases_detectadas?: string[];
   hay_infraccion?: boolean;
   ancho_frame?: number;
   alto_frame?: number;
+  filtro_visual_zona?: {
+    activo: boolean;
+    clases_permitidas: string[];
+    total_detecciones_visual: number;
+  };
 }
 
 export interface DetectionClassInfo {

@@ -28,20 +28,20 @@ export const MonitoreoTiempoRealView = () => {
           <div className="text-2xl font-bold text-black tracking-[-0.01em]">
             Monitoreo en tiempo real
           </div>
-          <div className="text-subtitle mt-1">
+          <div className="text-sm text-slate-500 mt-1">
             Transmisiones activas y estado operativo de camaras en alcance
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2 min-w-[320px]">
-          <div className="bg-white border border-[#e5e5e5] rounded-lg px-4 py-3">
+          <div className="bg-white border border-slate-200 rounded-md px-4 py-3">
             <div className="text-[11px] text-gray-500">Total</div>
             <div className="text-xl font-bold text-black">{camaras.length}</div>
           </div>
-          <div className="bg-white border border-[#e5e5e5] rounded-lg px-4 py-3">
+          <div className="bg-white border border-slate-200 rounded-md px-4 py-3">
             <div className="text-[11px] text-gray-500">Online</div>
             <div className="text-xl font-bold text-green-600">{camarasOnline}</div>
           </div>
-          <div className="bg-white border border-[#e5e5e5] rounded-lg px-4 py-3">
+          <div className="bg-white border border-slate-200 rounded-md px-4 py-3">
             <div className="text-[11px] text-gray-500">Offline</div>
             <div className="text-xl font-bold text-red-600">{camarasOffline}</div>
           </div>
@@ -53,7 +53,7 @@ export const MonitoreoTiempoRealView = () => {
           <span className="animate-pulse">Cargando camaras...</span>
         </div>
       ) : camaras.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 text-[#6b6b6b] gap-2 bg-white border border-[#e5e5e5] rounded-lg">
+        <div className="flex flex-col items-center justify-center h-64 text-slate-500 gap-2 bg-white border border-slate-200 rounded-md">
           <Camera size={48} />
           <span>{dashboardStats?.mensaje || "No hay camaras configuradas"}</span>
         </div>
@@ -62,7 +62,7 @@ export const MonitoreoTiempoRealView = () => {
           {camaras.map((cam) => (
             <div
               key={cam.id_camara}
-              className="bg-white border border-[#e5e5e5] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+              className="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
               onClick={() => setCamaraExpandida(cam)}
             >
               <div className="relative">

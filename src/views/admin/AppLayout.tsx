@@ -23,6 +23,7 @@ import { DesplegableNotificaciones } from "../../components/admin/DesplegableNot
 
 import { StreamProvider } from "../../context/StreamContext";
 import { NotificacionVinculacion } from "../../components/admin/NotificacionVinculacion";
+import { ROLE_STYLES } from "../../models/auth.model";
 import {
   APP_CAMBIAR_CONTRASENA,
   APP_LOGIN,
@@ -62,18 +63,6 @@ const PERMISSION_NAV_MAP: { permiso?: string; item: NavItem }[] = [
   { permiso: PERM_REPORTES_VER, item: { path: APP_ROUTES.REPORTES, label: "Reportes ejecutivos", icon: <FileText size={16} /> } },
   { permiso: PERM_DETECCION_VER, item: { path: "/admin/deteccion", label: "Detección", icon: <Scan size={16} /> } },
 ];
-
-const ROLE_GRADIENT: Record<string, string> = {
-  supervisor: "from-[#3b82f6] to-[#2563eb]",
-  sso: "from-[#10b981] to-[#059669]",
-  admin: "from-[#8b5cf6] to-[#7c3aed]",
-};
-
-const ROLE_COLOR: Record<string, string> = {
-  supervisor: "#3b82f6",
-  sso: "#10b981",
-  admin: "#8b5cf6",
-};
 
 interface NotificacionAlerta {
   id_alerta: number;
@@ -124,8 +113,9 @@ const AppLayoutContent = () => {
   const navItems = PERMISSION_NAV_MAP.filter(
     ({ permiso }) => !permiso || user!.permisos.includes(permiso),
   ).map(({ item }) => item);
-  const gradient = ROLE_GRADIENT[user!.rol] ?? ROLE_GRADIENT.admin;
-  const color = ROLE_COLOR[user!.rol] ?? ROLE_COLOR.admin;
+  const roleStyle = ROLE_STYLES[user!.rol] ?? ROLE_STYLES.admin;
+  const gradient = roleStyle.gradient;
+  const color = roleStyle.hex;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -133,7 +123,7 @@ const AppLayoutContent = () => {
   };
 
   return (
-    <div className="h-screen flex bg-[#f5f5f5] overflow-hidden">
+    <div className="h-screen flex bg-slate-50 overflow-hidden">
       <BarraLateralApp
         sidebarOpen={sidebarOpen}
         navItems={navItems}
@@ -146,35 +136,35 @@ const AppLayoutContent = () => {
       />
 
       <div className="flex-1 flex flex-col min-w-0 h-screen">
-        <header className="bg-white border-b border-[#e5e5e5] px-4 h-14 flex items-center gap-3 shrink-0">
+        <header className="bg-white border-b border-slate-200 px-4 h-14 flex items-center gap-3 shrink-0">
           <button
             onClick={() => setSidebarOpen((prev) => !prev)}
-            className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#3b82f6] hover:bg-blue-50 flex items-center justify-center transition-colors shrink-0"
+            className="h-8 w-8 rounded-md border border-slate-300 hover:border-brand-500 hover:bg-brand-50 flex items-center justify-center transition-colors shrink-0"
             title={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
           >
             {sidebarOpen ? (
-              <ChevronLeft size={15} className="text-gray-500" />
+              <ChevronLeft size={15} className="text-slate-500" />
             ) : (
-              <ChevronRight size={15} className="text-gray-500" />
+              <ChevronRight size={15} className="text-slate-500" />
             )}
           </button>
 
           <div className="relative flex-1 max-w-md">
             <Search
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
             />
             <input
               placeholder="Buscar en el sistema…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-9 pl-9 pr-3 rounded-md bg-[#f5f5f5] focus:bg-white border border-transparent focus:border-[#3b82f6] outline-none transition-colors text-sm"
+              className="w-full h-9 pl-9 pr-3 rounded-md bg-slate-100 focus:bg-white border border-transparent focus:border-brand-500 outline-none transition-colors text-sm text-slate-900 placeholder:text-slate-400"
             />
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-label flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#f5f5f5]">
-              <span className="h-1.5 w-1.5 rounded-full bg-linear-to-r from-[#10b981] to-[#059669] animate-pulse shadow-sm shadow-green-500/50" />
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100">
+              <span className="h-1.5 w-1.5 rounded-full bg-linear-to-r from-success-500 to-success-600 animate-pulse shadow-sm shadow-success-500/50" />
               Sistema en línea
             </span>
             <DesplegableNotificaciones

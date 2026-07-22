@@ -3,14 +3,12 @@ import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
-  useNavigate,
 } from "react-router-dom";
 import { APP_ROUTES } from "../constants/apiRoutesConstants";
 import {
   APP_CAMBIAR_CONTRASENA,
   APP_DASHBOARD,
   APP_LOGIN,
-  APP_RESET_PASSWORD,
   APP_RESET_PASSWORD_CONFIRM,
   APP_ROOT,
 } from "../constants/authRoutesConstants";
@@ -44,22 +42,17 @@ import { AppLayout } from "../views/admin/AppLayout";
 import { MonitoreoTiempoRealView } from "../views/admin/MonitoreoTiempoRealView";
 import { ReportesTurnoView } from "../views/admin/ReportesTurnoView";
 
-const ForgotPasswordPage = () => {
-  const navigate = useNavigate();
-  return <OlvidePasswordView onBackToLogin={() => navigate(APP_LOGIN)} />;
-};
-
 const AuthRoutes = () => {
   const [selectedRol, setSelectedRol] = useState<Rol | null>(null);
   const [showSelector, setShowSelector] = useState(true);
-  const navigate = useNavigate();
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   return (
     <>
       <InicioSesionView
         selectedRol={selectedRol}
         selectedRolLabel={selectedRol ? ROL_LABELS[selectedRol] : null}
-        onGoToReset={() => navigate(APP_RESET_PASSWORD)}
+        onOpenResetPassword={() => setShowResetPassword(true)}
         onOpenRoleSelector={() => setShowSelector(true)}
       />
       {showSelector && (
@@ -71,6 +64,9 @@ const AuthRoutes = () => {
           onClose={selectedRol ? () => setShowSelector(false) : undefined}
         />
       )}
+      {showResetPassword && (
+        <OlvidePasswordView onClose={() => setShowResetPassword(false)} />
+      )}
     </>
   );
 };
@@ -80,10 +76,6 @@ export const AppRouter = () => {
     {
       path: APP_LOGIN,
       element: <AuthRoutes />,
-    },
-    {
-      path: APP_RESET_PASSWORD,
-      element: <ForgotPasswordPage />,
     },
     {
       path: APP_RESET_PASSWORD_CONFIRM,

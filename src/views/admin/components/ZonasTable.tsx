@@ -146,7 +146,7 @@ export const ZonasTable = ({
         <div className="flex items-center justify-center gap-1">
           {puedeEditar && z.epps?.some((e) => e.estado_calibracion === "pendiente") && (
             <button
-              className="h-8 w-8 rounded-md border border-[#d4d4d4] hover:border-[#059669] hover:bg-green-50 flex items-center justify-center"
+              className="h-8 w-8 rounded-md border border-slate-300 hover:border-success-500 hover:bg-success-50 flex items-center justify-center"
               title="Validar calibración pendiente"
               onClick={(e) => {
                 e.stopPropagation();
@@ -156,7 +156,7 @@ export const ZonasTable = ({
                 if (pending) onCalibrarEpp(z.id_zona, pending.id_tipo_epp);
               }}
             >
-              <Check size={13} className="text-[#059669]" />
+              <Check size={13} className="text-success-500" />
             </button>
           )}
           <ActionButtons
@@ -169,10 +169,10 @@ export const ZonasTable = ({
   ];
 
   return (
-    <div className="bg-white border border-[#e5e5e5] rounded-lg">
-      <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4">
-        <div className="text-table-title">
-          Zonas <span className="text-table-count">· {total}</span>
+    <div className="bg-white border border-slate-200 rounded-md">
+      <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-4">
+        <div className="text-base font-semibold text-slate-900">
+          Zonas <span className="text-sm text-slate-500 font-normal">· {total}</span>
         </div>
         <SearchBar
           value={query}

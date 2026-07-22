@@ -1,9 +1,9 @@
 import { X } from "lucide-react";
 import type { MouseEvent } from "react";
 
-import { Button } from "../ui/Button";
-import { CustomTextArea } from "../form/CustomTextArea";
 import type { AlertaReporte } from "../../models/reporte.model";
+import { CustomTextArea } from "../form/CustomTextArea";
+import { Button } from "../ui/Button";
 
 interface AlertResolveModalProps {
   alerta: AlertaReporte;
@@ -31,23 +31,23 @@ export const ModalResolverAlerta = ({
     onClick={onClose}
   >
     <div
-      className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+      className="bg-white rounded-2xl shadow-modal w-full max-w-md p-6"
       onClick={(e: MouseEvent) => e.stopPropagation()}
     >
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-lg text-gray-900">
+          <h3 className="font-semibold text-lg text-slate-900">
             Justificar alerta
           </h3>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-slate-500 mt-0.5">
             Camara: {alerta.codigo_camara} · Zona: {alerta.nombre_zona}
           </p>
         </div>
         <button
           onClick={onClose}
-          className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+          className="h-8 w-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors"
         >
-          <X size={16} className="text-gray-500" />
+          <X size={16} className="text-slate-500" />
         </button>
       </div>
 
@@ -55,7 +55,7 @@ export const ModalResolverAlerta = ({
         <img
           src={alerta.captura_frame}
           alt="Captura de la incidencia"
-          className="w-full h-40 object-cover rounded-lg mb-4 border border-[#e5e5e5]"
+          className="w-full h-40 object-cover rounded-lg mb-4 border border-slate-200"
         />
       )}
 
@@ -64,7 +64,7 @@ export const ModalResolverAlerta = ({
           label="Comentario / justificacion *"
           value={comentario}
           onChange={(e) => onComentarioChange(e.target.value)}
-          placeholder="Describe que ocurrio o por que se descarta como falso positivo..."
+          placeholder="Describe que ocurrio o por que se descarta..."
           rows={4}
           error={error ?? undefined}
         />
@@ -79,7 +79,7 @@ export const ModalResolverAlerta = ({
           onClick={onDiscard}
           disabled={loading || !comentario.trim()}
         >
-          Descartar falso positivo
+          Descartar
         </Button>
         <Button
           variant="secondary"

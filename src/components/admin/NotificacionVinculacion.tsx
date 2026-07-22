@@ -65,29 +65,29 @@ export const NotificacionVinculacion = () => {
       {pendientes.map((p) => (
         <div
           key={p.codigo}
-          className="bg-white border border-zinc-200 rounded-xl shadow-xl p-4 animate-in slide-in-from-right"
+          className="bg-white border border-slate-200 rounded-xl shadow-xl p-4 animate-in slide-in-from-right"
         >
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <Smartphone size={16} className="text-blue-600" />
+              <div className="h-8 w-8 rounded-full bg-brand-100 flex items-center justify-center">
+                <Smartphone size={16} className="text-brand-600" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-zinc-900">
+                <p className="text-sm font-semibold text-slate-900">
                   Nueva vinculación
                 </p>
-                <p className="text-xs text-zinc-500">Cámara #{p.camara_id}</p>
+                <p className="text-xs text-slate-500">Cámara #{p.camara_id}</p>
               </div>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono">{p.ip}</span>
+            <span className="text-[10px] text-slate-400 font-mono">{p.ip}</span>
           </div>
-          <p className="text-xs text-zinc-600 mb-3">
+          <p className="text-xs text-slate-600 mb-3">
             Un dispositivo quiere conectarse como cámara #{p.camara_id}.
           </p>
           <div className="flex items-center gap-2">
             <button
               onClick={() => procesar(p.codigo, "aprobar")}
-              className="flex-1 h-9 rounded-lg bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-blue-700 transition-colors"
+              className="flex-1 h-9 rounded-lg bg-brand-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-brand-700 transition-colors"
             >
               <Check size={14} /> Aceptar
             </button>

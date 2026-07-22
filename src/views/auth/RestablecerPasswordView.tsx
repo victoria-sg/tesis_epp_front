@@ -1,13 +1,7 @@
-import {
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  ShieldAlert,
-  ShieldCheck,
-} from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, ShieldAlert } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../../components/ui/Button";
 import { CustomInput } from "../../components/form/CustomInput";
+import { Button } from "../../components/ui/Button";
 import { useResetPassword } from "../../controllers/useResetPassword";
 
 export const RestablecerPasswordView = () => {
@@ -17,11 +11,15 @@ export const RestablecerPasswordView = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-10">
       <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <div className="h-16 w-16 rounded-2xl bg-linear-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
+          <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg shadow-purple-500/30 bg-white">
+            <img
+              src="/logo.png"
+              alt="EPP Monitor"
+              className="w-full h-full object-contain mix-blend-multiply"
+            />
           </div>
           <div className="text-2xl font-bold text-slate-900 text-center tracking-[-0.01em]">
             Nueva contraseña
@@ -45,7 +43,11 @@ export const RestablecerPasswordView = () => {
             <div className="text-sm text-slate-700">
               Tu contraseña fue actualizada correctamente.
             </div>
-            <Button variant="secondary" className="w-full h-12" onClick={goToLogin}>
+            <Button
+              variant="secondary"
+              className="w-full h-12"
+              onClick={goToLogin}
+            >
               Iniciar sesión
             </Button>
           </div>
@@ -66,7 +68,7 @@ export const RestablecerPasswordView = () => {
                 <button
                   type="button"
                   onClick={() => setShowPass((s) => !s)}
-                  className="text-gray-500 hover:text-blue-500 transition-colors pointer-events-auto"
+                  className="text-slate-500 hover:text-brand-500 transition-colors pointer-events-auto"
                   tabIndex={-1}
                 >
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -88,7 +90,7 @@ export const RestablecerPasswordView = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirm((s) => !s)}
-                  className="text-gray-500 hover:text-blue-500 transition-colors pointer-events-auto"
+                  className="text-slate-500 hover:text-brand-500 transition-colors pointer-events-auto"
                   tabIndex={-1}
                 >
                   {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -96,7 +98,7 @@ export const RestablecerPasswordView = () => {
               }
             />
 
-            <div className="text-xs text-gray-500 -mt-1">
+            <div className="text-xs text-slate-500 -mt-1">
               Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter
               especial.
             </div>

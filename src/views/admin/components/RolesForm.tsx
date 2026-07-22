@@ -102,12 +102,12 @@ export const RolesForm = ({
                   return (
                     <div
                       key={grupo.grupo}
-                      className="border border-[#e5e5e5] rounded-md overflow-hidden"
+                      className="border border-slate-200 rounded-md overflow-hidden"
                     >
                       <button
                         type="button"
                         onClick={() => onToggleGrupo(grupo.grupo)}
-                        className="w-full flex items-center gap-2 px-3 py-2 bg-[#fafafa] hover:bg-[#f0f0f0] transition-colors text-left"
+                        className="w-full flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
                       >
                         {abierto ? (
                           <ChevronDown size={14} />

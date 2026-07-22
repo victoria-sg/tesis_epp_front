@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 
+import { StatCard } from "../../components/ui/Card";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
 import { StatusBadge } from "../../components/crud/StatusBadge";
@@ -195,14 +196,14 @@ export const ReportesTurnoView = () => {
         }
       />
 
-      <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 mb-6 flex flex-wrap items-end gap-3">
+      <div className="bg-white border border-slate-200 rounded-md p-4 mb-6 flex flex-wrap items-end gap-3">
         <label className="text-xs font-semibold text-gray-600">
           Inicio
           <input
             type="datetime-local"
             value={fechaInicio}
             onChange={(e) => setFechaInicio(e.target.value)}
-            className="mt-1 h-9 rounded-md border border-[#d4d4d4] px-3 text-sm text-black outline-none focus:border-blue-500"
+            className="mt-1 h-9 rounded-md border border-slate-300 px-3 text-sm text-black outline-none focus:border-brand-500"
           />
         </label>
         <label className="text-xs font-semibold text-gray-600">
@@ -211,7 +212,7 @@ export const ReportesTurnoView = () => {
             type="datetime-local"
             value={fechaFin}
             onChange={(e) => setFechaFin(e.target.value)}
-            className="mt-1 h-9 rounded-md border border-[#d4d4d4] px-3 text-sm text-black outline-none focus:border-blue-500"
+            className="mt-1 h-9 rounded-md border border-slate-300 px-3 text-sm text-black outline-none focus:border-brand-500"
           />
         </label>
         <Button onClick={cargarReporte} loading={loading}>
@@ -232,43 +233,43 @@ export const ReportesTurnoView = () => {
       ) : reporte ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-              <FileText size={18} className="text-blue-600" />
-              <div>
-                <div className="text-number-md">
-                  {reporte.resumen.total_alertas}
-                </div>
-                <div className="text-xs text-gray-500">Alertas del turno</div>
-              </div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-              <Clock size={18} className="text-red-500" />
-              <div>
-                <div className="text-number-md">{reporte.resumen.pendientes}</div>
-                <div className="text-xs text-gray-500">Pendientes</div>
-              </div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-              <CheckCircle size={18} className="text-green-600" />
-              <div>
-                <div className="text-number-md">
-                  {reporte.resumen.cumplimiento}%
-                </div>
-                <div className="text-xs text-gray-500">Cumplimiento</div>
-              </div>
-            </div>
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-              <AlertTriangle size={18} className="text-amber-600" />
-              <div>
-                <div className="text-number-md">{reporte.zonas.length}</div>
-                <div className="text-xs text-gray-500">Zonas con eventos</div>
-              </div>
-            </div>
+            <StatCard
+              horizontal
+              icon={<FileText size={18} className="text-brand-600" />}
+              iconBgClass="bg-brand-50"
+              iconColorClass="text-brand-600"
+              label="Alertas del turno"
+              value={reporte.resumen.total_alertas}
+            />
+            <StatCard
+              horizontal
+              icon={<Clock size={18} className="text-danger-500" />}
+              iconBgClass="bg-danger-50"
+              iconColorClass="text-danger-500"
+              label="Pendientes"
+              value={reporte.resumen.pendientes}
+            />
+            <StatCard
+              horizontal
+              icon={<CheckCircle size={18} className="text-success-600" />}
+              iconBgClass="bg-success-50"
+              iconColorClass="text-success-600"
+              label="Cumplimiento"
+              value={`${reporte.resumen.cumplimiento}%`}
+            />
+            <StatCard
+              horizontal
+              icon={<AlertTriangle size={18} className="text-warning-600" />}
+              iconBgClass="bg-warning-50"
+              iconColorClass="text-warning-600"
+              label="Zonas con eventos"
+              value={reporte.zonas.length}
+            />
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-4">
-            <div className="bg-white border border-[#e5e5e5] rounded-lg p-5">
-              <div className="text-table-title mb-3">Resumen por zona</div>
+            <div className="bg-white border border-slate-200 rounded-md p-5">
+              <div className="text-base font-semibold text-slate-900 mb-3">Resumen por zona</div>
               <div className="space-y-2">
                 {reporte.zonas.length === 0 ? (
                   <div className="text-sm text-gray-500">Sin eventos por zona.</div>
@@ -276,7 +277,7 @@ export const ReportesTurnoView = () => {
                   reporte.zonas.map((zona) => (
                     <div
                       key={zona.zona}
-                      className="flex items-center justify-between rounded-md bg-[#f7f7f7] px-3 py-2"
+                      className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2"
                     >
                       <span className="text-sm text-black truncate">{zona.zona}</span>
                       <span className="text-xs font-bold text-blue-700">
@@ -288,11 +289,11 @@ export const ReportesTurnoView = () => {
               </div>
             </div>
 
-            <div className="bg-white border border-[#e5e5e5] rounded-lg">
-              <div className="px-5 py-4 border-b border-[#ececec]">
-                <div className="text-table-title">
+            <div className="bg-white border border-slate-200 rounded-md">
+              <div className="px-5 py-4 border-b border-slate-200">
+                <div className="text-base font-semibold text-slate-900">
                   Eventos del turno{" "}
-                  <span className="text-table-count">
+                  <span className="text-sm text-slate-500 font-normal">
                     · {reporte.alertas.length}
                   </span>
                 </div>

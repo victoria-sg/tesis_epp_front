@@ -117,7 +117,7 @@ export const CamarasForm = ({
           </>
         )}
         {esFallbackPhone && (
-          <div className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-blue-50 text-xs text-blue-700 leading-relaxed">
+          <div className="px-3 py-2.5 rounded-md border border-slate-200 bg-blue-50 text-xs text-blue-700 leading-relaxed">
             <span className="flex items-center gap-1">
               <Smartphone size={14} />
             </span>{" "}

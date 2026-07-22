@@ -34,7 +34,7 @@ export const ModalCamaraDashboard = ({
           <div className="text-white font-semibold text-lg">
             {camara.codigo_camara}
           </div>
-          <div className="text-zinc-400 text-sm">
+          <div className="text-slate-400 text-sm">
             {camara.zona_nombre || "Sin zona"}
           </div>
         </div>
@@ -73,16 +73,16 @@ export const ModalCamaraDashboard = ({
           {camara.estado_conexion === "activo" ? (
             <Wifi size={14} className="text-green-500" />
           ) : (
-            <WifiOff size={14} className="text-zinc-600" />
+            <WifiOff size={14} className="text-slate-600" />
           )}
-          <span className="text-zinc-400 text-xs">
+          <span className="text-slate-400 text-xs">
             {camara.estado_conexion === "activo"
               ? "Online"
               : "Offline"}
           </span>
         </div>
         {camara.ip_direccion && (
-          <span className="text-zinc-600 text-xs font-mono">
+          <span className="text-slate-600 text-xs font-mono">
             {camara.ip_direccion}
           </span>
         )}
@@ -114,7 +114,7 @@ export const ModalCamaraDashboard = ({
               {mensajeCaptura}
             </span>
           )}
-          <span className="text-zinc-600 text-xs">
+          <span className="text-slate-600 text-xs">
             Haz clic fuera para cerrar
           </span>
         </div>

@@ -122,7 +122,7 @@ export const ZonasForm = ({
           <label className="block mb-1.5 text-xs font-semibold text-gray-800">
             EPP Requeridos
           </label>
-          <div className="flex flex-wrap gap-2 p-2 border border-[#e5e5e5] rounded-lg bg-[#fafafa]">
+          <div className="flex flex-wrap gap-2 p-2 border border-slate-200 rounded-md bg-slate-50">
             {tiposEpp.map((tipo) => {
               const selected = (formik.values.epp_ids ?? []).includes(
                 tipo.id_tipo_epp,

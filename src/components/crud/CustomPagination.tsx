@@ -21,21 +21,15 @@ export const CustomPagination = ({
   const end = Math.min(page * pageSize, total);
 
   return (
-    <div className="flex items-center justify-between px-5 py-4 border-t border-[#ececec]">
-      <div
-        style={{
-          fontSize: 12,
-          color: "#6b6b6b",
-          fontVariantNumeric: "tabular-nums",
-        }}
-      >
+    <div className="flex items-center justify-between px-5 py-4 border-t border-slate-200">
+      <div className="text-xs text-slate-500 tabular-nums">
         {start}–{end} de {total}
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          className="h-8 w-8 rounded-md border border-[#d4d4d4] flex items-center justify-center disabled:opacity-30 hover:bg-[#f5f5f5] transition-colors"
+          className="h-8 w-8 rounded-md border border-slate-300 flex items-center justify-center disabled:opacity-30 hover:bg-slate-100 transition-colors text-slate-600"
         >
           <ChevronLeft size={14} />
         </button>
@@ -55,12 +49,11 @@ export const CustomPagination = ({
             <button
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
-              className={`h-8 min-w-8 rounded-md flex items-center justify-center text-sm transition-all ${
+              className={`h-8 min-w-8 rounded-md flex items-center justify-center text-xs transition-all ${
                 page === pageNum
-                  ? "bg-linear-to-r from-[#3b82f6] to-[#2563eb] text-white shadow-md shadow-blue-500/20"
-                  : "border border-[#d4d4d4] text-[#1a1a1a] hover:bg-[#f5f5f5]"
+                  ? "bg-linear-to-r from-brand-500 to-brand-600 text-white shadow-md shadow-brand-500/20"
+                  : "border border-slate-300 text-slate-700 hover:bg-slate-100"
               }`}
-              style={{ fontSize: 12, fontWeight: page === pageNum ? 600 : 400 }}
             >
               {pageNum}
             </button>
@@ -70,7 +63,7 @@ export const CustomPagination = ({
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          className="h-8 w-8 rounded-md border border-[#d4d4d4] flex items-center justify-center disabled:opacity-30 hover:bg-[#f5f5f5] transition-colors"
+          className="h-8 w-8 rounded-md border border-slate-300 flex items-center justify-center disabled:opacity-30 hover:bg-slate-100 transition-colors text-slate-600"
         >
           <ChevronRight size={14} />
         </button>

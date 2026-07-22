@@ -32,27 +32,21 @@ export const ConfirmDialog = ({
       onClick={onCancel}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6"
+        className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="h-12 w-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
-            <AlertTriangle size={24} className="text-red-500" />
+          <div className="h-12 w-12 rounded-full bg-danger-50 flex items-center justify-center mb-3">
+            <AlertTriangle size={24} className="text-danger-500" />
           </div>
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              color: "#000",
-            }}
-          >
+          <div className="text-lg font-bold text-slate-900">
             {title}
           </div>
-          <div className="mt-1" style={{ fontSize: 13, color: "#6b6b6b" }}>
+          <div className="mt-1 text-sm text-slate-500">
             {message}
           </div>
           {error && (
-            <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[12px] font-medium text-red-700">
+            <div className="mt-3 rounded-md border border-danger-400 bg-danger-50 px-3 py-2 text-xs font-medium text-danger-600">
               {error}
             </div>
           )}
@@ -69,7 +63,7 @@ export const ConfirmDialog = ({
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 h-10 px-4 rounded-lg bg-linear-to-r from-[#ef4444] to-[#dc2626] text-white hover:from-[#dc2626] hover:to-[#b91c1c] text-sm font-semibold transition-colors disabled:opacity-50"
+            className="flex-1 h-10 px-4 rounded-md bg-linear-to-r from-danger-500 to-danger-600 text-white hover:from-danger-600 hover:to-danger-600 text-sm font-semibold transition-colors disabled:opacity-50"
           >
             {loading ? "Eliminando..." : confirmLabel}
           </button>

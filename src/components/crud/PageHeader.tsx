@@ -9,18 +9,11 @@ interface Props {
 export const PageHeader = ({ title, subtitle, action }: Props) => (
   <div className="flex items-start justify-between mb-6">
     <div>
-      <div
-        style={{
-          fontSize: 24,
-          fontWeight: 700,
-          color: "#000",
-          letterSpacing: "-0.01em",
-        }}
-      >
+      <div className="text-2xl font-bold text-slate-900 tracking-tight">
         {title}
       </div>
       {subtitle && (
-        <div className="mt-1" style={{ fontSize: 13, color: "#6b6b6b" }}>
+        <div className="mt-1 text-sm text-slate-500">
           {subtitle}
         </div>
       )}

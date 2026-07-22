@@ -27,20 +27,13 @@ export const CustomTable = <T,>({
 }: Props<T>) => (
   <div className="overflow-x-auto">
     <table className="w-full">
-      <thead className="bg-[#fafafa]">
-        <tr className="border-b border-[#ececec]">
+      <thead className="bg-slate-100">
+        <tr className="border-b border-slate-200">
           {columns.map((col) => (
             <th
               key={col.key}
-              className={`px-4 py-3 ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"}`}
-              style={{
-                fontSize: 11,
-                color: "#6b6b6b",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                fontWeight: 600,
-                width: col.width,
-              }}
+              className={`px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-widest ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"}`}
+              style={{ width: col.width }}
             >
               {col.header}
             </th>
@@ -52,8 +45,7 @@ export const CustomTable = <T,>({
           <tr>
             <td
               colSpan={columns.length}
-              className="px-4 py-12 text-center"
-              style={{ fontSize: 13, color: "#6b6b6b" }}
+              className="px-4 py-12 text-center text-sm text-slate-500"
             >
               {emptyMessage}
             </td>
@@ -62,14 +54,13 @@ export const CustomTable = <T,>({
           data.map((item, idx) => (
             <tr
               key={keyExtractor(item)}
-              className={`border-b border-[#ececec] last:border-0 hover:bg-[#fafafa] ${onRowClick ? "cursor-pointer" : ""}`}
+              className={`border-b border-slate-200 last:border-0 hover:bg-slate-50 ${onRowClick ? "cursor-pointer" : ""}`}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className={`px-4 py-3.5 ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"}`}
-                  style={{ fontSize: 13, color: "#1a1a1a" }}
+                  className={`px-4 py-3.5 text-sm text-slate-800 ${col.align === "center" ? "text-center" : col.align === "right" ? "text-right" : "text-left"}`}
                 >
                   {col.render
                     ? col.render(item, startIndex + idx)

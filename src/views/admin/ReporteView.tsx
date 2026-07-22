@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 
 import { ModalPrevisualizacion } from "../../components/admin/ModalPrevisualizacion";
 import { ModalResolverAlerta } from "../../components/admin/ModalResolverAlerta";
+import { StatCard } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { CustomTable, type Column } from "../../components/crud/CustomTable";
 import { PageHeader } from "../../components/crud/PageHeader";
@@ -101,7 +102,7 @@ export const ReportesView = ({ modo = "alertas" }: ReportesViewProps) => {
             src={a.captura_frame}
             alt="Captura"
             onClick={() => setImagenExpandida(a.captura_frame)}
-            className="w-14 h-10 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border border-[#e5e5e5]"
+            className="w-14 h-10 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border border-slate-200"
           />
         ) : (
           <span className="text-gray-300 text-xs">Sin captura</span>
@@ -212,52 +213,48 @@ export const ReportesView = ({ modo = "alertas" }: ReportesViewProps) => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center">
-            <AlertTriangle size={18} className="text-blue-600" />
-          </div>
-          <div>
-            <div className="text-number-md">{stats.total}</div>
-            <div className="text-xs text-gray-500">Total alertas</div>
-          </div>
-        </div>
-        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-red-50 flex items-center justify-center">
-            <Clock size={18} className="text-red-500" />
-          </div>
-          <div>
-            <div className="text-number-md">{stats.pendientes}</div>
-            <div className="text-xs text-gray-500">Pendientes</div>
-          </div>
-        </div>
-        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-green-50 flex items-center justify-center">
-            <CheckCircle size={18} className="text-green-600" />
-          </div>
-          <div>
-            <div className="text-number-md">{stats.resueltas}</div>
-            <div className="text-xs text-gray-500">Resueltas</div>
-          </div>
-        </div>
-        <div className="bg-white border border-[#e5e5e5] rounded-lg p-4 flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center">
-            <FileWarning size={18} className="text-slate-600" />
-          </div>
-          <div>
-            <div className="text-number-md">{stats.descartadas}</div>
-            <div className="text-xs text-gray-500">Descartadas</div>
-          </div>
-        </div>
+        <StatCard
+          horizontal
+          icon={<AlertTriangle size={18} className="text-brand-600" />}
+          iconBgClass="bg-brand-50"
+          iconColorClass="text-brand-600"
+          label="Total alertas"
+          value={stats.total}
+        />
+        <StatCard
+          horizontal
+          icon={<Clock size={18} className="text-danger-500" />}
+          iconBgClass="bg-danger-50"
+          iconColorClass="text-danger-500"
+          label="Pendientes"
+          value={stats.pendientes}
+        />
+        <StatCard
+          horizontal
+          icon={<CheckCircle size={18} className="text-success-600" />}
+          iconBgClass="bg-success-50"
+          iconColorClass="text-success-600"
+          label="Resueltas"
+          value={stats.resueltas}
+        />
+        <StatCard
+          horizontal
+          icon={<FileWarning size={18} className="text-slate-600" />}
+          iconBgClass="bg-slate-100"
+          iconColorClass="text-slate-600"
+          label="Descartadas"
+          value={stats.descartadas}
+        />
       </div>
 
-      <div className="bg-white border border-[#e5e5e5] rounded-lg">
-        <div className="px-5 py-4 border-b border-[#ececec] flex items-center justify-between gap-4 flex-wrap">
-          <div className="text-table-title">
+      <div className="bg-white border border-slate-200 rounded-md">
+        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-4 flex-wrap">
+          <div className="text-base font-semibold text-slate-900">
             {modo === "ejecutivo" ? "Reporte ejecutivo" : "Alertas"}{" "}
-            <span className="text-table-count">· {data.length}</span>
+            <span className="text-sm text-slate-500 font-normal">· {data.length}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter size={14} className="text-[#6b6b6b]" />
+            <Filter size={14} className="text-slate-500" />
             <CustomSelect
               value={filtroZona}
               onChange={(v) => setFiltroZona(String(v))}

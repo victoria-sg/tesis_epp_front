@@ -38,7 +38,7 @@ export const TransmisionVideo = ({
   }[status] ?? { color: "bg-yellow-500", label: "Conectando..." };
 
   return (
-    <div className={`relative bg-black rounded-lg overflow-hidden border border-gray-200 ${className}`}>
+    <div className={`relative bg-black rounded-lg overflow-hidden border border-slate-200 ${className}`}>
       {status === "connected" && currentFrame ? (
         <div className={`relative w-full ${height} flex items-center justify-center overflow-hidden bg-black`}>
           <img
@@ -56,7 +56,7 @@ export const TransmisionVideo = ({
           )}
         </div>
       ) : (
-        <div className={`w-full ${height} flex flex-col items-center justify-center bg-gray-900 text-gray-400 gap-2`}>
+        <div className={`w-full ${height} flex flex-col items-center justify-center bg-slate-900 text-slate-400 gap-2`}>
           <Camera size={32} className="animate-pulse" />
           <span className="text-xs">
             {status === "connecting" ? "Conectando..." : "Sin señal"}

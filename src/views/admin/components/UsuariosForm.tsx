@@ -135,7 +135,7 @@ export const UsuariosForm = ({
           </div>
         )}
         {!isEditing && (
-          <div className="px-3 py-2.5 rounded-md border border-[#e5e5e5] bg-[#f5f3ff] text-xs text-gray-500 leading-relaxed">
+          <div className="px-3 py-2.5 rounded-md border border-slate-200 bg-purple-50 text-xs text-gray-500 leading-relaxed">
             <span className="flex items-center gap-1">
               <Lock size={14} />
             </span>{" "}

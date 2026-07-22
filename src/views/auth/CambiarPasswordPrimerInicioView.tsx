@@ -1,7 +1,7 @@
-import { Eye, EyeOff, LogOut, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, LogOut } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../../components/ui/Button";
 import { CustomInput } from "../../components/form/CustomInput";
+import { Button } from "../../components/ui/Button";
 import { useChangePasswordFirst } from "../../controllers/useChangePasswordFirst";
 
 export const CambiarPasswordPrimerInicioView = () => {
@@ -15,11 +15,15 @@ export const CambiarPasswordPrimerInicioView = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
+      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-10">
         <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12 text-center">
           <div className="flex flex-col items-center gap-4 py-4">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center shadow-lg shadow-green-500/30">
-              <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
+            <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg shadow-success-500/30 bg-white">
+              <img
+                src="/logo.png"
+                alt="EPP Monitor"
+                className="w-full h-full object-contain mix-blend-multiply"
+              />
             </div>
             <div className="text-2xl font-bold text-slate-900 tracking-[-0.01em]">
               Contraseña actualizada
@@ -28,7 +32,11 @@ export const CambiarPasswordPrimerInicioView = () => {
               Tu contraseña ha sido cambiada exitosamente. Ahora puedes iniciar
               sesión con tu nueva contraseña.
             </div>
-            <Button variant="primary" className="w-full h-12" onClick={handleLogout}>
+            <Button
+              variant="primary"
+              className="w-full h-12"
+              onClick={handleLogout}
+            >
               Ir a iniciar sesión
             </Button>
           </div>
@@ -38,16 +46,20 @@ export const CambiarPasswordPrimerInicioView = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0a1628] via-[#0f2744] to-[#1a3a5c] px-6 py-10">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-6 py-10">
       <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-slate-900/40 ring-1 ring-white/40 p-10 md:p-12">
         <div className="flex flex-col items-center gap-3 mb-6">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#7c3aed] to-[#6d28d9] flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.75} />
+          <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-lg shadow-purple-500/30 bg-white">
+            <img
+              src="/logo.png"
+              alt="EPP Monitor"
+              className="w-full h-full object-contain mix-blend-multiply"
+            />
           </div>
           <div className="text-2xl font-bold text-slate-900 text-center tracking-[-0.01em]">
             Cambio de contraseña requerido
           </div>
-          <div className="text-sm text-gray-500 text-center">
+          <div className="text-sm text-slate-500 text-center">
             Por ser tu primer inicio de sesión, debes cambiar tu contraseña.
           </div>
           {user && (
@@ -75,10 +87,14 @@ export const CambiarPasswordPrimerInicioView = () => {
                 onClick={() =>
                   setShowPasswords((s) => ({ ...s, actual: !s.actual }))
                 }
-                className="text-gray-500 hover:text-blue-500 transition-colors pointer-events-auto"
+                className="text-slate-500 hover:text-brand-500 transition-colors pointer-events-auto"
                 tabIndex={-1}
               >
-                {showPasswords.actual ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPasswords.actual ? (
+                  <EyeOff size={16} />
+                ) : (
+                  <Eye size={16} />
+                )}
               </button>
             }
           />
@@ -99,7 +115,7 @@ export const CambiarPasswordPrimerInicioView = () => {
                 onClick={() =>
                   setShowPasswords((s) => ({ ...s, nueva: !s.nueva }))
                 }
-                className="text-gray-500 hover:text-blue-500 transition-colors pointer-events-auto"
+                className="text-slate-500 hover:text-brand-500 transition-colors pointer-events-auto"
                 tabIndex={-1}
               >
                 {showPasswords.nueva ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -107,7 +123,7 @@ export const CambiarPasswordPrimerInicioView = () => {
             }
           />
 
-          <div className="text-xs text-gray-500 -mt-2">
+          <div className="text-xs text-slate-500 -mt-2">
             Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un
             carácter especial.
           </div>
@@ -128,16 +144,22 @@ export const CambiarPasswordPrimerInicioView = () => {
                 onClick={() =>
                   setShowPasswords((s) => ({ ...s, confirmar: !s.confirmar }))
                 }
-                className="text-gray-500 hover:text-blue-500 transition-colors pointer-events-auto"
+                className="text-slate-500 hover:text-brand-500 transition-colors pointer-events-auto"
                 tabIndex={-1}
               >
-                {showPasswords.confirmar ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPasswords.confirmar ? (
+                  <EyeOff size={16} />
+                ) : (
+                  <Eye size={16} />
+                )}
               </button>
             }
           />
 
           {serverError && (
-            <div className="text-xs text-red-600 text-center">{serverError}</div>
+            <div className="text-xs text-red-600 text-center">
+              {serverError}
+            </div>
           )}
 
           <Button

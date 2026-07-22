@@ -15,17 +15,17 @@ export const CustomCheckbox = ({
   checked,
   onChange,
   variant = "visible",
-  accentColor = "accent-[#7c3aed]",
+  accentColor = "accent-purple-600",
   icon,
   className = "",
 }: Props) => {
   if (variant === "hidden") {
     return (
       <label
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-colors text-[13px] ${
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-md cursor-pointer transition-colors text-sm ${
           checked
-            ? "bg-blue-100 text-blue-800 border border-blue-300"
-            : "bg-white text-[#4a4a4a] border border-[#e5e5e5] hover:border-blue-200"
+            ? "bg-brand-50 text-brand-700 border border-brand-200"
+            : "bg-white text-slate-700 border border-slate-200 hover:border-brand-200"
         } ${className}`}
       >
         <input
@@ -42,7 +42,7 @@ export const CustomCheckbox = ({
 
   return (
     <label
-      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#e5e5e5] hover:border-[#8b5cf6] hover:bg-[#f5f3ff] cursor-pointer transition-colors ${className}`}
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-slate-200 hover:border-purple-500 hover:bg-purple-50 cursor-pointer transition-colors ${className}`}
     >
       <input
         type="checkbox"
@@ -50,7 +50,7 @@ export const CustomCheckbox = ({
         onChange={onChange}
         className={`${accentColor} w-3.5 h-3.5`}
       />
-      <span className="text-[11px] text-gray-800">{label}</span>
+      <span className="text-xs text-slate-700">{label}</span>
     </label>
   );
 };

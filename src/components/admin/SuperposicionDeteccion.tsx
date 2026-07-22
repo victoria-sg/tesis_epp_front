@@ -31,7 +31,13 @@ export const SuperposicionDeteccion = ({ camaraId, activo = true }: DeteccionOve
     };
   }, [camaraId, activo]);
 
-  if (!deteccion || !deteccion.detecciones || deteccion.detecciones.length === 0) {
+  if (!deteccion) {
+    return null;
+  }
+
+  const deteccionesVisuales = deteccion.detecciones_visual ?? deteccion.detecciones ?? [];
+
+  if (deteccionesVisuales.length === 0) {
     return null;
   }
 
@@ -44,7 +50,7 @@ export const SuperposicionDeteccion = ({ camaraId, activo = true }: DeteccionOve
       viewBox={`0 0 ${anchoFrame} ${altoFrame}`}
       preserveAspectRatio="xMidYMid meet"
     >
-      {deteccion.detecciones.map((det, i) => {
+      {deteccionesVisuales.map((det, i) => {
         const [x1, y1, x2, y2] = det.bbox;
         const w = x2 - x1;
         const h = y2 - y1;

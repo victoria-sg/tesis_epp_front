@@ -25,19 +25,19 @@ export const CamaraTelefonoView = () => {
   if (vinculacionStatus === "pendiente") {
     return (
       <div className="h-screen w-screen bg-black flex flex-col items-center justify-center gap-6 px-8">
-        <div className="w-20 h-20 rounded-full bg-blue-900/40 flex items-center justify-center">
-          <Clock size={40} className="text-blue-400 animate-pulse" />
+        <div className="w-20 h-20 rounded-full bg-slate-900/40 flex items-center justify-center">
+          <Clock size={40} className="text-slate-400 animate-pulse" />
         </div>
         <div className="text-center max-w-xs">
           <p className="text-white text-base font-semibold mb-2">
             Esperando aprobación
           </p>
-          <p className="text-zinc-400 text-sm leading-relaxed">
+          <p className="text-slate-400 text-sm leading-relaxed">
             El administrador recibió una solicitud de vinculación desde este
             dispositivo. Espera a que sea aprobada.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-zinc-600 text-xs">
+        <div className="flex items-center gap-2 text-slate-600 text-xs">
           <Smartphone size={14} />
           <span>Dispositivo registrado</span>
         </div>
@@ -55,7 +55,7 @@ export const CamaraTelefonoView = () => {
           <p className="text-white text-base font-semibold mb-2">
             Conexión rechazada
           </p>
-          <p className="text-zinc-400 text-sm leading-relaxed">
+          <p className="text-slate-400 text-sm leading-relaxed">
             El administrador rechazó la solicitud de vinculación. Escanea un
             nuevo código QR para intentarlo de nuevo.
           </p>
@@ -74,7 +74,7 @@ export const CamaraTelefonoView = () => {
           <p className="text-white text-base font-semibold mb-2">
             Error de vinculación
           </p>
-          <p className="text-zinc-400 text-sm leading-relaxed">
+          <p className="text-slate-400 text-sm leading-relaxed">
             El código de vinculación es inválido o ha expirado. Escanea un
             nuevo código QR.
           </p>
@@ -86,7 +86,7 @@ export const CamaraTelefonoView = () => {
   return (
     <div className="h-screen w-screen bg-black flex flex-col overflow-hidden">
       {isAuthenticated && (
-        <div className="bg-zinc-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-b border-zinc-800/50">
+        <div className="bg-slate-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-b border-slate-800/50">
           <div className="flex items-center gap-2">
             <div className="h-7 w-7 rounded-lg bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center">
               <Camera size={14} className="text-white" />
@@ -95,7 +95,7 @@ export const CamaraTelefonoView = () => {
               <div className="text-white text-xs font-semibold">
                 EPP Monitor
               </div>
-              <div className="text-zinc-500 text-[9px] uppercase tracking-wider">
+              <div className="text-slate-500 text-[9px] uppercase tracking-wider">
                 Cámara #{camaraId}
               </div>
             </div>
@@ -110,8 +110,8 @@ export const CamaraTelefonoView = () => {
               </>
             ) : (
               <>
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
-                <span className="text-zinc-500 text-[10px] font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                <span className="text-slate-500 text-[10px] font-medium">
                   DETENIDO
                 </span>
               </>
@@ -132,28 +132,28 @@ export const CamaraTelefonoView = () => {
                   onStreamChange={handleStreamChange}
                 />
               ) : (
-                <div className="text-zinc-500 text-sm flex items-center justify-center h-full">
+                <div className="text-slate-500 text-sm flex items-center justify-center h-full">
                   ID de cámara inválido
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-zinc-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-t border-zinc-800/50">
+          <div className="bg-slate-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between shrink-0 border-t border-slate-800/50">
             <div className="flex items-center gap-1.5">
               {streamActive ? (
                 <Camera size={12} className="text-green-500" />
               ) : (
-                <Camera size={12} className="text-zinc-600" />
+                <Camera size={12} className="text-slate-600" />
               )}
-              <span className="text-zinc-500 text-[10px]">
+              <span className="text-slate-500 text-[10px]">
                 {streamActive ? "Transmitiendo" : "Sin transmisión"}
               </span>
             </div>
           </div>
         </>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-zinc-500 text-sm px-6 text-center">
+        <div className="flex-1 flex items-center justify-center text-slate-500 text-sm px-6 text-center">
           <p>
             Código de vinculación inválido o expirado. Escanea el código QR
             desde el panel de administración.
